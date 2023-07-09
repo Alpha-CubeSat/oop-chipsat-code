@@ -1,5 +1,4 @@
-// #include "Dictionary.h"
-#include "Vector.h"
+#include <ArxContainer.h>
 #include <ArxTypeTraits.h>
 #include <stdint.h>
 
@@ -20,9 +19,8 @@ protected:
     bool restore;       // If the field should be restored or not
 
 public:
-    // static Dictionary<int, SFRInterface *> opcode_lookup; // </brief Op Code Lookup Map For SFR Field Uplink Override
-    // static Dictionary *opcode_lookup;
-    static Vector<SFRInterface *> sfr_fields_vector;
+    static arx::map<int, SFRInterface *> opcode_lookup; // </brief Op Code Lookup Map For SFR Field Uplink Override
+    static arx::vector<SFRInterface *> sfr_fields_vector;
 
     virtual ~SFRInterface(){};
     static void setFieldValByOpcode(int opcode, uint32_t arg1);
@@ -74,7 +72,7 @@ public:
         address_offset = addr_offset;
         restore = restore_on_boot;
 
-        // SFRInterface::opcode_lookup[opcode_val] = this;
+        SFRInterface::opcode_lookup[opcode_val] = this;
         SFRInterface::sfr_fields_vector.push_back(this);
     }
 
@@ -98,7 +96,7 @@ public:
         address_offset = addr_offset;
         restore = restore_on_boot;
 
-        // SFRInterface::opcode_lookup[opcode_val] = this;
+        SFRInterface::opcode_lookup[opcode_val] = this;
         SFRInterface::sfr_fields_vector.push_back(this);
     }
 
@@ -124,7 +122,7 @@ public:
         address_offset = addr_offset;
         restore = restore_on_boot;
 
-        // SFRInterface::opcode_lookup[opcode_val] = this;
+        SFRInterface::opcode_lookup[opcode_val] = this;
         SFRInterface::sfr_fields_vector.push_back(this);
     }
 

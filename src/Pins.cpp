@@ -2,14 +2,13 @@
 
 void Pins::setPinState(int pinName, int pinState)
 {
-    // sfr::pins::pinMap[pinName] = pinState;
+    sfr::pins::pinMap[pinName] = pinState;
     digitalWrite(pinName, pinState);
 }
 
 int Pins::getPinState(int pinName)
 {
-    // return sfr::pins::pinMap[pinName];
-    return 0;
+    return sfr::pins::pinMap[pinName];
 }
 
 void Pins::setInitialPinStates()

@@ -2,8 +2,7 @@
 
 namespace sfr {
     namespace pins {
-        // Dictionary<int, int> pinMap = {};
-        // Dictionary *pinMap = new Dictionary();
+        arx::map<int, int> pinMap = {};
 
     } // namespace pins
     namespace imu {

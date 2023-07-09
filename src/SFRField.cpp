@@ -1,16 +1,14 @@
 #include "SFRField.hpp"
 
-// std::map<int, SFRInterface *> SFRInterface::opcode_lookup;
-// Dictionary *opcode_lookup = new Dictionary();
-Vector<SFRInterface *> SFRInterface::sfr_fields_vector;
+arx::map<int, SFRInterface *> SFRInterface::opcode_lookup;
+arx::vector<SFRInterface *> SFRInterface::sfr_fields_vector;
 
 void SFRInterface::setFieldValByOpcode(int opcode, uint32_t arg1)
 {
-    // if (opcode_lookup.count(opcode)) {
-    if (true) {
+    if (opcode_lookup.find(opcode) != opcode_lookup.end()) {
         // Valid Op Code
-        // SFRInterface *ptr = opcode_lookup[opcode];
-        // ptr->setValue(arg1);
+        SFRInterface *ptr = opcode_lookup[opcode];
+        ptr->setValue(arg1);
     }
 }
 

@@ -7,13 +7,11 @@
 #include "SFRField.hpp"
 #include "SensorReading.hpp"
 #include "constants.hpp"
+#include <ArxContainer.h>
 
 namespace sfr {
     namespace pins {
-        // TODO confirm initial pin states are correct FS-159
-        // @ Josh do we need to change this?
-        // extern Dictionary<int, int> pinMap;
-        // extern Dictionary *pinMap;
+        extern arx::map<int, int> pinMap;
     } // namespace pins
 
     namespace imu {
