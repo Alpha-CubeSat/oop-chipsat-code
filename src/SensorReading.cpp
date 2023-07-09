@@ -10,7 +10,7 @@ SensorReading::SensorReading(float min, float max)
 bool SensorReading::get_value(float *value_location)
 {
     // enough values have been accumulated to get the average
-    if (value != -1 ) {
+    if (value != -1) {
         *value_location = value;
         return 1;
     } else {
@@ -21,7 +21,7 @@ bool SensorReading::get_value(float *value_location)
 void SensorReading::set_value(float x)
 {
     if (x <= max && x >= min) {
-        if(valid){
+        if (valid) {
             value = x;
         }
     } else {
