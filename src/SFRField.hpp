@@ -1,9 +1,7 @@
-#include <cstring>
-#include <limits>
-#include <map>
+// #include "Dictionary.h"
+#include "Vector.h"
+#include <ArxTypeTraits.h>
 #include <stdint.h>
-#include <type_traits>
-#include <vector>
 
 #ifndef _SFRFIELD_HPP_
 #define _SFRFIELD_HPP_
@@ -22,19 +20,9 @@ protected:
     bool restore;       // If the field should be restored or not
 
 public:
-    static std::map<int, SFRInterface *> opcode_lookup; // </brief Op Code Lookup Map For SFR Field Uplink Override
-    static std::vector<SFRInterface *> sfr_fields_vector;
-
-#ifdef DEBUG
-    static void resetSFR()
-    {
-        for (auto const &kv : SFRInterface::opcode_lookup) {
-            opcode_lookup[kv.first]->reset();
-        }
-    }
-
-    virtual void reset();
-#endif
+    // static Dictionary<int, SFRInterface *> opcode_lookup; // </brief Op Code Lookup Map For SFR Field Uplink Override
+    // static Dictionary *opcode_lookup;
+    static Vector<SFRInterface *> sfr_fields_vector;
 
     virtual ~SFRInterface(){};
     static void setFieldValByOpcode(int opcode, uint32_t arg1);
@@ -63,10 +51,6 @@ private:
     int opcode;   // </brief Uplink Op Code to set this field
     int resolution;
 
-#ifdef DEBUG
-    T initial;
-#endif
-
 public:
     SFRField(T default_val, T min, T max, int opcode_val, int addr_offset, bool restore_on_boot)
     {
@@ -90,11 +74,7 @@ public:
         address_offset = addr_offset;
         restore = restore_on_boot;
 
-#ifdef DEBUG
-        T initial = default_val;
-#endif
-
-        SFRInterface::opcode_lookup[opcode_val] = this;
+        // SFRInterface::opcode_lookup[opcode_val] = this;
         SFRInterface::sfr_fields_vector.push_back(this);
     }
 
@@ -118,11 +98,7 @@ public:
         address_offset = addr_offset;
         restore = restore_on_boot;
 
-#ifdef DEBUG
-        T initial = default_val;
-#endif
-
-        SFRInterface::opcode_lookup[opcode_val] = this;
+        // SFRInterface::opcode_lookup[opcode_val] = this;
         SFRInterface::sfr_fields_vector.push_back(this);
     }
 
@@ -148,11 +124,7 @@ public:
         address_offset = addr_offset;
         restore = restore_on_boot;
 
-#ifdef DEBUG
-        T initial = default_val * resolution; // Since value gets set to initial in reset(), initial should be default_val * resolution instead of default_val
-#endif
-
-        SFRInterface::opcode_lookup[opcode_val] = this;
+        // SFRInterface::opcode_lookup[opcode_val] = this;
         SFRInterface::sfr_fields_vector.push_back(this);
     }
 
@@ -179,20 +151,13 @@ public:
         field_value = (int)input;
     }
 
-#ifdef DEBUG
-    void reset()
-    {
-        value = initial;
-        field_value = (int)initial;
-    }
-#endif
     void setValue(uint32_t arg1)
     {
         // Convert 32bit word into Target Type
         // TODO Joining Two uint16s FS-158
         static_assert(sizeof(T) <= sizeof arg1, "Templated Type is larger than input.");
         T casted;
-        std::memcpy(&casted, &arg1, sizeof(T));
+        memcpy(&casted, &arg1, sizeof(T));
         set(casted);
     }
 
