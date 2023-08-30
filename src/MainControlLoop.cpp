@@ -2,7 +2,8 @@
 
 MainControlLoop::MainControlLoop()
     : imu_monitor(),
-      temp_monitor()
+      temp_monitor(),
+      radio_monitor()
 
 {
     delay(1000);
@@ -14,4 +15,5 @@ void MainControlLoop::execute()
 
     imu_monitor.execute();
     temp_monitor.execute();
+    radio_monitor.execute();
 }

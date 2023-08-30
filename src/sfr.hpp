@@ -40,6 +40,14 @@ namespace sfr {
         extern uint16_t sfr_address;
         extern uint8_t boot_counter;
     } // namespace eeprom
+
+    namespace radio {
+        extern sensor_init_mode_type init_mode;
+        extern uint8_t start_progress;
+        extern bool receive_mode;
+        extern uint32_t receive_period;
+
+    } // namespace radio
 };    // namespace sfr
 
 #endif
