@@ -1,0 +1,11 @@
+#ifndef radio_mode_type_enum_
+#define radio_mode_type_enum_
+
+enum class radio_mode_type : unsigned char
+{
+    init = 0,
+    transmit,
+    receive
+};
+
+#endif

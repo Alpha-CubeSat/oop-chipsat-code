@@ -17,6 +17,8 @@ private:
     RFM96 *radio;
     void Radio_init();
     int8_t code;
+    void transmit(byte byteArr[]);
+    void receive();
 };
 
 #endif

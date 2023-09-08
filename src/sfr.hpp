@@ -2,6 +2,7 @@
 #define SFR_HPP_
 
 #include "Arduino.h"
+#include "Modes/radio_mode_type.enum"
 #include "Modes/sensor_init_mode_type.enum"
 #include "Modes/sensor_mode_type.enum"
 #include "SFRField.hpp"
@@ -45,7 +46,9 @@ namespace sfr {
         extern sensor_init_mode_type init_mode;
         extern uint8_t start_progress;
         extern bool receive_mode;
+        extern radio_mode_type mode;
         extern uint32_t receive_period;
+        extern uint32_t last_receive;
 
     } // namespace radio
 };    // namespace sfr

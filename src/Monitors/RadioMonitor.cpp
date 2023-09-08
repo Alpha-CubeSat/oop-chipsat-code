@@ -118,7 +118,7 @@ void RadioMonitor::Radio_init()
     }
 }
 
-void RadioMonitor::transmit()
+void RadioMonitor::transmit(byte byteArr[])
 {
     code = radio->transmit(byteArr, 8);
 
@@ -148,6 +148,7 @@ void RadioMonitor::transmit()
 
 void RadioMonitor::receive()
 {
+    byte byteArr[8];
     code = radio->receive(byteArr, 8);
 
     if (code == RADIOLIB_ERR_NONE) {
@@ -194,14 +195,14 @@ void RadioMonitor::receive()
 void RadioMonitor::execute()
 {
     // just form report here to make life easy
-    switch (sfr::radio_receive_mode)
+    switch (sfr::radio::receive_mode)
 
         if (millis() - sfr::radio::last_receive >= sfr::radio::receive_period) {
             // receive every minutes- add bit to end of downlink report indicating we are in receive mode
             receive();
         }
 
-    transmit();
+    // transmit();
 }
 
 Command *RadioMonitor::commandFactory(RawCommand raw)
