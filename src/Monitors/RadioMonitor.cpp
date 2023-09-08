@@ -1,34 +1,15 @@
 #include "RadioMonitor.hpp"
 
-// put in constants
-#define RADIO_CS_PIN 10
-#define RADIO_DI0_PIN 2
-#define RADIO_RST_PIN 9
-#define RADIO_BUSY_PIN A2
-
-#define ERR_NONE 0
-#define ERR_CRC_MISMATCH -7
-#define ERR_PACKET_TOO_LONG -4
-#define ERR_TX_TIMEOUT -5
-
-float freq = 433.0;
-float bw = 125.0;
-int sf = 12;
-int cr = 5;
-int sw = 18;
-int pwr = 20;
-int pl = 8;
-int gn = 0;
 uint8_t byte_counter = 0x00;
 
 RadioMonitor::RadioMonitor()
 {
 
-    RFM96 local_radio = new Module(RADIO_CS_PIN, RADIO_DI0_PIN, RADIO_RST_PIN, RADIO_BUSY_PIN);
+    RFM96 local_radio = new Module(constants::radio::radio_cs_pin, constants::radio::radio_di0_pin, constants::radio::radio_rst_pin, constants::radio::radio_busy_pin);
     radio = &local_radio;
 }
 
-void RadioMonitor::Radio_init()
+void RadioMonitor::init()
 {
     if (sfr::radio::init_mode == sensor_init_mode_type::awaiting) {
         // Called camera_init function and initialization process has not yet started
@@ -41,8 +22,8 @@ void RadioMonitor::Radio_init()
             Serial.begin(115200);
             // initialize SX1278 with default settings
             Serial.print(F("[SX1278] Initializing ... "));
-            code = radio->begin(freq, bw, sf, cr, sw, pwr, pl, gn);
-            if (code == ERR_NONE) {
+            code = radio->begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr, constants::radio::sw, constants::radio::pwr, constants::radio::pl, constants::radio::gn);
+            if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
             } else {
@@ -51,10 +32,10 @@ void RadioMonitor::Radio_init()
             }
             break;
         case 1:
-            // saftey check to make sure frequency is at 436.7
+            // saftey check to make sure frequency is set correctly
             Serial.print(F("[RF96] Setting frequency ... "));
-            code = radio->setFrequency(freq);
-            if (code == ERR_NONE) {
+            code = radio->setFrequency(constants::radio::freq);
+            if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
             } else {
@@ -66,8 +47,8 @@ void RadioMonitor::Radio_init()
             // adjust output power, avialable ranges: -3 to 15 dBm
             // increasing power increases range of transmission
             Serial.print(F("[RF96] Setting Output Power parameter ... "));
-            code = radio->setOutputPower(pwr);
-            if (code == ERR_NONE) {
+            code = radio->setOutputPower(constants::radio::pwr);
+            if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
             } else {
@@ -79,8 +60,8 @@ void RadioMonitor::Radio_init()
             // adjust spreading factor, avialable ranges: SF7 to SF12 (7 to 12)
             // increasing spreading factor increases range of transmission, but increases the time to transmit the message
             Serial.print(F("[RF96] Setting Spreading Factor parameter ... "));
-            code = radio->setSpreadingFactor(sf);
-            if (code == ERR_NONE) {
+            code = radio->setSpreadingFactor(constants::radio::sf);
+            if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
             } else {
@@ -92,7 +73,7 @@ void RadioMonitor::Radio_init()
             // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
             Serial.print(F("[RF96] Setting CRC parameter ... "));
             code = radio->setCRC(true);
-            if (code == ERR_NONE) { // ERR_NONE
+            if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
             } else {
@@ -104,7 +85,7 @@ void RadioMonitor::Radio_init()
             // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
             Serial.print(F("[RF96] Setting forceLDRO parameter ... "));
             code = radio->forceLDRO(true);
-            if (code == ERR_NONE) { // ERR_NONE
+            if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
             } else {
@@ -122,7 +103,7 @@ void RadioMonitor::transmit(byte byteArr[])
 {
     code = radio->transmit(byteArr, 8);
 
-    if (code == ERR_NONE) {
+    if (code == constants::radio::err_none) {
         // the packet was successfully transmitted
         Serial.println(F(" success!"));
 
@@ -130,11 +111,11 @@ void RadioMonitor::transmit(byte byteArr[])
         Serial.print(F("[SX1278] Datarate:\t"));
         Serial.print(radio->getDataRate());
         Serial.println(F(" bps"));
-    } else if (code == ERR_PACKET_TOO_LONG) {
+    } else if (code == constants::radio::err_packet_too_long) {
         // the supplied packet was longer than 256 bytes
         Serial.println(F("too long!"));
 
-    } else if (code == ERR_TX_TIMEOUT) {
+    } else if (code == constants::radio::err_tx_timeout) {
         // timeout occurred while transmitting packet
         Serial.println(F("timeout!"));
 
@@ -143,7 +124,7 @@ void RadioMonitor::transmit(byte byteArr[])
         Serial.print(F("failed, code "));
         Serial.println(code);
     }
-    sfr::radio::mode = radio_mode_type::receive;
+    sfr::radio::mode = radio_mode_type::listen;
 }
 
 void RadioMonitor::receive()
@@ -177,11 +158,11 @@ void RadioMonitor::receive()
         Serial.print(radio->getFrequencyError());
         Serial.println(F(" Hz"));
 
-    } else if (code == RADIOLIB_ERR_RX_TIMEOUT) {
+    } else if (code == constants::radio::err_rx_timeout) {
         // timeout occurred while waiting for a packet
         Serial.println(F("timeout!"));
 
-    } else if (code == RADIOLIB_ERR_CRC_MISMATCH) {
+    } else if (code == constants::radio::err_crc_mismatch) {
         // packet was received, but is malformed
         Serial.println(F("CRC error!"));
 

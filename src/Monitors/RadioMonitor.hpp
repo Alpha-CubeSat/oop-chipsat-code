@@ -15,7 +15,7 @@ public:
 private:
     Command *commandFactory(RawCommand raw);
     RFM96 *radio;
-    void Radio_init();
+    void init();
     int8_t code;
     void transmit(byte byteArr[]);
     void receive();
