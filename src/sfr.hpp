@@ -14,7 +14,6 @@ namespace sfr {
     namespace pins {
         extern arx::map<int, int> pinMap;
     } // namespace pins
-
     namespace imu {
         extern SensorReading *gyro_x;
         extern SensorReading *gyro_y;
@@ -31,24 +30,25 @@ namespace sfr {
         extern sensor_init_mode_type init_mode;
         extern sensor_mode_type mode;
     } // namespace imu
-
     namespace temp {
         extern SensorReading *temp_c;
         extern SensorReading *temp_f;
     } // namespace temp
-
     namespace eeprom {
         extern uint16_t sfr_address;
         extern uint8_t boot_counter;
     } // namespace eeprom
-
     namespace radio {
         extern sensor_init_mode_type init_mode;
         extern uint8_t start_progress;
-        extern bool receive_mode;
         extern radio_mode_type mode;
-        extern uint32_t receive_period;
-        extern uint32_t last_receive;
+
+        extern uint32_t downlink_period;
+        extern uint32_t listen_period;
+        extern uint32_t command_wait_period;
+        extern uint32_t downlink_period_start;
+        extern uint32_t listen_period_start;
+        extern uint32_t command_wait_start;
 
     } // namespace radio
 };    // namespace sfr

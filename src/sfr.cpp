@@ -36,9 +36,11 @@ namespace sfr {
     } // namespace eeprom
     namespace radio {
         sensor_init_mode_type init_mode = sensor_init_mode_type::awaiting;
+        radio_mode_type mode = radio_mode_type::init;
         uint8_t start_progress = 0;
-        bool receive_mode = 0;
-        uint32_t receive_period = 5 * constants::time::one_minute;
+        uint32_t downlink_period = 5 * constants::time::one_minute;
+        uint32_t listen_period = 5 * constants::time::one_minute;
+        uint32_t command_wait_period = 5 * constants::time::one_minute;
 
     } // namespace radio
 
