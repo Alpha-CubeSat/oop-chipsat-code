@@ -72,19 +72,6 @@ namespace constants {
     namespace imu {
 
     } // namespace imu
-    namespace eeprom {
-        // EEPROM SFR memory offsets, determined by size of the prevoius SFR value type + size of a boolean (1 byte) + offset of the previous SFR value
-        // The boolean indicates whether or not to restore the value on bootup
-        static constexpr unsigned int eeprom_boot_count_offset = 0;
-        static constexpr unsigned int eeprom_wait_time_write_step_time_offset = eeprom_boot_count_offset + 2;
-        static constexpr unsigned int eeprom_alloted_time_offset = eeprom_wait_time_write_step_time_offset + 5;
-        static constexpr unsigned int eeprom_alloted_time_passed_offset = eeprom_alloted_time_offset + 5;
-        static constexpr unsigned int eeprom_sfr_write_step_time_offset = eeprom_alloted_time_passed_offset + 2;
-        static constexpr unsigned int eeprom_sfr_address_age_offset = eeprom_sfr_write_step_time_offset + 5;
-        static constexpr unsigned int eeprom_storage_full_offset = eeprom_sfr_address_age_offset + 5;
-
-        static constexpr unsigned int full_offset = eeprom_storage_full_offset + 2;
-    } // namespace eeprom
 };    // namespace constants
 
 #endif

@@ -6,12 +6,8 @@ IMUMonitor::IMUMonitor()
 
 void IMUMonitor::IMU_init()
 {
-    if (sfr::imu::init_mode == sensor_init_mode_type::awaiting) {
-        // Called imu_init function and initialization process has not yet started
-        sfr::imu::init_mode = sensor_init_mode_type::in_progress;
-    }
 
-    if (sfr::imu::init_mode == sensor_init_mode_type::in_progress) {
+    if (sfr::imu::init_mode == sensor_init_mode_type::init) {
         if (!IMU.begin()) {
             sfr::imu::init_mode = sensor_init_mode_type::failed;
         } else {
@@ -38,7 +34,7 @@ void IMUMonitor::execute()
                 sfr::imu::failed_times = sfr::imu::failed_times + 1;
                 Serial.print("IMU initialization failed times: ");
                 Serial.println(sfr::imu::failed_times);
-                sfr::imu::init_mode = sensor_init_mode_type::awaiting;
+                sfr::imu::init_mode = sensor_init_mode_type::init;
             }
         }
     }
@@ -114,5 +110,5 @@ void IMUMonitor::transition_to_abnormal_init()
 
     sfr::imu::turn_on = false;
     sfr::imu::powered = false;
-    sfr::imu::init_mode = sensor_init_mode_type::awaiting;
+    sfr::imu::init_mode = sensor_init_mode_type::init;
 }

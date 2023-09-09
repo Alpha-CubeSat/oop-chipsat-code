@@ -34,10 +34,6 @@ namespace sfr {
         extern SensorReading *temp_c;
         extern SensorReading *temp_f;
     } // namespace temp
-    namespace eeprom {
-        extern uint16_t sfr_address;
-        extern uint8_t boot_counter;
-    } // namespace eeprom
     namespace radio {
         extern sensor_init_mode_type init_mode;
         extern uint8_t start_progress;

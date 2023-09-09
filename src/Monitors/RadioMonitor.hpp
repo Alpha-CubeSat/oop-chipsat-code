@@ -13,7 +13,7 @@ public:
     void execute();
 
 private:
-    RFM96 *radio;
+    RFM96 radio;
     int8_t code;
     void init();
     bool transmit(byte byteArr[], int size);

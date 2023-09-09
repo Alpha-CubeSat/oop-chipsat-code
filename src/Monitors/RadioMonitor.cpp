@@ -1,26 +1,20 @@
 #include "RadioMonitor.hpp"
 
-RadioMonitor::RadioMonitor()
+RadioMonitor::RadioMonitor() : radio(&Module(constants::radio::radio_cs_pin, constants::radio::radio_di0_pin,
+                                             constants::radio::radio_rst_pin, constants::radio::radio_busy_pin))
 {
-    RFM96 local_radio = new Module(constants::radio::radio_cs_pin, constants::radio::radio_di0_pin,
-                                   constants::radio::radio_rst_pin, constants::radio::radio_busy_pin);
-    radio = &local_radio;
 }
 
 void RadioMonitor::init()
 {
-    if (sfr::radio::init_mode == sensor_init_mode_type::awaiting) {
-        sfr::radio::init_mode = sensor_init_mode_type::in_progress;
-    }
-
-    if (sfr::radio::init_mode == sensor_init_mode_type::in_progress) {
+    if (sfr::radio::init_mode == sensor_init_mode_type::init) {
         switch (sfr::radio::start_progress) {
         case 0:
             Serial.begin(115200);
             // initialize SX1278 with default settings
             Serial.print(F("[SX1278] Initializing ... "));
-            code = radio->begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,
-                                constants::radio::sw, constants::radio::pwr, constants::radio::pl, constants::radio::gn);
+            code = radio.begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,
+                               constants::radio::sw, constants::radio::pwr, constants::radio::pl, constants::radio::gn);
             if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
@@ -32,7 +26,7 @@ void RadioMonitor::init()
         case 1:
             // saftey check to make sure frequency is set correctly
             Serial.print(F("[RF96] Setting frequency ... "));
-            code = radio->setFrequency(constants::radio::freq);
+            code = radio.setFrequency(constants::radio::freq);
             if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
@@ -45,7 +39,7 @@ void RadioMonitor::init()
             // adjust output power, avialable ranges: -3 to 15 dBm
             // increasing power increases range of transmission
             Serial.print(F("[RF96] Setting Output Power parameter ... "));
-            code = radio->setOutputPower(constants::radio::pwr);
+            code = radio.setOutputPower(constants::radio::pwr);
             if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
@@ -58,7 +52,7 @@ void RadioMonitor::init()
             // adjust spreading factor, avialable ranges: SF7 to SF12 (7 to 12)
             // increasing spreading factor increases range of transmission, but increases the time to transmit the message
             Serial.print(F("[RF96] Setting Spreading Factor parameter ... "));
-            code = radio->setSpreadingFactor(constants::radio::sf);
+            code = radio.setSpreadingFactor(constants::radio::sf);
             if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
@@ -70,7 +64,7 @@ void RadioMonitor::init()
         case 4:
             // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
             Serial.print(F("[RF96] Setting CRC parameter ... "));
-            code = radio->setCRC(true);
+            code = radio.setCRC(true);
             if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
@@ -82,7 +76,7 @@ void RadioMonitor::init()
         case 5:
             // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
             Serial.print(F("[RF96] Setting forceLDRO parameter ... "));
-            code = radio->forceLDRO(true);
+            code = radio.forceLDRO(true);
             if (code == constants::radio::err_none) {
                 Serial.println(F("success!"));
                 sfr::radio::start_progress++;
@@ -100,7 +94,7 @@ void RadioMonitor::init()
 
 bool RadioMonitor::transmit(byte byteArr[], int size)
 {
-    code = radio->transmit(byteArr, size);
+    code = radio.transmit(byteArr, size);
 
     if (code == constants::radio::err_none) {
         // the packet was successfully transmitted
@@ -108,7 +102,7 @@ bool RadioMonitor::transmit(byte byteArr[], int size)
 
         // print measured data rate
         Serial.print(F("[SX1278] Datarate:\t"));
-        Serial.print(radio->getDataRate());
+        Serial.print(radio.getDataRate());
         Serial.println(F(" bps"));
 
         return true;
@@ -130,7 +124,7 @@ bool RadioMonitor::transmit(byte byteArr[], int size)
 
 bool RadioMonitor::receive(byte byteArr[], int size)
 {
-    code = radio->receive(byteArr, size);
+    code = radio.receive(byteArr, size);
 
     if (code == constants::radio::err_none) {
         // packet was successfully received
@@ -142,19 +136,19 @@ bool RadioMonitor::receive(byte byteArr[], int size)
         // print the RSSI (Received Signal Strength Indicator)
         // of the last received packet
         Serial.print(F("[SX1278] RSSI:\t\t\t"));
-        Serial.print(radio->getRSSI());
+        Serial.print(radio.getRSSI());
         Serial.println(F(" dBm"));
 
         // print the SNR (Signal-to-Noise Ratio)
         // of the last received packet
         Serial.print(F("[SX1278] SNR:\t\t\t"));
-        Serial.print(radio->getSNR());
+        Serial.print(radio.getSNR());
         Serial.println(F(" dB"));
 
         // print frequency error
         // of the last received packet
         Serial.print(F("[SX1278] Frequency error:\t"));
-        Serial.print(radio->getFrequencyError());
+        Serial.print(radio.getFrequencyError());
         Serial.println(F(" Hz"));
 
         return true;
@@ -203,8 +197,9 @@ void RadioMonitor::execute()
         // placeholder for reports
         byte byteArr_t[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         bool transmit_success = transmit(byteArr_t, 8);
+        sfr::radio::mode = radio_mode_type::waiting;
+        // reset downlink period if downlink successful
         if (transmit_success) {
-            sfr::radio::mode = radio_mode_type::waiting;
             sfr::radio::downlink_period_start = millis();
         }
         break;
@@ -212,6 +207,7 @@ void RadioMonitor::execute()
         Serial.println(F("Listen State"));
         // placeholder for command uplinks
         byte byteArr_r[8];
+        // does receive() timeout? seems like built in timeout is 100 LoRa symbols? (need to test)
         bool receive_success = receive(byteArr_r, 8);
         if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
             sfr::radio::mode = radio_mode_type::waiting;
