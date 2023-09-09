@@ -85,6 +85,6 @@ namespace constants {
 
         static constexpr unsigned int full_offset = eeprom_storage_full_offset + 2;
     } // namespace eeprom
-}; // namespace constants
+};    // namespace constants
 
 #endif

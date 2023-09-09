@@ -41,6 +41,9 @@ namespace sfr {
         uint32_t downlink_period = 5 * constants::time::one_minute;
         uint32_t listen_period = 5 * constants::time::one_minute;
         uint32_t command_wait_period = 5 * constants::time::one_minute;
+        uint32_t downlink_period_start;
+        uint32_t listen_period_start;
+        uint32_t command_wait_start;
 
     } // namespace radio
 

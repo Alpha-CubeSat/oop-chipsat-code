@@ -201,9 +201,9 @@ void RadioMonitor::execute()
     case radio_mode_type::downlink:
         Serial.println(F("Downlink State"));
         // placeholder for reports
-        byte byteArr[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-        bool sucessful = transmit(byteArr, 8);
-        if (sucessful) {
+        byte byteArr_t[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        bool transmit_success = transmit(byteArr_t, 8);
+        if (transmit_success) {
             sfr::radio::mode = radio_mode_type::waiting;
             sfr::radio::downlink_period_start = millis();
         }
@@ -211,9 +211,9 @@ void RadioMonitor::execute()
     case radio_mode_type::listen:
         Serial.println(F("Listen State"));
         // placeholder for command uplinks
-        byte byteArr[8];
-        bool sucessful = receive(byteArr, 8);
-        if (sucessful || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
+        byte byteArr_r[8];
+        bool receive_success = receive(byteArr_r, 8);
+        if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
             sfr::radio::mode = radio_mode_type::waiting;
             sfr::radio::listen_period_start = millis();
         }
