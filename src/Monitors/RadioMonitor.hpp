@@ -13,12 +13,12 @@ public:
     void execute();
 
 private:
-    Command *commandFactory(RawCommand raw);
-    RFM96 *radio;
-    void Radio_init();
+    RFM96 radio;
     int8_t code;
-    void transmit(byte byteArr[]);
-    void receive();
+    void init();
+    bool transmit(byte byteArr[], int size);
+    bool receive(byte byteArr[], int size);
+    Command *commandFactory(RawCommand raw);
 };
 
 #endif
