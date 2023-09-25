@@ -1,11 +1,11 @@
-#include "RadioMonitor.hpp"
+#include "RadioControlTask.hpp"
 
-RadioMonitor::RadioMonitor() : radio(&Module(constants::radio::radio_cs_pin, constants::radio::radio_di0_pin,
-                                             constants::radio::radio_rst_pin, constants::radio::radio_busy_pin))
+RadioControlTask::RadioControlTask() : radio(&Module(constants::radio::radio_cs_pin, constants::radio::radio_di0_pin,
+                                                     constants::radio::radio_rst_pin, constants::radio::radio_busy_pin))
 {
 }
 
-void RadioMonitor::init()
+void RadioControlTask::init()
 {
     if (sfr::radio::init_mode == sensor_init_mode_type::init) {
         switch (sfr::radio::start_progress) {
@@ -92,7 +92,7 @@ void RadioMonitor::init()
     }
 }
 
-bool RadioMonitor::transmit(byte byteArr[], int size)
+bool RadioControlTask::transmit(uint8_t byteArr[], size_t size)
 {
     code = radio.transmit(byteArr, size);
 
@@ -122,7 +122,7 @@ bool RadioMonitor::transmit(byte byteArr[], int size)
     }
 }
 
-bool RadioMonitor::receive(byte byteArr[], int size)
+bool RadioControlTask::receive(uint8_t byteArr[], size_t size)
 {
     code = radio.receive(byteArr, size);
 
@@ -170,7 +170,7 @@ bool RadioMonitor::receive(byte byteArr[], int size)
     }
 }
 
-void RadioMonitor::execute()
+void RadioControlTask::execute()
 {
     // implements the state machine described in: https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki
     switch (sfr::radio::mode) {
@@ -195,7 +195,7 @@ void RadioMonitor::execute()
     case radio_mode_type::downlink:
         Serial.println(F("Downlink State"));
         // placeholder for reports
-        byte byteArr_t[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        uint8_t byteArr_t[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
         bool transmit_success = transmit(byteArr_t, 8);
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful
@@ -206,7 +206,7 @@ void RadioMonitor::execute()
     case radio_mode_type::listen:
         Serial.println(F("Listen State"));
         // placeholder for command uplinks
-        byte byteArr_r[8];
+        uint8_t byteArr_r[8];
         // does receive() timeout? seems like built in timeout is 100 LoRa symbols? (need to test)
         bool receive_success = receive(byteArr_r, 8);
         if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
@@ -217,7 +217,7 @@ void RadioMonitor::execute()
     }
 }
 
-Command *RadioMonitor::commandFactory(RawCommand raw)
+Command *RadioControlTask::commandFactory(RawCommand raw)
 {
     // Create Specific Child Class of command depending on the OP Code
     uint16_t op_code = raw.get_f_opcode();
