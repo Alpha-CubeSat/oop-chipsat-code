@@ -6,7 +6,6 @@ MainControlLoop::MainControlLoop()
       radio_control_task(),
       gps_monitor()
 
-
 {
     delay(1000);
 }

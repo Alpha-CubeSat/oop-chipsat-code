@@ -2,9 +2,9 @@
 #define MAIN_CONTROL_LOOP_HPP_
 
 #include "ControlTasks/RadioControlTask.hpp"
+#include "Monitors/GPSMonitor.hpp"
 #include "Monitors/IMUMonitor.hpp"
 #include "Monitors/TempMonitor.hpp"
-#include "Monitors/GPSMonitor.hpp"
 
 class MainControlLoop
 {

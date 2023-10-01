@@ -4,13 +4,13 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-//dog size must larger than the char length of the GPGGA msg
+// dog size must larger than the char length of the GPGGA msg
 #define DOG_SIZE 62
 
 typedef struct GPS
 {
-    //extra slot for '\0' when tokenlizing
-    char watch_dog[DOG_SIZE+1];
+    // extra slot for '\0' when tokenlizing
+    char watch_dog[DOG_SIZE + 1];
 
     float UTC_h;
     float UTC_m;
@@ -33,8 +33,8 @@ private:
     void print_dog();
     void buffer_shift(char new_char);
     int check_GPGGA();
-    float token_to_time(char* token, int precision);
-    float token_to_degree(char* token, bool is_lat);
+    float token_to_time(char *token, int precision);
+    float token_to_degree(char *token, bool is_lat);
     void parse_gps();
 };
 
