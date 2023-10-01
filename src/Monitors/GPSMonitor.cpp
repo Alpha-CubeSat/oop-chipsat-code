@@ -1,40 +1,39 @@
+#include <Arduino.h>
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(4, 3); // RX, TX
+#include "GPSMonitor.hpp"
 
-
-//dog size must larger than the char length of the GPGGA msg
-#define DOG_SIZE 62
-#define PI 3.1415926
-
-
-
-typedef struct GPS
+GPSMonitor::GPSMonitor()
 {
+    uint8_t SetNMEA[] = {
+  0xA0, 0xA1, 0x00, 0x03, 0x09, 0x01, 0x01, 0x09, 0x0D, 0x0A};
 
-    //extra slot for '\0' when tokenlizing
-    char watch_dog[DOG_SIZE+1];
+    uint8_t SetPosRate[] = {
+  0xA0, 0xA1, 0x00, 0x03, 0x0E, 0x01, 0x01, 0x0E, 0x0D, 0x0A}; 
 
-    float UTC_h;
-    float UTC_m;
-    float UTC_s;
+    mySerial.begin(115200);
+    delay(1000);
+    mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    delay(500);
+    mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    delay(500);
+    mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    delay(1000);
+}
 
-    float Lat;
-    float Long;
-    float Alt;
 
-} GPS;
-
-void print_dog (GPS *myGPS){
-
-    for(int i =0; i<(DOG_SIZE);i++){
-      Serial.print(myGPS->watch_dog[i]);  
+void GPSMonitor::print_dog()
+{
+    for (int i =0; i<(DOG_SIZE);i++)
+    {
+        Serial.print(myGPS->watch_dog[i]);  
     }
 
     Serial.print("\n");
 }
+
 // GPGGA,031434.000,4226.63801,N,07630.10c90,W,0,00,0.0,105.7,M,0
-void buffer_shift(GPS *myGPS, char new_char)
+void GPSMonitor::buffer_shift(char new_char)
 {
     char temp_dog[DOG_SIZE];
     for (int i=0;i<DOG_SIZE-1;i++){
@@ -51,7 +50,7 @@ void buffer_shift(GPS *myGPS, char new_char)
 
 }
 
-int check_GPGGA(GPS *myGPS)
+int GPSMonitor::check_GPGGA()
 {
     char c0 = myGPS->watch_dog[0];
     char c1 = myGPS->watch_dog[1];
@@ -67,7 +66,8 @@ int check_GPGGA(GPS *myGPS)
 }
 
 //precision = 0 , 1 , 2, for hour min sec
-float token_to_time(char* token, int precision){
+float GPSMonitor::token_to_time(char* token, int precision)
+{
 //HHMMSS
     char hh[3];
     char mm[3];
@@ -101,7 +101,7 @@ float token_to_time(char* token, int precision){
 }
 
 //convert token for either Lat or Long to degree
-float token_to_degree(char* token, bool is_lat)
+float GPSMonitor::token_to_degree(char* token, bool is_lat)
 {
   float d,m;
   
@@ -150,9 +150,7 @@ float token_to_degree(char* token, bool is_lat)
     return d + m / 60.0;
 }
 
-
-
-void parse_gps(GPS *myGPS)
+void GPSMonitor::parse_gps()
 {
     int token_number=0;
     char *token = strtok(myGPS->watch_dog, ",");
@@ -188,71 +186,22 @@ void parse_gps(GPS *myGPS)
     }
 }
 
-void fetch_GPS(GPS *myGPS){
- //Check to see if anything is available in the serial receive buffer
- while (mySerial.available() > 0)
- {
-   //Read the next available byte in the serial receive buffer
-   char new_char = mySerial.read();
-   buffer_shift(myGPS, new_char);   
-   //if valid, update the fields
-   if(check_GPGGA(myGPS)==1){
-     parse_gps(myGPS);
+void GPSMonitor::execute()
+{
+    //Check to see if anything is available in the serial receive buffer
+    while (mySerial.available() > 0)
+    {
+        //Read the next available byte in the serial receive buffer
+        char new_char = mySerial.read();
+        buffer_shift(new_char);   
+        //if valid, update the fields
+        if(check_GPGGA()==1)
+        {
+            parse_gps();
      
-     //for testing purpose
-     Serial.print("NEW MSG UPDATE!: ");     
-     print_dog(myGPS);
-   }
- }  
-}
- uint8_t SetNMEA[] = {
-  0xA0, 0xA1, 0x00, 0x03, 0x09, 0x01, 0x01, 0x09, 0x0D, 0x0A};
-
- uint8_t SetPosRate[] = {
-  0xA0, 0xA1, 0x00, 0x03, 0x0E, 0x01, 0x01, 0x0E, 0x0D, 0x0A};  
-
-static GPS myGPS;
-
-void setup() {
- Serial.begin(9600);
- mySerial.begin(115200);
- delay(1000);
-
-
- mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
- delay(500);
- mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
- delay(500);
- mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
- delay(1000);
-}
-
-void loop() {
-  
-  fetch_GPS(&myGPS);
-
-  Serial.print("UTC hour: ");
-  Serial.println(myGPS.UTC_h);
-
-  Serial.print("UTC min: ");
-  Serial.println(myGPS.UTC_m);
-  
-  Serial.print("UTC sec: ");
-  Serial.println(myGPS.UTC_s);
-
-  Serial.print("Latitude(degree): ");
-  Serial.println(myGPS.Lat);
-
-  Serial.print("Longitude(degree): ");
-  Serial.println(myGPS.Long);
-
-    Serial.print("Altitude(M): ");
-  Serial.println(myGPS.Alt);
-
-
-  Serial.println("------------------------------------------------------------------------");
-
-  delay(1000);
-
-
+            //for testing purpose
+            Serial.print("NEW MSG UPDATE!: ");     
+            print_dog();
+        }
+    }
 }

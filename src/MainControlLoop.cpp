@@ -3,7 +3,9 @@
 MainControlLoop::MainControlLoop()
     : imu_monitor(),
       temp_monitor(),
-      radio_control_task()
+      radio_control_task(),
+      gps_monitor()
+
 
 {
     delay(1000);
@@ -16,4 +18,5 @@ void MainControlLoop::execute()
     imu_monitor.execute();
     temp_monitor.execute();
     radio_control_task.execute();
+    gps_monitor.execute();
 }
