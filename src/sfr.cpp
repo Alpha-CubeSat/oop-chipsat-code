@@ -16,8 +16,7 @@ namespace sfr {
         SensorReading *acc_y = new SensorReading(0, 0);
         SensorReading *acc_z = new SensorReading(0, 0);
 
-        bool powered = false;
-        bool turn_on = true;
+        bool initialized = false;
         uint16_t failed_times = 0;
         uint16_t failed_limit = 5;
         sensor_init_mode_type init_mode = sensor_init_mode_type::init;

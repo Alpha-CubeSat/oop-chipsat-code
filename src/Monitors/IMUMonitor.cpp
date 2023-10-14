@@ -2,7 +2,10 @@
 
 IMUMonitor::IMUMonitor()
 {
+}
 
+void IMUMonitor::IMU_init()
+{
     if (sfr::imu::init_mode == sensor_init_mode_type::init) {
         if (!IMU.begin()) {
             sfr::imu::init_mode = sensor_init_mode_type::failed;
@@ -14,14 +17,13 @@ IMUMonitor::IMUMonitor()
 
 void IMUMonitor::execute()
 {
-    if (sfr::imu::turn_on == true && sfr::imu::powered == false) {
+    if (!sfr::imu::initialized) {
         Serial.println("Turned on IMU");
 
         IMUMonitor::IMU_init();
         if (sfr::imu::init_mode == sensor_init_mode_type::complete) {
-            sfr::imu::turn_on = false;
             transition_to_normal();
-            sfr::imu::powered = true;
+            sfr::imu::initialized = true;
         } else {
             if (sfr::imu::failed_times == sfr::imu::failed_limit) {
                 sfr::imu::failed_times = 0; // reset
@@ -35,8 +37,7 @@ void IMUMonitor::execute()
         }
     }
 
-    if (sfr::imu::powered == true) {
-        Serial.println("IMU is on and initialized");
+    if (sfr::imu::initialized) {
         capture_imu_values();
     }
 }
@@ -82,7 +83,6 @@ void IMUMonitor::transition_to_abnormal_init()
     sfr::imu::acc_y->set_invalid();
     sfr::imu::acc_y->set_invalid();
 
-    sfr::imu::turn_on = false;
-    sfr::imu::powered = false;
+    sfr::imu::initialized = false;
     sfr::imu::init_mode = sensor_init_mode_type::init;
 }

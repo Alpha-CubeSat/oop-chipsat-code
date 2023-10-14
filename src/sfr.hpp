@@ -23,8 +23,7 @@ namespace sfr {
         extern SensorReading *acc_y;
         extern SensorReading *acc_z;
 
-        extern bool powered;
-        extern bool turn_on;
+        extern bool initialized;
         extern uint16_t failed_times;
         extern uint16_t failed_limit;
         extern sensor_init_mode_type init_mode;
