@@ -77,8 +77,8 @@ void MainControlLoop::execute()
 
     imu_monitor.execute();
     temp_monitor.execute();
-    radio_control_task.execute();
     gps_monitor.execute();
+    radio_control_task.execute();
 
 #ifdef VERBOSE
     Serial.println("-------------------- END LOOP --------------------");
