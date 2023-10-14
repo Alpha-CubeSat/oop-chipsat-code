@@ -49,6 +49,30 @@ void MainControlLoop::execute()
         Serial.print(val);
         Serial.println(" F");
     }
+    if (sfr::gps::latitude->get_value(&val)) {
+        Serial.print("GPS Latitude (degrees): ");
+        Serial.print(val);
+    }
+    if (sfr::gps::longitude->get_value(&val)) {
+        Serial.print("GPS Longitude (degrees): ");
+        Serial.print(val);
+    }
+    if (sfr::gps::altitude->get_value(&val)) {
+        Serial.print("GPS Alitude (m): ");
+        Serial.print(val);
+    }
+    if (sfr::gps::utc_h->get_value(&val)) {
+        Serial.print("UTC Hour: ");
+        Serial.print(val);
+    }
+    if (sfr::gps::utc_m->get_value(&val)) {
+        Serial.print("UTC Min: ");
+        Serial.print(val);
+    }
+    if (sfr::gps::utc_s->get_value(&val)) {
+        Serial.print("UTC Sec: ");
+        Serial.print(val);
+    }
 #endif
 
     imu_monitor.execute();
