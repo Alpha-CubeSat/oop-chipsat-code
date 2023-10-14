@@ -23,8 +23,8 @@ GPSMonitor::GPSMonitor()
 
 void GPSMonitor::print_dog()
 {
-    for (int i = 0; i < (DOG_SIZE); i++) {
-        Serial.print(myGPS->watch_dog[i]);
+    for (int i = 0; i < (constants::gps::dog_size); i++) {
+        Serial.print(sfr::gps::watch_dog[i]);
     }
 
     Serial.print("\n");
@@ -33,27 +33,27 @@ void GPSMonitor::print_dog()
 // GPGGA,031434.000,4226.63801,N,07630.10c90,W,0,00,0.0,105.7,M,0
 void GPSMonitor::buffer_shift(char new_char)
 {
-    char temp_dog[DOG_SIZE];
-    for (int i = 0; i < DOG_SIZE - 1; i++) {
-        temp_dog[i] = myGPS->watch_dog[i + 1];
+    char temp_dog[constants::gps::dog_size];
+    for (int i = 0; i < constants::gps::dog_size - 1; i++) {
+        temp_dog[i] = sfr::gps::watch_dog[i + 1];
     }
-    temp_dog[DOG_SIZE - 1] = new_char;
+    temp_dog[constants::gps::dog_size - 1] = new_char;
 
     // full copy
-    for (int i = 0; i < DOG_SIZE; i++) {
-        myGPS->watch_dog[i] = temp_dog[i];
+    for (int i = 0; i < constants::gps::dog_size; i++) {
+        sfr::gps::watch_dog[i] = temp_dog[i];
     }
 
-    myGPS->watch_dog[DOG_SIZE] = '\0';
+    sfr::gps::watch_dog[constants::gps::dog_size] = '\0';
 }
 
 int GPSMonitor::check_GPGGA()
 {
-    char c0 = myGPS->watch_dog[0];
-    char c1 = myGPS->watch_dog[1];
-    char c2 = myGPS->watch_dog[2];
-    char c3 = myGPS->watch_dog[3];
-    char c4 = myGPS->watch_dog[4];
+    char c0 = sfr::gps::watch_dog[0];
+    char c1 = sfr::gps::watch_dog[1];
+    char c2 = sfr::gps::watch_dog[2];
+    char c3 = sfr::gps::watch_dog[3];
+    char c4 = sfr::gps::watch_dog[4];
 
     if (c0 == 'G' && c1 == 'P' && c2 == 'G' && c3 == 'G' && c4 == 'A') {
         return 1;
@@ -141,32 +141,34 @@ float GPSMonitor::token_to_degree(char *token, bool is_lat)
 void GPSMonitor::parse_gps()
 {
     int token_number = 0;
-    char *token = strtok(myGPS->watch_dog, ",");
+    char *token = strtok(sfr::gps::watch_dog, ",");
 
     while (token != NULL) {
         switch (token_number) {
         case 1: // UTC time
-            myGPS->UTC_h = token_to_time(token, 0);
-            myGPS->UTC_m = token_to_time(token, 1);
-            myGPS->UTC_s = token_to_time(token, 2);
+            sfr::gps::utc_h->set_value(token_to_time(token, 0));
+            sfr::gps::utc_m->set_value(token_to_time(token, 1));
+            sfr::gps::utc_s->set_value(token_to_time(token, 2));
         case 2: // Latitude
-            myGPS->Lat = token_to_degree(token, true);
+            sfr::gps::latitude->set_value(token_to_degree(token, true));
             break;
         case 3: // Latitude N/S indicator
             if (token[0] == 'S') {
-                myGPS->Lat = -myGPS->Lat;
+                float latitude;
+                sfr::gps::latitude->set_value(-sfr::gps::latitude->get_value(&latitude));
             }
             break;
         case 4: // Longitude
-            myGPS->Long = token_to_degree(token, false);
+            sfr::gps::longitude->set_value(token_to_degree(token, false));
             break;
         case 5: // Longitude E/W indicator
             if (token[0] == 'W') {
-                myGPS->Long = -myGPS->Long;
+                float longitude;
+                sfr::gps::longitude->set_value(-sfr::gps::longitude->get_value(&longitude));
             }
             break;
         case 9: // Altitude
-            myGPS->Alt = atof(token);
+            sfr::gps::altitude->set_value(atof(token));
             break;
         }
         token = strtok(NULL, ",");

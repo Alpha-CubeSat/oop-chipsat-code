@@ -72,6 +72,11 @@ namespace constants {
     namespace imu {
 
     } // namespace imu
+
+    namespace gps {
+        constexpr int dog_size = 62;
+    } // namespace gps
+
 };    // namespace constants
 
 #endif

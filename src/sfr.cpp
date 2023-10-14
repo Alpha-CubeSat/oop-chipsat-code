@@ -42,4 +42,17 @@ namespace sfr {
 
     } // namespace radio
 
+    namespace gps {
+        SensorReading *utc_h = new SensorReading(0, 0);
+        SensorReading *utc_m = new SensorReading(0, 0);
+        SensorReading *utc_s = new SensorReading(0, 0);
+
+        SensorReading *latitude = new SensorReading(0, 0);
+        SensorReading *longitude = new SensorReading(0, 0);
+        SensorReading *altitude = new SensorReading(0, 0);
+
+        // extra slot for '\0' when tokenizing
+        char watch_dog[constants::gps::dog_size + 1];
+    } // namespace gps
+
 }; // namespace sfr

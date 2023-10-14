@@ -47,6 +47,17 @@ namespace sfr {
         extern uint32_t command_wait_start;
 
     } // namespace radio
+    namespace gps {
+        extern SensorReading *utc_h;
+        extern SensorReading *utc_m;
+        extern SensorReading *utc_s;
+
+        extern SensorReading *latitude;
+        extern SensorReading *longitude;
+        extern SensorReading *altitude;
+
+        extern char watch_dog[constants::gps::dog_size + 1];
+    } // namespace gps
 };    // namespace sfr
 
 #endif
