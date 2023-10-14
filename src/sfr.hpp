@@ -30,10 +30,10 @@ namespace sfr {
         extern sensor_init_mode_type init_mode;
         extern sensor_mode_type mode;
     } // namespace imu
-    namespace temp {
+    namespace temperature {
         extern SensorReading *temp_c;
         extern SensorReading *temp_f;
-    } // namespace temp
+    } // namespace temperature
     namespace radio {
         extern sensor_init_mode_type init_mode;
         extern uint8_t start_progress;

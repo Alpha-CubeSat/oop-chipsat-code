@@ -2,10 +2,6 @@
 
 IMUMonitor::IMUMonitor()
 {
-}
-
-void IMUMonitor::IMU_init()
-{
 
     if (sfr::imu::init_mode == sensor_init_mode_type::init) {
         if (!IMU.begin()) {
@@ -47,22 +43,9 @@ void IMUMonitor::execute()
 
 void IMUMonitor::capture_imu_values()
 {
-    // fix this eeeek
-    float gyroX, gyroY, gyroZ;
-
-    float accX, accY, accZ;
 
     if (IMU.gyroscopeAvailable()) {             // check if the gyroscope has new data available
         IMU.readGyroscope(gyroX, gyroY, gyroZ); // library function to read from the gyroscope
-
-        // Print Gyroscope Values
-        Serial.println("Reading Gyroscopic Values");
-        Serial.print("X: ");
-        Serial.println(gyroX);
-        Serial.print("Y: ");
-        Serial.println(gyroY);
-        Serial.print("Z ");
-        Serial.println(gyroZ);
 
         sfr::imu::gyro_x->set_value(gyroX);
         sfr::imu::gyro_y->set_value(gyroY);
@@ -71,15 +54,6 @@ void IMUMonitor::capture_imu_values()
 
     if (IMU.accelerationAvailable()) { // check if accelerometer is available
         IMU.readAcceleration(accX, accY, accZ);
-
-        // Print Accelerometer Values
-        Serial.println("Reading Accelerometer Values");
-        Serial.print("X: ");
-        Serial.println(accX);
-        Serial.print("Y ");
-        Serial.println(accY);
-        Serial.print("Z ");
-        Serial.println(accZ);
 
         sfr::imu::acc_x->set_value(accX);
         sfr::imu::acc_y->set_value(accY);

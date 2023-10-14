@@ -10,7 +10,6 @@ void RadioControlTask::init()
     if (sfr::radio::init_mode == sensor_init_mode_type::init) {
         switch (sfr::radio::start_progress) {
         case 0:
-            Serial.begin(115200);
             // initialize SX1278 with default settings
             Serial.print(F("[SX1278] Initializing ... "));
             code = radio.begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,

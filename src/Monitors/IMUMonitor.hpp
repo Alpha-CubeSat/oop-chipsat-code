@@ -7,6 +7,7 @@
 #include "Pins.hpp"
 #include "SensorReading.hpp"
 #include "sfr.hpp"
+
 class IMUMonitor
 {
 public:
@@ -20,6 +21,8 @@ private:
     void capture_imu_values();
 
     sensor_mode_type mode;
+    float gyroX, gyroY, gyroZ;
+    float accX, accY, accZ;
 };
 
 #endif

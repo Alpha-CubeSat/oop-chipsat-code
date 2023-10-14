@@ -24,11 +24,11 @@ namespace sfr {
         sensor_mode_type mode = sensor_mode_type::init;
 
     } // namespace imu
-    namespace temp {
+    namespace temperature {
         SensorReading *temp_c = new SensorReading(-5000, 5000);
         SensorReading *temp_f = new SensorReading(-10000, 10000);
 
-    } // namespace temp
+    } // namespace temperature
     namespace radio {
         sensor_init_mode_type init_mode = sensor_init_mode_type::init;
         radio_mode_type mode = radio_mode_type::init;
