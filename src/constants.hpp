@@ -77,6 +77,6 @@ namespace constants {
         constexpr int dog_size = 62;
     } // namespace gps
 
-};    // namespace constants
+}; // namespace constants
 
 #endif
