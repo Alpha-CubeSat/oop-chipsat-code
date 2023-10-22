@@ -91,9 +91,9 @@ void RadioControlTask::init()
     }
 }
 
-bool RadioControlTask::transmit(uint8_t byteArr[], size_t size)
+bool RadioControlTask::transmit(String packet)
 {
-    code = radio.transmit(byteArr, size);
+    code = radio.transmit(packet);
 
     if (code == constants::radio::err_none) {
         // the packet was successfully transmitted
@@ -173,7 +173,7 @@ void RadioControlTask::execute()
 {
     // implements the state machine described in: https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki
     switch (sfr::radio::mode) {
-    case radio_mode_type::init:
+    case radio_mode_type::init: {
         Serial.println(F("Init State"));
         init();
         if (sfr::radio::init_mode == sensor_init_mode_type::complete) {
@@ -182,7 +182,8 @@ void RadioControlTask::execute()
             sfr::radio::downlink_period_start = millis();
         }
         break;
-    case radio_mode_type::waiting:
+    }
+    case radio_mode_type::waiting: {
         Serial.println(F("Waiting State"));
         if (millis() - sfr::radio::listen_period_start >= sfr::radio::listen_period) {
             sfr::radio::mode = radio_mode_type::listen;
@@ -191,18 +192,20 @@ void RadioControlTask::execute()
             sfr::radio::mode = radio_mode_type::downlink;
         }
         break;
-    case radio_mode_type::downlink:
+    }
+    case radio_mode_type::downlink: {
         Serial.println(F("Downlink State"));
-        // placeholder for reports
-        uint8_t byteArr_t[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-        bool transmit_success = transmit(byteArr_t, 8);
+        String normal_report = buildDownlink();
+        Serial.println(normal_report);
+        bool transmit_success = transmit(normal_report);
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful
         if (transmit_success) {
             sfr::radio::downlink_period_start = millis();
         }
         break;
-    case radio_mode_type::listen:
+    }
+    case radio_mode_type::listen: {
         Serial.println(F("Listen State"));
         // placeholder for command uplinks
         uint8_t byteArr_r[8];
@@ -214,6 +217,34 @@ void RadioControlTask::execute()
         }
         break;
     }
+    }
+}
+
+String RadioControlTask::buildDownlink()
+{
+    String packet = "";
+    packet = sensorReadingString(sfr::gps::latitude) + ",";
+    packet += sensorReadingString(sfr::gps::longitude) + ",";
+    packet += sensorReadingString(sfr::gps::altitude) + ",";
+    packet += sensorReadingString(sfr::gps::utc_h) + ",";
+    packet += sensorReadingString(sfr::gps::utc_m) + ",";
+    packet += sensorReadingString(sfr::gps::utc_s) + ",";
+    packet += sensorReadingString(sfr::imu::gyro_x) + ",";
+    packet += sensorReadingString(sfr::imu::gyro_y) + ",";
+    packet += sensorReadingString(sfr::imu::gyro_z) + ",";
+    packet += sensorReadingString(sfr::imu::acc_x) + ",";
+    packet += sensorReadingString(sfr::imu::acc_y) + ",";
+    packet += sensorReadingString(sfr::imu::acc_z) + ",";
+    packet += sensorReadingString(sfr::temperature::temp_c) + ",";
+    packet += sensorReadingString(sfr::temperature::temp_f) + ",";
+    return packet;
+}
+
+String RadioControlTask::sensorReadingString(SensorReading *sr)
+{
+    float val;
+    sr->get_value(&val);
+    return String(val);
 }
 
 Command *RadioControlTask::commandFactory(RawCommand raw)

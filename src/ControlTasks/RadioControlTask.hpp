@@ -16,9 +16,11 @@ private:
     RFM96 radio;
     int8_t code;
     void init();
-    bool transmit(uint8_t byteArr[], size_t size);
+    bool transmit(String packet);
     bool receive(uint8_t byteArr[], size_t size);
     Command *commandFactory(RawCommand raw);
+    String buildDownlink();
+    String sensorReadingString(SensorReading *sr);
 };
 
 #endif
