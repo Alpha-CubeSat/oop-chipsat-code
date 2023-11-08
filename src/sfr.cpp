@@ -1,10 +1,6 @@
 #include "sfr.hpp"
 
 namespace sfr {
-    namespace pins {
-        arx::map<int, int> pinMap = {};
-
-    } // namespace pins
     
     namespace temperature {
         SensorReading *temp_c = new SensorReading(-5000, 5000);
