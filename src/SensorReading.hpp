@@ -10,7 +10,7 @@ private:
     float max;          // max valid value
     float min;          // min valid value
     bool valid = false; // if SensorReading is valid
-    uint8_t value;
+    float value;
 
 public:
     SensorReading(float max, float min);   // constructor
