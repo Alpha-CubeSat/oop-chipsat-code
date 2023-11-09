@@ -1,8 +1,9 @@
 #include "MainControlLoop.hpp"
 
 MainControlLoop::MainControlLoop()
-    : temp_monitor(),
-      imu_monitor()
+    : imu_monitor(),
+      temp_monitor(),
+      radio_control_task()
 
 {
     // delay(1000);
@@ -37,7 +38,6 @@ void MainControlLoop::execute()
         Serial.print("Accel Z: ");
         Serial.println(val);
     }
-    
     if (sfr::temperature::temp_c->get_value(&val)) {
         Serial.print("Temperature (C): ");
         Serial.print(val);
@@ -51,9 +51,9 @@ void MainControlLoop::execute()
     
 #endif
 
-
     temp_monitor.execute();
     imu_monitor.execute();
+    radio_control_task.execute();
 
 #ifdef VERBOSE
     Serial.println("-------------------- END LOOP --------------------");

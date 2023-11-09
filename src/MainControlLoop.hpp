@@ -1,14 +1,16 @@
 #ifndef MAIN_CONTROL_LOOP_HPP_
 #define MAIN_CONTROL_LOOP_HPP_
 
+#include "ControlTasks/RadioControlTask.hpp"
 #include "Monitors/TempMonitor.hpp"
 #include "Monitors/IMUMonitor.hpp"
 
 class MainControlLoop
 {
 protected:
-    TempMonitor temp_monitor;
     IMUMonitor imu_monitor;
+    TempMonitor temp_monitor;
+    RadioControlTask radio_control_task;
 
 public:
     MainControlLoop();
