@@ -17,7 +17,7 @@ private:
     int8_t code;
     void init();
     bool transmit(String packet);
-    bool receive(uint8_t byteArr[], size_t size);
+    bool receive(String commmand);
     // Command *commandFactory(RawCommand raw);
     String buildDownlink();
     String sensorReadingString(SensorReading *sr);

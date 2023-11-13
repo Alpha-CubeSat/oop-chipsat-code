@@ -120,9 +120,9 @@ bool RadioControlTask::transmit(String packet)
     }
 }
 
-bool RadioControlTask::receive(uint8_t byteArr[], size_t size)
+bool RadioControlTask::receive(String command)
 {
-    code = radio.receive(byteArr, size);
+    code = radio.receive(command, 15);
 
     if (code == constants::radio::err_none) {
         // packet was successfully received
@@ -207,9 +207,12 @@ void RadioControlTask::execute()
     case radio_mode_type::listen: {
         Serial.println(F("Radio: Listen State"));
         // placeholder for command uplinks
-        uint8_t byteArr_r[8];
+        String command;
         // does receive() timeout? seems like built in timeout is 100 LoRa symbols? (need to test)
-        bool receive_success = receive(byteArr_r, 8);
+        bool receive_success = receive(command);
+        if (receive_success) {
+            Serial.println("Received: " + command);
+        }
         if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
             sfr::radio::mode = radio_mode_type::waiting;
             sfr::radio::listen_period_start = millis();
