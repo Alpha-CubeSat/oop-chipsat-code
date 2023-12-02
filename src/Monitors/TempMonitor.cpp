@@ -30,8 +30,8 @@ void TempMonitor::execute()
     }
 
     // Convert the data
-    float rawtmp = (data[0] * 256 + data[1]) & 0xFFFC;
-    float temp_c = -46.85 + (175.72 * (rawtmp / 65536.0));
+    uint32_t rawtemp = (data[0] * 256 + data[1]) & 0xFFFC;
+    float temp_c = -46.85 + (175.72 * (rawtemp / 65536.0));
     float temp_f = temp_c * 1.8 + 32;
 
     sfr::temperature::temp_c->set_value(temp_c);
