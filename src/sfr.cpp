@@ -1,7 +1,7 @@
 #include "sfr.hpp"
 
 namespace sfr {
-    
+
     namespace imu {
 
         // TODO set min and max to good values
@@ -42,13 +42,14 @@ namespace sfr {
         sensor_init_mode_type init_mode = sensor_init_mode_type::init;
         radio_mode_type mode = radio_mode_type::init;
         uint8_t start_progress = 0;
-        uint32_t downlink_period = 1 * constants::time::one_minute;
-        uint32_t listen_period = 1 * constants::time::one_minute;
+        uint32_t downlink_period = 30 * constants::time::one_second;
+        uint32_t listen_period = 30 * constants::time::one_second;
         uint32_t command_wait_period = 30 * constants::time::one_second;
         uint32_t downlink_period_start;
         uint32_t listen_period_start;
         uint32_t command_wait_start;
+        String received;
 
     } // namespace radio
-    
+
 }; // namespace sfr

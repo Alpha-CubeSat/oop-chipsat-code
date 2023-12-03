@@ -21,7 +21,6 @@ private:
     // Command *commandFactory(RawCommand raw);
     String buildDownlink();
     String sensorReadingString(SensorReading *sr);
-    String received;
 };
 
 #endif

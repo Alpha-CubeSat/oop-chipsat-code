@@ -39,6 +39,7 @@ namespace sfr {
         extern uint32_t downlink_period_start;
         extern uint32_t listen_period_start;
         extern uint32_t command_wait_start;
+        extern String received;
 
     } // namespace radio
     namespace gps {
@@ -52,7 +53,7 @@ namespace sfr {
 
         extern char watch_dog[constants::gps::dog_size + 1];
     } // namespace gps
-    
-};    // namespace sfr
+
+}; // namespace sfr
 
 #endif

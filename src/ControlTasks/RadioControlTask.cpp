@@ -122,7 +122,9 @@ bool RadioControlTask::transmit(String packet)
 
 bool RadioControlTask::receive()
 {
-    code = radio.receive(received);
+    String command;
+    code = radio.receive(command);
+    sfr::radio::received = command;
 
     if (code == constants::radio::err_none) {
         // packet was successfully received
@@ -206,9 +208,13 @@ void RadioControlTask::execute()
     }
     case radio_mode_type::listen: {
         Serial.println(F("Radio: Listen State"));
+        // built in timeout is 100 LoRa symbols
         bool receive_success = receive();
         if (receive_success) {
-            Serial.println("Received: " + received);
+            Serial.print("Received: ");
+            Serial.println(sfr::radio::received);
+        } else {
+            Serial.println("Receive Failed");
         }
         if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
             sfr::radio::mode = radio_mode_type::waiting;
