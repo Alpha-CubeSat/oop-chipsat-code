@@ -120,9 +120,9 @@ bool RadioControlTask::transmit(String packet)
     }
 }
 
-bool RadioControlTask::receive(String command)
+bool RadioControlTask::receive()
 {
-    code = radio.receive(command, 15);
+    code = radio.receive(received);
 
     if (code == constants::radio::err_none) {
         // packet was successfully received
@@ -206,12 +206,9 @@ void RadioControlTask::execute()
     }
     case radio_mode_type::listen: {
         Serial.println(F("Radio: Listen State"));
-        // placeholder for command uplinks
-        String command;
-        // does receive() timeout? seems like built in timeout is 100 LoRa symbols? (need to test)
-        bool receive_success = receive(command);
+        bool receive_success = receive();
         if (receive_success) {
-            Serial.println("Received: " + command);
+            Serial.println("Received: " + received);
         }
         if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
             sfr::radio::mode = radio_mode_type::waiting;
@@ -225,12 +222,12 @@ void RadioControlTask::execute()
 String RadioControlTask::buildDownlink()
 {
     String packet = "";
-    packet = sensorReadingString(sfr::gps::latitude) + ",";
-    packet += sensorReadingString(sfr::gps::longitude) + ",";
-    packet += sensorReadingString(sfr::gps::altitude) + ",";
-    packet += sensorReadingString(sfr::gps::utc_h) + ",";
-    packet += sensorReadingString(sfr::gps::utc_m) + ",";
-    packet += sensorReadingString(sfr::gps::utc_s) + ",";
+    // packet = sensorReadingString(sfr::gps::latitude) + ",";
+    // packet += sensorReadingString(sfr::gps::longitude) + ",";
+    // packet += sensorReadingString(sfr::gps::altitude) + ",";
+    // packet += sensorReadingString(sfr::gps::utc_h) + ",";
+    // packet += sensorReadingString(sfr::gps::utc_m) + ",";
+    // packet += sensorReadingString(sfr::gps::utc_s) + ",";
     packet += sensorReadingString(sfr::imu::gyro_x) + ",";
     packet += sensorReadingString(sfr::imu::gyro_y) + ",";
     packet += sensorReadingString(sfr::imu::gyro_z) + ",";

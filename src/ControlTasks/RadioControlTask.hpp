@@ -17,10 +17,11 @@ private:
     int8_t code;
     void init();
     bool transmit(String packet);
-    bool receive(String commmand);
+    bool receive();
     // Command *commandFactory(RawCommand raw);
     String buildDownlink();
     String sensorReadingString(SensorReading *sr);
+    String received;
 };
 
 #endif

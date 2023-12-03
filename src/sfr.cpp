@@ -44,7 +44,7 @@ namespace sfr {
         uint8_t start_progress = 0;
         uint32_t downlink_period = 1 * constants::time::one_minute;
         uint32_t listen_period = 1 * constants::time::one_minute;
-        uint32_t command_wait_period = 1 * constants::time::one_minute;
+        uint32_t command_wait_period = 30 * constants::time::one_second;
         uint32_t downlink_period_start;
         uint32_t listen_period_start;
         uint32_t command_wait_start;
