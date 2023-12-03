@@ -3,6 +3,7 @@
 MainControlLoop::MainControlLoop()
     : imu_monitor(),
       temp_monitor(),
+      /*gps_monitor(),*/
       radio_control_task()
 
 {
@@ -48,11 +49,36 @@ void MainControlLoop::execute()
         Serial.print(val);
         Serial.println(" F");
     }
+    if (sfr::gps::latitude->get_value(&val)) {
+        Serial.print("GPS Latitude (degrees): ");
+        Serial.println(val);
+    }
+    if (sfr::gps::longitude->get_value(&val)) {
+        Serial.print("GPS Longitude (degrees): ");
+        Serial.println(val);
+    }
+    if (sfr::gps::altitude->get_value(&val)) {
+        Serial.print("GPS Alitude (m): ");
+        Serial.println(val);
+    }
+    if (sfr::gps::utc_h->get_value(&val)) {
+        Serial.print("UTC Hour: ");
+        Serial.println(val);
+    }
+    if (sfr::gps::utc_m->get_value(&val)) {
+        Serial.print("UTC Min: ");
+        Serial.println(val);
+    }
+    if (sfr::gps::utc_s->get_value(&val)) {
+        Serial.print("UTC Sec: ");
+        Serial.println(val);
+    }
     
 #endif
 
     temp_monitor.execute();
     imu_monitor.execute();
+    //gps_monitor.execute();
     radio_control_task.execute();
 
 #ifdef VERBOSE
