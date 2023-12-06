@@ -65,13 +65,17 @@ namespace constants {
 
         // } // namespace opcodes
     } // namespace radio
+
     namespace temperature {
-        constexpr int pin = 39;
-        constexpr float in_sun_val = 30;
+        constexpr int i2c_address = 0x4A;
     } // namespace temperature
     namespace imu {
 
     } // namespace imu
-};    // namespace constants
+    namespace gps {
+        constexpr int dog_size = 62;
+    } // namespace gps
+
+}; // namespace constants
 
 #endif

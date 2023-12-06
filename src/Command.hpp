@@ -2,7 +2,6 @@
 #define _COMMAND_HPP_
 
 #include "Arduino.h"
-#include "SFRField.hpp"
 #include "constants.hpp"
 #include <stdint.h>
 
@@ -59,32 +58,6 @@ public:
     {
         return (hex_arg_bytes[3] << 24) | (hex_arg_bytes[2]) << 16 | (hex_arg_bytes[1] << 8) | (hex_arg_bytes[0]);
     }
-};
-
-class SFROverrideCommand : public Command
-{
-public:
-    SFROverrideCommand(RawCommand raw) : Command{raw}
-    {
-        if (SFRInterface::opcode_lookup.find(f_opcode) != SFRInterface::opcode_lookup.end()) {
-            field = SFRInterface::opcode_lookup[f_opcode];
-        }
-    };
-
-    void execute()
-    {
-        if (field) {
-            field->setValue(f_arg_1);
-        }
-    }
-
-    bool isValid()
-    {
-        return field != nullptr;
-    }
-
-private:
-    SFRInterface *field;
 };
 
 class UnknownCommand : public Command

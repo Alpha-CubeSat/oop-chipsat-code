@@ -12,6 +12,7 @@ public:
 
 private:
     bool initialized = false;
+    unsigned int data[2];
 };
 
 #endif

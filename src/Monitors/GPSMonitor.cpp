@@ -12,19 +12,26 @@ GPSMonitor::GPSMonitor()
         0xA0, 0xA1, 0x00, 0x03, 0x0E, 0x01, 0x01, 0x0E, 0x0D, 0x0A};
 
     mySerial.begin(115200);
-    delay(1000);
+    // delay(1000);
     mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
-    delay(500);
-    mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
-    delay(500);
-    mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
-    delay(1000);
+    // delay(500);
+    // mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    // delay(500);
+    // mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    // delay(1000);
+
+    sfr::gps::latitude->set_valid();
+    sfr::gps::longitude->set_valid();
+    sfr::gps::altitude->set_valid();
+    sfr::gps::utc_h->set_valid();
+    sfr::gps::utc_m->set_valid();
+    sfr::gps::utc_s->set_valid();
 }
 
 void GPSMonitor::print_dog()
 {
-    for (int i = 0; i < (DOG_SIZE); i++) {
-        Serial.print(myGPS->watch_dog[i]);
+    for (int i = 0; i < (constants::gps::dog_size); i++) {
+        Serial.print(sfr::gps::watch_dog[i]);
     }
 
     Serial.print("\n");
@@ -33,27 +40,27 @@ void GPSMonitor::print_dog()
 // GPGGA,031434.000,4226.63801,N,07630.10c90,W,0,00,0.0,105.7,M,0
 void GPSMonitor::buffer_shift(char new_char)
 {
-    char temp_dog[DOG_SIZE];
-    for (int i = 0; i < DOG_SIZE - 1; i++) {
-        temp_dog[i] = myGPS->watch_dog[i + 1];
+    char temp_dog[constants::gps::dog_size];
+    for (int i = 0; i < constants::gps::dog_size - 1; i++) {
+        temp_dog[i] = sfr::gps::watch_dog[i + 1];
     }
-    temp_dog[DOG_SIZE - 1] = new_char;
+    temp_dog[constants::gps::dog_size - 1] = new_char;
 
     // full copy
-    for (int i = 0; i < DOG_SIZE; i++) {
-        myGPS->watch_dog[i] = temp_dog[i];
+    for (int i = 0; i < constants::gps::dog_size; i++) {
+        sfr::gps::watch_dog[i] = temp_dog[i];
     }
 
-    myGPS->watch_dog[DOG_SIZE] = '\0';
+    sfr::gps::watch_dog[constants::gps::dog_size] = '\0';
 }
 
 int GPSMonitor::check_GPGGA()
 {
-    char c0 = myGPS->watch_dog[0];
-    char c1 = myGPS->watch_dog[1];
-    char c2 = myGPS->watch_dog[2];
-    char c3 = myGPS->watch_dog[3];
-    char c4 = myGPS->watch_dog[4];
+    char c0 = sfr::gps::watch_dog[0];
+    char c1 = sfr::gps::watch_dog[1];
+    char c2 = sfr::gps::watch_dog[2];
+    char c3 = sfr::gps::watch_dog[3];
+    char c4 = sfr::gps::watch_dog[4];
 
     if (c0 == 'G' && c1 == 'P' && c2 == 'G' && c3 == 'G' && c4 == 'A') {
         return 1;
@@ -141,32 +148,48 @@ float GPSMonitor::token_to_degree(char *token, bool is_lat)
 void GPSMonitor::parse_gps()
 {
     int token_number = 0;
-    char *token = strtok(myGPS->watch_dog, ",");
+    char *token = strtok(sfr::gps::watch_dog, ",");
 
     while (token != NULL) {
+        Serial.print("TOKEN NUMBER: ");
+        Serial.println(token_number);
         switch (token_number) {
         case 1: // UTC time
-            myGPS->UTC_h = token_to_time(token, 0);
-            myGPS->UTC_m = token_to_time(token, 1);
-            myGPS->UTC_s = token_to_time(token, 2);
+            sfr::gps::utc_h->set_value(token_to_time(token, 0));
+            Serial.print("UTC_H: ");
+            Serial.println(token_to_time(token, 0));
+            sfr::gps::utc_m->set_value(token_to_time(token, 1));
+            sfr::gps::utc_s->set_value(token_to_time(token, 2));
         case 2: // Latitude
-            myGPS->Lat = token_to_degree(token, true);
+            sfr::gps::latitude->set_value(token_to_degree(token, true));
+            Serial.print("Latitude");
+            Serial.println(token_to_degree(token, true));
             break;
         case 3: // Latitude N/S indicator
             if (token[0] == 'S') {
-                myGPS->Lat = -myGPS->Lat;
+                float latitude;
+                sfr::gps::latitude->set_value(-sfr::gps::latitude->get_value(&latitude));
+                Serial.print("Latitude N/S");
+                Serial.println(-sfr::gps::latitude->get_value(&latitude));
             }
             break;
         case 4: // Longitude
-            myGPS->Long = token_to_degree(token, false);
+            sfr::gps::longitude->set_value(token_to_degree(token, false));
+            Serial.print("Longitude");
+            Serial.println(token_to_degree(token, false));
             break;
         case 5: // Longitude E/W indicator
             if (token[0] == 'W') {
-                myGPS->Long = -myGPS->Long;
+                float longitude;
+                sfr::gps::longitude->set_value(-sfr::gps::longitude->get_value(&longitude));
+                Serial.print("Longitude E/W");
+                Serial.println(-sfr::gps::longitude->get_value(&longitude));
             }
             break;
         case 9: // Altitude
-            myGPS->Alt = atof(token);
+            sfr::gps::altitude->set_value(atof(token));
+            Serial.print("Altitude");
+            Serial.println(atof(token));
             break;
         }
         token = strtok(NULL, ",");

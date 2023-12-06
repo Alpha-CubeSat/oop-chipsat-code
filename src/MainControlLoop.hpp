@@ -11,12 +11,15 @@ class MainControlLoop
 protected:
     IMUMonitor imu_monitor;
     TempMonitor temp_monitor;
+    // GPSMonitor gps_monitor;
     RadioControlTask radio_control_task;
-    GPSMonitor gps_monitor;
 
 public:
     MainControlLoop();
     void execute();
+
+private:
+    float val;
 };
 
 #endif

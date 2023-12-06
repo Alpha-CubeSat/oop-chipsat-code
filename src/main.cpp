@@ -1,5 +1,4 @@
 #include "MainControlLoop.hpp"
-#include "Pins.hpp"
 
 MainControlLoop mcl;
 
@@ -11,7 +10,6 @@ void setup()
     // delay(7200000);
     Serial.begin(9600);
     delay(5000);
-    Pins::setInitialPinStates();
 }
 
 void loop()

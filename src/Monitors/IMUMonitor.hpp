@@ -4,9 +4,9 @@
 #include "Arduino_LSM9DS1.h"
 #include "Modes/sensor_init_mode_type.enum"
 #include "Modes/sensor_mode_type.enum"
-#include "Pins.hpp"
 #include "SensorReading.hpp"
 #include "sfr.hpp"
+
 class IMUMonitor
 {
 public:
@@ -20,6 +20,8 @@ private:
     void capture_imu_values();
 
     sensor_mode_type mode;
+    float gyroX, gyroY, gyroZ;
+    float accX, accY, accZ;
 };
 
 #endif
