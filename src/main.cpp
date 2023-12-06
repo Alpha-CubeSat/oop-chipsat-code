@@ -1,6 +1,5 @@
 #include "MainControlLoop.hpp"
 
-
 MainControlLoop mcl;
 
 #ifndef UNIT_TEST

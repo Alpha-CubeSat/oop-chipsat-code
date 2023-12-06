@@ -65,7 +65,7 @@ namespace constants {
 
         // } // namespace opcodes
     } // namespace radio
-    
+
     namespace temperature {
         constexpr int i2c_address = 0x4A;
     } // namespace temperature
@@ -76,7 +76,6 @@ namespace constants {
         constexpr int dog_size = 62;
     } // namespace gps
 
-    
 }; // namespace constants
 
 #endif

@@ -73,12 +73,12 @@ void MainControlLoop::execute()
         Serial.print("UTC Sec: ");
         Serial.println(val);
     }
-    
+
 #endif
 
     temp_monitor.execute();
     imu_monitor.execute();
-    //gps_monitor.execute();
+    // gps_monitor.execute();
     radio_control_task.execute();
 
 #ifdef VERBOSE
