@@ -203,10 +203,11 @@ void GPSMonitor::execute()
     while (mySerial.available() > 0) {
         // Read the next available byte in the serial receive buffer
         char new_char = mySerial.read();
+        //Serial.println("read from serial");
         buffer_shift(new_char);
         // if valid, update the fields
         if (check_GPGGA() == 1) {
-            parse_gps();
+            //parse_gps();
 
             // for testing purpose
             Serial.print("NEW MSG UPDATE!: ");

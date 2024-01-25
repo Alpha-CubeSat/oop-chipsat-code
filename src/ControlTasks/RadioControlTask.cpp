@@ -92,7 +92,10 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(String packet)
 {
-    code = radio.transmit(packet);
+    uint8_t buf[2];
+    buf[0] = 'h';
+    buf[1] = 'i';
+    code = radio.transmit(buf, 2);
 
     if (code == constants::radio::err_none) {
         // the packet was successfully transmitted
@@ -122,8 +125,12 @@ bool RadioControlTask::transmit(String packet)
 
 bool RadioControlTask::receive()
 {
+    // don't use Arduino strings
     String command;
-    code = radio.receive(command);
+    // code = radio.receive(command);
+
+    uint8_t str[8];
+    code = radio.receive(str, 4);
     sfr::radio::received = command;
 
     if (code == constants::radio::err_none) {

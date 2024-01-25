@@ -3,7 +3,7 @@
 MainControlLoop::MainControlLoop()
     : imu_monitor(),
       temp_monitor(),
-      /*gps_monitor(),*/
+      gps_monitor(),
       radio_control_task()
 
 {
@@ -78,7 +78,7 @@ void MainControlLoop::execute()
 
     temp_monitor.execute();
     imu_monitor.execute();
-    // gps_monitor.execute();
+    gps_monitor.execute();
     radio_control_task.execute();
 
 #ifdef VERBOSE
