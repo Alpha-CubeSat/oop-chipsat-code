@@ -27,12 +27,12 @@ namespace sfr {
 
     } // namespace temperature
     namespace gps {
-        SensorReading *utc_h = new SensorReading(0, 23);
-        SensorReading *utc_m = new SensorReading(0, 59);
-        SensorReading *utc_s = new SensorReading(0, 59);
+        char utc_time[9];
+        char latitude[11];
+        char longitude[12];
 
-        SensorReading *latitude = new SensorReading(-90, 90);
-        SensorReading *longitude = new SensorReading(-180, 180);
+        // SensorReading *latitude = new SensorReading(-90, 90);
+        // SensorReading *longitude = new SensorReading(-180, 180);
         SensorReading *altitude = new SensorReading(0, 500000);
 
         // extra slot for '\0' when tokenizing

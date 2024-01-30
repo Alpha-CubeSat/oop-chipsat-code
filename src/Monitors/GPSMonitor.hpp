@@ -13,13 +13,12 @@ public:
     void execute();
 
 private:
-    SoftwareSerial mySerial = SoftwareSerial(4, 3); // RX, TX
-    void print_dog();
-    void buffer_shift(char new_char);
-    int check_GPGGA();
-    float token_to_time(char *token, int precision);
-    float token_to_degree(char *token, bool is_lat);
-    void parse_gps();
+    SoftwareSerial ss = SoftwareSerial(4, 3); // RX, TX
+    char term_buffer[15];
+    uint8_t char_count = 0;
+    uint8_t term_count = 0;
+    bool encode(char c);
+
 };
 
 #endif

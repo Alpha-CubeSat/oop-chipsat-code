@@ -11,13 +11,13 @@ GPSMonitor::GPSMonitor()
     uint8_t SetPosRate[] = {
         0xA0, 0xA1, 0x00, 0x03, 0x0E, 0x01, 0x01, 0x0E, 0x0D, 0x0A};
 
-    mySerial.begin(115200);
+    ss.begin(115200);
     // delay(1000);
-    mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
     // delay(500);
-    // mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    // ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
     // delay(500);
-    // mySerial.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
+    // ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
     // delay(1000);
 
     sfr::gps::latitude->set_valid();
@@ -197,14 +197,57 @@ void GPSMonitor::parse_gps()
     }
 }
 
+// return true at end of term
+bool GPSMonitor::encode(char c) {
+    
+    switch (c) {
+    case ',':
+        // clear term buffer and udpate sfr if needed
+
+        switch (term_count) {
+        case 1: // UTC
+            strcpy(&sfr::gps::utc_time, &term_buffer);
+            break;
+        case 2: // Latitude value
+            strcpy(&sfr::gps::latitude, &term_buffer);
+            break;
+        case 3: // Latitude hemisphere
+            sfr::gps::latitude[10] = term_buffer[0];
+            break;
+        case 4: // Longitude value
+            strcpy(&sfr::gps::longitude, &term_buffer);
+            break;
+        case 5: // Longitude hemisphere
+            sfr::gps::longitude[11] = term_buffer[0];
+            break;
+        case 9:
+            sfr::gps::altitude->set_value(atof(term_buffer));
+            break;
+        }
+        term_buffer
+        char_count = 0;
+        term_count++;
+        break;
+    case '$':
+        // new sentence
+        term_count = 0;
+        break;
+    default:
+        term_buffer[char_count] = c;
+        // add to term buffer
+    }
+
+    char_count++;
+}
+
 void GPSMonitor::execute()
 {
     // Check to see if anything is available in the serial receive buffer
-    while (mySerial.available() > 0) {
-        // Read the next available byte in the serial receive buffer
-        char new_char = mySerial.read();
-        //Serial.println("read from serial");
-        buffer_shift(new_char);
+    while (ss.available() > 0) {
+        if (encode(ss.read())) {
+
+        }
+
         // if valid, update the fields
         if (check_GPGGA() == 1) {
             //parse_gps();

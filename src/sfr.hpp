@@ -43,12 +43,12 @@ namespace sfr {
 
     } // namespace radio
     namespace gps {
-        extern SensorReading *utc_h;
-        extern SensorReading *utc_m;
-        extern SensorReading *utc_s;
+        extern char utc_time[9];
+        extern char latitude[11];
+        extern char longitude[12];
 
-        extern SensorReading *latitude;
-        extern SensorReading *longitude;
+        // extern SensorReading *latitude;
+        // extern SensorReading *longitude;
         extern SensorReading *altitude;
 
         extern char watch_dog[constants::gps::dog_size + 1];
