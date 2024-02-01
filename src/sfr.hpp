@@ -43,7 +43,7 @@ namespace sfr {
 
     } // namespace radio
     namespace gps {
-        extern char utc_time[9];
+        extern char utc_time[10];
         extern char latitude[11];
         extern char longitude[12];
 

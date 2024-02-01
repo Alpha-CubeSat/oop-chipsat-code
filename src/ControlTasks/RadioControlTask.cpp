@@ -243,12 +243,13 @@ String RadioControlTask::buildDownlink()
     packet += sensorReadingString(sfr::imu::acc_z) + ",";
     packet += sensorReadingString(sfr::temperature::temp_c) + ",";
     packet += sensorReadingString(sfr::temperature::temp_f) + ",";
-    packet = sensorReadingString(sfr::gps::latitude) + ",";
-    packet += sensorReadingString(sfr::gps::longitude) + ",";
+    // packet = sensorReadingString(sfr::gps::latitude) + ",";
+    // packet += sensorReadingString(sfr::gps::longitude) + ",";
     packet += sensorReadingString(sfr::gps::altitude) + ",";
-    packet += sensorReadingString(sfr::gps::utc_h) + ",";
-    packet += sensorReadingString(sfr::gps::utc_m) + ",";
-    packet += sensorReadingString(sfr::gps::utc_s);
+    // packet += sensorReadingString(sfr::gps::utc_h) + ",";
+    // packet += sensorReadingString(sfr::gps::utc_m) + ",";
+    // packet += sensorReadingString(sfr::gps::utc_s);
+    ;
     return packet;
 }
 

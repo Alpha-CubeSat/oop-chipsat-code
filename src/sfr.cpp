@@ -27,7 +27,7 @@ namespace sfr {
 
     } // namespace temperature
     namespace gps {
-        char utc_time[9];
+        char utc_time[10];
         char latitude[11];
         char longitude[12];
 
