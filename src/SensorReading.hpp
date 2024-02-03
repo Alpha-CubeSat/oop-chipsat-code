@@ -13,7 +13,7 @@ private:
     float value;
 
 public:
-    SensorReading(float max, float min);   // constructor
+    SensorReading(float min, float max);   // constructor
     bool get_value(float *value_location); // get SensorReading averaged value
     void set_value(float x);               // set SensorReading value
     void set_invalid();

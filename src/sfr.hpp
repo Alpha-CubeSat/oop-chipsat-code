@@ -43,20 +43,11 @@ namespace sfr {
 
     } // namespace radio
     namespace gps {
-        // extern char utc_time[10];
-        // extern bool utc_time_valid;
-
-        // extern char latitude[11];
-        // extern bool latitude_valid;
-
-        // extern char longitude[12];
-        // extern bool longitude_valid;
+        extern SensorReading *utc_time;
 
         extern SensorReading *latitude;
         extern SensorReading *longitude;
         extern SensorReading *altitude;
-
-        // extern char watch_dog[constants::gps::dog_size + 1];
     } // namespace gps
 
 }; // namespace sfr

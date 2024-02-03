@@ -21,9 +21,9 @@ bool SensorReading::get_value(float *value_location)
 void SensorReading::set_value(float x)
 {
     if (x <= max && x >= min) {
-        if (valid) {
-            value = x;
-        }
+        // if (valid) {
+        value = x;
+        // }
     } else {
         set_invalid();
     }

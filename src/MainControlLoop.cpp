@@ -55,21 +55,21 @@ void MainControlLoop::execute()
         Serial.print(val);
         Serial.println(F(" F"));
     }
-    if (sfr::gps::latitude_valid) {
-        Serial.print("GPS Latitude (degrees): ");
-        Serial.println(sfr::gps::latitude);
-    }
-    if (sfr::gps::longitude_valid) {
-        Serial.print("GPS Longitude (degrees): ");
-        Serial.println(sfr::gps::longitude);
-    }
-    if (sfr::gps::altitude->get_value(&val)) {
-        Serial.print(F("GPS Alitude (m): "));
+    if (sfr::gps::latitude->get_value(&val)) {
+        Serial.print(F("GPS Latitude: "));
         Serial.println(val);
     }
-    if (sfr::gps::utc_time_valid) {
+    if (sfr::gps::longitude->get_value(&val)) {
+        Serial.print(F("GPS Longitude: "));
+        Serial.println(val);
+    }
+    if (sfr::gps::altitude->get_value(&val)) {
+        Serial.print(F("GPS Altitude (m): "));
+        Serial.println(val);
+    }
+    if (sfr::gps::utc_time->get_value(&val)) {
         Serial.print("UTC Time: ");
-        Serial.println(sfr::gps::utc_time);
+        Serial.println(val);
     }
 
     Serial.print("Free RAM: ");

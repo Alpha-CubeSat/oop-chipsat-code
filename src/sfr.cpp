@@ -27,21 +27,12 @@ namespace sfr {
 
     } // namespace temperature
     namespace gps {
-        // char utc_time[10];
-        // bool utc_time_valid = true;
+        SensorReading *utc_time = new SensorReading(0, 235959.999);
 
-        // char latitude[11];
-        // bool latitude_valid = true;
-
-        // char longitude[12];
-        // bool longitude_valid = true;
-
-        SensorReading *latitude = new SensorReading(-90, 90);
-        SensorReading *longitude = new SensorReading(-180, 180);
+        SensorReading *latitude = new SensorReading(-9000, 9000);
+        SensorReading *longitude = new SensorReading(-18000, 18000);
         SensorReading *altitude = new SensorReading(0, 500000);
 
-        // extra slot for '\0' when tokenizing
-        // char watch_dog[constants::gps::dog_size + 1];
     } // namespace gps
     namespace radio {
         sensor_init_mode_type init_mode = sensor_init_mode_type::init;
