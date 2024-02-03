@@ -11,10 +11,12 @@ class GPSMonitor
 public:
     GPSMonitor();
     void execute();
+    bool check_GPGGA();
 
 private:
     SoftwareSerial ss = SoftwareSerial(4, 3); // RX, TX
     char term_buffer[15];
+    bool valid_msg = true;
     uint8_t char_count = 0;
     uint8_t term_count = 0;
     bool encode(char c);

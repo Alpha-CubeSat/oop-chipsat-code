@@ -10,6 +10,12 @@ MainControlLoop::MainControlLoop()
     // delay(1000);
 }
 
+int freeRam() {
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
+
 void MainControlLoop::execute()
 {
 
@@ -49,30 +55,25 @@ void MainControlLoop::execute()
         Serial.print(val);
         Serial.println(F(" F"));
     }
-    // if (sfr::gps::latitude->get_value(&val)) {
-    //     Serial.print("GPS Latitude (degrees): ");
-    //     Serial.println(val);
-    // }
-    // if (sfr::gps::longitude->get_value(&val)) {
-    //     Serial.print("GPS Longitude (degrees): ");
-    //     Serial.println(val);
-    // }
+    if (sfr::gps::latitude_valid) {
+        Serial.print("GPS Latitude (degrees): ");
+        Serial.println(sfr::gps::latitude);
+    }
+    if (sfr::gps::longitude_valid) {
+        Serial.print("GPS Longitude (degrees): ");
+        Serial.println(sfr::gps::longitude);
+    }
     if (sfr::gps::altitude->get_value(&val)) {
         Serial.print(F("GPS Alitude (m): "));
         Serial.println(val);
     }
-    // if (sfr::gps::utc_h->get_value(&val)) {
-    //     Serial.print("UTC Hour: ");
-    //     Serial.println(val);
-    // }
-    // if (sfr::gps::utc_m->get_value(&val)) {
-    //     Serial.print("UTC Min: ");
-    //     Serial.println(val);
-    // }
-    // if (sfr::gps::utc_s->get_value(&val)) {
-    //     Serial.print("UTC Sec: ");
-    //     Serial.println(val);
-    // }
+    if (sfr::gps::utc_time_valid) {
+        Serial.print("UTC Time: ");
+        Serial.println(sfr::gps::utc_time);
+    }
+
+    Serial.print("Free RAM: ");
+    Serial.println(freeRam());
 
 #endif
 
