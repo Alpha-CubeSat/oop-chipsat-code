@@ -18,21 +18,21 @@ void IMUMonitor::IMU_init()
 void IMUMonitor::execute()
 {
     if (!sfr::imu::initialized) {
-        Serial.println("Turning on IMU");
+        Serial.println(F("Turning on IMU"));
 
         IMUMonitor::IMU_init();
         if (sfr::imu::init_mode == sensor_init_mode_type::complete) {
             transition_to_normal();
             sfr::imu::initialized = true;
-            Serial.println("IMU on");
+            Serial.println(F("IMU on"));
         } else {
             if (sfr::imu::failed_times == sfr::imu::failed_limit) {
                 sfr::imu::failed_times = 0; // reset
                 transition_to_abnormal_init();
-                Serial.println("IMU failed");
+                Serial.println(F("IMU failed"));
             } else {
                 sfr::imu::failed_times = sfr::imu::failed_times + 1;
-                Serial.print("IMU initialization failed times: ");
+                Serial.print(F("IMU initialization failed times: "));
                 Serial.println(sfr::imu::failed_times);
                 sfr::imu::init_mode = sensor_init_mode_type::init;
             }
