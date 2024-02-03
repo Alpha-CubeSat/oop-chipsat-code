@@ -36,7 +36,7 @@ namespace sfr {
         SensorReading *altitude = new SensorReading(0, 500000);
 
         // extra slot for '\0' when tokenizing
-        char watch_dog[constants::gps::dog_size + 1];
+        // char watch_dog[constants::gps::dog_size + 1];
     } // namespace gps
     namespace radio {
         sensor_init_mode_type init_mode = sensor_init_mode_type::init;

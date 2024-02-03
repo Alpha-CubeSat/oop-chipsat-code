@@ -51,7 +51,7 @@ namespace sfr {
         // extern SensorReading *longitude;
         extern SensorReading *altitude;
 
-        extern char watch_dog[constants::gps::dog_size + 1];
+        // extern char watch_dog[constants::gps::dog_size + 1];
     } // namespace gps
 
 }; // namespace sfr

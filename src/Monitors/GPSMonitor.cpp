@@ -18,12 +18,7 @@ GPSMonitor::GPSMonitor()
     // ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
     // delay(1000);
 
-    // sfr::gps::latitude->set_valid();
-    // sfr::gps::longitude->set_valid();
     sfr::gps::altitude->set_valid();
-    // sfr::gps::utc_h->set_valid();
-    // sfr::gps::utc_m->set_valid();
-    // sfr::gps::utc_s->set_valid();
 }
 
 // return true at end of term
@@ -34,22 +29,22 @@ bool GPSMonitor::encode(char c) {
         // clear term buffer and udpate sfr if needed
 
         switch (term_count) {
-        case 1: // UTC
+        case 2: // UTC
             memcpy(&sfr::gps::utc_time, &term_buffer, 10);
             break;
-        case 2: // Latitude value
+        case 3: // Latitude value
             memcpy(&sfr::gps::latitude, &term_buffer, char_count);
             break;
-        case 3: // Latitude hemisphere
-            sfr::gps::latitude[10] = term_buffer[0];
+        case 4: // Latitude hemisphere
+            sfr::gps::latitude[char_count] = term_buffer[0]; // TODO edge case
             break;
-        case 4: // Longitude value
+        case 5: // Longitude value
             memcpy(&sfr::gps::longitude, &term_buffer, char_count);
             break;
-        case 5: // Longitude hemisphere
-            sfr::gps::longitude[11] = term_buffer[0];
+        case 6: // Longitude hemisphere
+            sfr::gps::longitude[char_count] = term_buffer[0]; // TODO edge case
             break;
-        case 9:
+        case 10:
             sfr::gps::altitude->set_value(atof(term_buffer));
             break;
         }
@@ -63,7 +58,6 @@ bool GPSMonitor::encode(char c) {
         break;
     default:
         term_buffer[char_count] = c;
-        // add to term buffer
     }
 
     char_count++;
