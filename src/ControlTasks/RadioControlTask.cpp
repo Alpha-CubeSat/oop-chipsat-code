@@ -204,7 +204,7 @@ void RadioControlTask::execute()
     case radio_mode_type::downlink: {
         Serial.println(F("Radio: Downlink State"));
         String normal_report = buildDownlink();
-        //Serial.println(normal_report);
+        // Serial.println(normal_report);
         bool transmit_success = transmit(normal_report);
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful

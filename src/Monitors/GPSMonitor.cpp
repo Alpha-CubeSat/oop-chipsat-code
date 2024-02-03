@@ -2,7 +2,6 @@
 #include <SoftwareSerial.h>
 #include <string.h>
 
-
 #include "GPSMonitor.hpp"
 
 GPSMonitor::GPSMonitor()
@@ -23,7 +22,6 @@ GPSMonitor::GPSMonitor()
     sfr::gps::latitude->set_valid();
     sfr::gps::longitude->set_valid();
     sfr::gps::utc_time->set_valid();
-    
 }
 
 bool GPSMonitor::check_GPGGA()
@@ -36,7 +34,8 @@ bool GPSMonitor::check_GPGGA()
 }
 
 // return true at end of term
-bool GPSMonitor::encode(char c) {
+bool GPSMonitor::encode(char c)
+{
     switch (c) {
     case ',':
         // clear term buffer and udpate sfr if needed
@@ -46,7 +45,8 @@ bool GPSMonitor::encode(char c) {
             Serial.print(term_buffer[i]);
         }
         Serial.println();
-        if (!valid_msg) break;
+        if (!valid_msg)
+            break;
         switch (term_count) {
         case 0:
             if (!check_GPGGA()) {
@@ -62,65 +62,65 @@ bool GPSMonitor::encode(char c) {
             temp_buf[10] = '\0';
 
             sfr::gps::utc_time->set_value(atof(temp_buf));
-            
+
             break;
         case 2: // Latitude value
-            {
-                Serial.println("Latitude val");
-                char temp_buf[11];
-                
-                strncpy(temp_buf, term_buffer, 10);
-                temp_buf[10] = '\0';
+        {
+            Serial.println("Latitude val");
+            char temp_buf[11];
 
-                Serial.print("Valid: ");
-                Serial.println(atof(temp_buf));
+            strncpy(temp_buf, term_buffer, 10);
+            temp_buf[10] = '\0';
 
-                sfr::gps::latitude->set_value(atof(temp_buf));
-                break;
-            }
+            Serial.print("Valid: ");
+            Serial.println(atof(temp_buf));
+
+            sfr::gps::latitude->set_value(atof(temp_buf));
+            break;
+        }
         case 3: // Latitude hemisphere
-            {
-                if (term_buffer[0] == 'S') {
-                    float latitude;
-                    sfr::gps::latitude->get_value(&latitude);
-                    sfr::gps::latitude->set_value(-latitude);
-                    Serial.println(latitude);
-                }
-                break;
+        {
+            if (term_buffer[0] == 'S') {
+                float latitude;
+                sfr::gps::latitude->get_value(&latitude);
+                sfr::gps::latitude->set_value(-latitude);
+                Serial.println(latitude);
             }
+            break;
+        }
         case 4: // Longitude value
-            {
-                Serial.println("Longitude val");
-                char temp_buf[12];
-                strncpy(temp_buf, term_buffer, 11);
-                temp_buf[11] = '\0';
+        {
+            Serial.println("Longitude val");
+            char temp_buf[12];
+            strncpy(temp_buf, term_buffer, 11);
+            temp_buf[11] = '\0';
 
-                Serial.print("Valid: ");
-                Serial.println(atof(temp_buf));
+            Serial.print("Valid: ");
+            Serial.println(atof(temp_buf));
 
-                sfr::gps::longitude->set_value(atof(temp_buf));
-                break;
-            }
+            sfr::gps::longitude->set_value(atof(temp_buf));
+            break;
+        }
         case 5: // Longitude hemisphere
-            {
-                if (term_buffer[0] == 'W') {
-                    float longitude;
-                    sfr::gps::longitude->get_value(&longitude);
-                    sfr::gps::longitude->set_value(-longitude);
-                    Serial.println(longitude);
-                }
-                break;
+        {
+            if (term_buffer[0] == 'W') {
+                float longitude;
+                sfr::gps::longitude->get_value(&longitude);
+                sfr::gps::longitude->set_value(-longitude);
+                Serial.println(longitude);
             }
+            break;
+        }
         case 9: // Altitude
-            {
-                Serial.println("Altitude");
+        {
+            Serial.println("Altitude");
 
-                char temp_buf[char_count];
-                strncpy(temp_buf, term_buffer, char_count - 1);
-                temp_buf[char_count - 1] = '\0';
+            char temp_buf[char_count];
+            strncpy(temp_buf, term_buffer, char_count - 1);
+            temp_buf[char_count - 1] = '\0';
 
-                sfr::gps::altitude->set_value(atof(temp_buf));
-            }
+            sfr::gps::altitude->set_value(atof(temp_buf));
+        }
         }
 
         char_count = 0;
@@ -155,10 +155,8 @@ void GPSMonitor::execute()
     //     }
     // }
 
-
     while (ss.available() > 0) {
         if (encode(ss.read())) {
-
         }
     }
 }
