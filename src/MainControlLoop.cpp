@@ -51,11 +51,6 @@ void MainControlLoop::execute()
         Serial.print(val);
         Serial.println(F(" C"));
     }
-    if (sfr::temperature::temp_f->get_value(&val)) {
-        Serial.print(F("Temperature (F): "));
-        Serial.print(val);
-        Serial.println(F(" F"));
-    }
     if (sfr::gps::latitude->get_value(&val)) {
         Serial.print(F("GPS Latitude: "));
         Serial.println(val);

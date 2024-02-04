@@ -26,7 +26,6 @@ namespace sfr {
     } // namespace imu
     namespace temperature {
         extern SensorReading *temp_c;
-        extern SensorReading *temp_f;
     } // namespace temperature
     namespace radio {
         extern sensor_init_mode_type init_mode;

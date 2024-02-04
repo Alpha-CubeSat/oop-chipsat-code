@@ -41,16 +41,6 @@ void SensorReading::set_invalid()
     value = -1;
 }
 
-float SensorReading::get_max()
-{
-    return max;
-}
-
-float SensorReading::get_min()
-{
-    return min;
-}
-
 bool SensorReading::is_valid()
 {
     return valid;

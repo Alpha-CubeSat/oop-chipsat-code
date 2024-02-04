@@ -242,7 +242,6 @@ String RadioControlTask::buildDownlink()
     packet += sensorReadingString(sfr::imu::acc_y) + ",";
     packet += sensorReadingString(sfr::imu::acc_z) + ",";
     packet += sensorReadingString(sfr::temperature::temp_c) + ",";
-    packet += sensorReadingString(sfr::temperature::temp_f) + ",";
     // packet = sensorReadingString(sfr::gps::latitude) + ",";
     // packet += sensorReadingString(sfr::gps::longitude) + ",";
     packet += sensorReadingString(sfr::gps::altitude) + ",";
