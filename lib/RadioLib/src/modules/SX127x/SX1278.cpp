@@ -132,12 +132,8 @@ int16_t SX1278::setBandwidth(float bw) {
   return(state);
 }
 
+// NOTE: This code has been modified to erase references to non-LoRa functionality
 int16_t SX1278::setSpreadingFactor(uint8_t sf) {
-  // check active modem
-  if(getActiveModem() != RADIOLIB_SX127X_LORA) {
-    return(RADIOLIB_ERR_WRONG_MODEM);
-  }
-
   uint8_t newSpreadingFactor;
 
   // check allowed spreading factor values
@@ -413,38 +409,19 @@ float SX1278::getRSSI(bool skipReceive) {
   }
 }
 
+// NOTE: This code has been modified to erase references to non-LoRa functionality
 int16_t SX1278::setCRC(bool enable, bool mode) {
-  if(getActiveModem() == RADIOLIB_SX127X_LORA) {
-    // set LoRa CRC
-    SX127x::_crcEnabled = enable;
-    if(enable) {
-      return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_MODEM_CONFIG_2, RADIOLIB_SX1278_RX_CRC_MODE_ON, 2, 2));
-    } else {
-      return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_MODEM_CONFIG_2, RADIOLIB_SX1278_RX_CRC_MODE_OFF, 2, 2));
-    }
+  // set LoRa CRC
+  SX127x::_crcEnabled = enable;
+  if(enable) {
+    return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_MODEM_CONFIG_2, RADIOLIB_SX1278_RX_CRC_MODE_ON, 2, 2));
   } else {
-    // set FSK CRC
-    int16_t state = RADIOLIB_ERR_NONE;
-    if(enable) {
-      state = _mod->SPIsetRegValue(RADIOLIB_SX127X_REG_PACKET_CONFIG_1, RADIOLIB_SX127X_CRC_ON, 4, 4);
-    } else {
-      state = _mod->SPIsetRegValue(RADIOLIB_SX127X_REG_PACKET_CONFIG_1, RADIOLIB_SX127X_CRC_OFF, 4, 4);
-    }
-    RADIOLIB_ASSERT(state);
-
-    // set FSK CRC mode
-    if(mode) {
-      return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_PACKET_CONFIG_1, RADIOLIB_SX127X_CRC_WHITENING_TYPE_IBM, 0, 0));
-    } else {
-      return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_PACKET_CONFIG_1, RADIOLIB_SX127X_CRC_WHITENING_TYPE_CCITT, 0, 0));
-    }
+    return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_MODEM_CONFIG_2, RADIOLIB_SX1278_RX_CRC_MODE_OFF, 2, 2));
   }
 }
 
+// NOTE: This code has been modified to erase references to non-LoRa functionality
 int16_t SX1278::forceLDRO(bool enable) {
-  if(getActiveModem() != RADIOLIB_SX127X_LORA) {
-    return(RADIOLIB_ERR_WRONG_MODEM);
-  }
 
   _ldroAuto = false;
   if(enable) {
