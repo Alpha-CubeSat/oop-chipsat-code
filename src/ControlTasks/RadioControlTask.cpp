@@ -142,21 +142,21 @@ bool RadioControlTask::receive()
 
         // print the RSSI (Received Signal Strength Indicator)
         // of the last received packet
-        Serial.print(F("[SX1278] RSSI:\t\t\t"));
-        Serial.print(radio.getRSSI());
-        Serial.println(F(" dBm"));
+        // Serial.print(F("[SX1278] RSSI:\t\t\t"));
+        // Serial.print(radio.getRSSI());
+        // Serial.println(F(" dBm"));
 
         // print the SNR (Signal-to-Noise Ratio)
         // of the last received packet
-        Serial.print(F("[SX1278] SNR:\t\t\t"));
-        Serial.print(radio.getSNR());
-        Serial.println(F(" dB"));
+        // Serial.print(F("[SX1278] SNR:\t\t\t"));
+        // Serial.print(radio.getSNR());
+        // Serial.println(F(" dB"));
 
         // print frequency error
         // of the last received packet
-        Serial.print(F("[SX1278] Frequency error:\t"));
-        Serial.print(radio.getFrequencyError());
-        Serial.println(F(" Hz"));
+        // Serial.print(F("[SX1278] Frequency error:\t"));
+        // Serial.print(radio.getFrequencyError());
+        // Serial.println(F(" Hz"));
 
         return true;
     } else {
