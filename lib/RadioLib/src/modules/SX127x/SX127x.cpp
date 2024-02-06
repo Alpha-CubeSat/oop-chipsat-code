@@ -146,6 +146,8 @@ int16_t SX127x::beginFSK(uint8_t chipVersion, float br, float freqDev, float rxB
 int16_t SX127x::transmit(uint8_t* data, size_t len, uint8_t addr) {
   // set mode to standby
   int16_t state = setMode(RADIOLIB_SX127X_STANDBY);
+  Serial.print("top state: ");
+  Serial.println(state);
   RADIOLIB_ASSERT(state);
 
   uint32_t start = 0;
@@ -156,6 +158,8 @@ int16_t SX127x::transmit(uint8_t* data, size_t len, uint8_t addr) {
 
   // start transmission
   state = startTransmit(data, len, addr);
+  Serial.print("below top state: ");
+  Serial.println(state);
   RADIOLIB_ASSERT(state);
 
   // wait for packet transmission or timeout
@@ -1315,11 +1319,13 @@ int16_t SX127x::configFSK() {
 int16_t SX127x::setPacketMode(uint8_t mode, uint8_t len) {
   // check packet length
   if(len > RADIOLIB_SX127X_MAX_PACKET_LENGTH_FSK) {
+    Serial.println("ERROR42");
     return(RADIOLIB_ERR_PACKET_TOO_LONG);
   }
 
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
+    Serial.println("ERROR43");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -1403,6 +1409,7 @@ void SX127x::clearFIFO(size_t count) {
 int16_t SX127x::invertIQ(bool invertIQ) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_LORA) {
+    Serial.println("ERROR44");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
