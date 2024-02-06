@@ -76,7 +76,6 @@ int16_t PhysicalLayer::readData(String& str, size_t len) {
   #else
     uint8_t* data = new uint8_t[length + 1];
     if(!data) {
-      Serial.println("ERROR45");
       return(RADIOLIB_ERR_MEMORY_ALLOCATION_FAILED);
     }
   #endif
@@ -119,7 +118,6 @@ int16_t PhysicalLayer::receive(String& str, size_t len) {
       data = new uint8_t[length + 1];
     }
     if(!data) {
-      Serial.println("ERROR46");
       return(RADIOLIB_ERR_MEMORY_ALLOCATION_FAILED);
     }
   #endif
@@ -218,7 +216,6 @@ uint8_t PhysicalLayer::read(bool drop) {
 
 int16_t PhysicalLayer::setDirectSyncWord(uint32_t syncWord, uint8_t len) {
   if(len > 32) {
-    Serial.println("ERROR47");
     return(RADIOLIB_ERR_INVALID_SYNC_WORD);
   }
   _directSyncWordMask = 0xFFFFFFFF >> (32 - len);
@@ -229,7 +226,7 @@ int16_t PhysicalLayer::setDirectSyncWord(uint32_t syncWord, uint8_t len) {
   if(_directSyncWordLen == 0) {
     _gotSync = true;
   }
-  Serial.println("ERROR48");
+
   return(RADIOLIB_ERR_NONE);
 }
 
@@ -267,7 +264,6 @@ void PhysicalLayer::updateDirectBuffer(uint8_t bit) {
 int16_t PhysicalLayer::setDIOMapping(RADIOLIB_PIN_TYPE pin, uint8_t value) {
   (void)pin;
   (void)value;
-  Serial.println("ERROR49");
   return(RADIOLIB_ERR_UNSUPPORTED);
 }
 

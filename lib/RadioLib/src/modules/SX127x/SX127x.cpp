@@ -19,7 +19,6 @@ int16_t SX127x::begin(uint8_t chipVersion, uint8_t syncWord, uint16_t preambleLe
   if(!SX127x::findChip(chipVersion)) {
     RADIOLIB_DEBUG_PRINTLN(F("No SX127x found!"));
     _mod->term();
-    Serial.println("ERROR6");
     return(RADIOLIB_ERR_CHIP_NOT_FOUND);
   }
   RADIOLIB_DEBUG_PRINTLN(F("M\tSX127x"));
@@ -67,7 +66,6 @@ int16_t SX127x::beginFSK(uint8_t chipVersion, float br, float freqDev, float rxB
   if(!SX127x::findChip(chipVersion)) {
     RADIOLIB_DEBUG_PRINTLN(F("No SX127x found!"));
     _mod->term();
-    Serial.println("ERROR7");
     return(RADIOLIB_ERR_CHIP_NOT_FOUND);
   }
   RADIOLIB_DEBUG_PRINTLN(F("M\tSX127x"));
@@ -164,7 +162,6 @@ int16_t SX127x::transmit(uint8_t* data, size_t len, uint8_t addr) {
     _mod->yield();
     if(_mod->micros() - start > timeout) {
       finishTransmit();
-      Serial.println("ERROR8");
       return(RADIOLIB_ERR_TX_TIMEOUT);
     }
   }
@@ -205,14 +202,12 @@ int16_t SX127x::receive(uint8_t* data, size_t len) {
       // no GPIO pin provided, use software timeout
       if(_mod->micros() - start > timeout) {
         clearIRQFlags();
-        Serial.println("ERROR9");
         return(RADIOLIB_ERR_RX_TIMEOUT);
       }
     } else {
       // GPIO provided, use that
       if(_mod->digitalRead(_mod->getGpio())) {
         clearIRQFlags();
-        Serial.println("ERROR10");
         return(RADIOLIB_ERR_RX_TIMEOUT);
       }
     }
@@ -236,11 +231,10 @@ int16_t SX127x::scanChannel() {
   while(!_mod->digitalRead(_mod->getIrq())) {
     _mod->yield();
     if(_mod->digitalRead(_mod->getGpio())) {
-      Serial.println("ERROR11");
       return(RADIOLIB_PREAMBLE_DETECTED);
     }
   }
-  Serial.println("ERROR12");
+
   return(RADIOLIB_CHANNEL_FREE);
 }
 
@@ -263,7 +257,6 @@ int16_t SX127x::standby() {
 int16_t SX127x::transmitDirect(uint32_t frf) {
   // check modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR13");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -293,7 +286,6 @@ int16_t SX127x::transmitDirect(uint32_t frf) {
 int16_t SX127x::receiveDirect() {
   // check modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR14");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -331,7 +323,6 @@ int16_t SX127x::directMode() {
 int16_t SX127x::packetMode() {
   // check modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR15");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -501,7 +492,6 @@ int16_t SX127x::startTransmit(uint8_t* data, size_t len, uint8_t addr) {
   
   // Begin modification here
   if(len > RADIOLIB_SX127X_MAX_PACKET_LENGTH) {
-    Serial.println("ERROR16");
     return(RADIOLIB_ERR_PACKET_TOO_LONG);
   }
 
@@ -540,7 +530,7 @@ int16_t SX127x::startTransmit(uint8_t* data, size_t len, uint8_t addr) {
   // start transmission
   state |= setMode(RADIOLIB_SX127X_TX);
   RADIOLIB_ASSERT(state);
-  Serial.println("ERROR17");
+
   return(RADIOLIB_ERR_NONE);
 }
 
@@ -600,7 +590,6 @@ int16_t SX127x::readData(uint8_t* data, size_t len) {
 int16_t SX127x::startChannelScan() {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_LORA) {
-    Serial.println("ERROR18");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -726,7 +715,7 @@ float SX127x::getFrequencyError(bool autoCorrect) {
 
     return(error);
   }
-  Serial.println("ERROR19");
+
   return(RADIOLIB_ERR_UNKNOWN);
 }
 
@@ -764,7 +753,6 @@ float SX127x::getDataRate() const {
 int16_t SX127x::setBitRate(float br) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR20");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -794,7 +782,6 @@ int16_t SX127x::setBitRate(float br) {
 int16_t SX127x::setFrequencyDeviation(float freqDev) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR21");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -806,7 +793,6 @@ int16_t SX127x::setFrequencyDeviation(float freqDev) {
 
   // check frequency deviation range
   if(!((newFreqDev + _br/2.0 <= 250.0) && (freqDev <= 200.0))) {
-    Serial.println("ERROR22");
     return(RADIOLIB_ERR_INVALID_FREQUENCY_DEVIATION);
   }
 
@@ -838,7 +824,6 @@ uint8_t SX127x::calculateBWManExp(float bandwidth)
 int16_t SX127x::setRxBandwidth(float rxBw) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR23");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -855,7 +840,6 @@ int16_t SX127x::setRxBandwidth(float rxBw) {
 int16_t SX127x::setAFCBandwidth(float rxBw) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK){
-    Serial.println("ERROR24");
       return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -872,7 +856,6 @@ int16_t SX127x::setAFCBandwidth(float rxBw) {
 int16_t SX127x::setAFC(bool isEnabled) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR25");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -882,7 +865,6 @@ int16_t SX127x::setAFC(bool isEnabled) {
 
 int16_t SX127x::setAFCAGCTrigger(uint8_t trigger) {
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR26");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -893,7 +875,6 @@ int16_t SX127x::setAFCAGCTrigger(uint8_t trigger) {
 int16_t SX127x::setSyncWord(uint8_t* syncWord, size_t len) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR27");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -902,7 +883,6 @@ int16_t SX127x::setSyncWord(uint8_t* syncWord, size_t len) {
   // sync word must not contain value 0x00
   for(size_t i = 0; i < len; i++) {
     if(syncWord[i] == 0x00) {
-      Serial.println("ERROR28");
       return(RADIOLIB_ERR_INVALID_SYNC_WORD);
     }
   }
@@ -914,14 +894,12 @@ int16_t SX127x::setSyncWord(uint8_t* syncWord, size_t len) {
 
   // set sync word
   _mod->SPIwriteRegisterBurst(RADIOLIB_SX127X_REG_SYNC_VALUE_1, syncWord, len);
-  Serial.println("ERROR29");
   return(RADIOLIB_ERR_NONE);
 }
 
 int16_t SX127x::setNodeAddress(uint8_t nodeAddr) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR30");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -936,7 +914,6 @@ int16_t SX127x::setNodeAddress(uint8_t nodeAddr) {
 int16_t SX127x::setBroadcastAddress(uint8_t broadAddr) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR31");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -951,7 +928,6 @@ int16_t SX127x::setBroadcastAddress(uint8_t broadAddr) {
 int16_t SX127x::disableAddressFiltering() {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR32");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -970,7 +946,6 @@ int16_t SX127x::disableAddressFiltering() {
 int16_t SX127x::setOokThresholdType(uint8_t type) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR33");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
   return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_OOK_PEAK, type, 4, 3, 5));
@@ -979,7 +954,6 @@ int16_t SX127x::setOokThresholdType(uint8_t type) {
 int16_t SX127x::setOokFixedOrFloorThreshold(uint8_t value) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR34");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
   return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_OOK_FIX, value, 7, 0, 5));
@@ -988,7 +962,6 @@ int16_t SX127x::setOokFixedOrFloorThreshold(uint8_t value) {
 int16_t SX127x::setOokPeakThresholdDecrement(uint8_t value) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR35");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
   return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_OOK_AVG, value, 7, 5, 5));
@@ -997,7 +970,6 @@ int16_t SX127x::setOokPeakThresholdDecrement(uint8_t value) {
 int16_t SX127x::setOokPeakThresholdStep(uint8_t value) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR36");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
   return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_OOK_PEAK, value, 2, 0, 5));
@@ -1014,7 +986,6 @@ int16_t SX127x::disableBitSync() {
 int16_t SX127x::setOOK(bool enableOOK) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR37");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -1119,7 +1090,6 @@ int16_t SX127x::setRSSIThreshold(float dbm) {
 int16_t SX127x::setRSSIConfig(uint8_t smoothingSamples, int8_t offset) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR38");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -1129,7 +1099,6 @@ int16_t SX127x::setRSSIConfig(uint8_t smoothingSamples, int8_t offset) {
 
   // check provided values
   if(!(smoothingSamples <= 7)) {
-    Serial.println("ERROR39");
     return(RADIOLIB_ERR_INVALID_NUM_SAMPLES);
   }
 
@@ -1144,7 +1113,6 @@ int16_t SX127x::setRSSIConfig(uint8_t smoothingSamples, int8_t offset) {
 int16_t SX127x::setEncoding(uint8_t encoding) {
   // check active modem
   if(getActiveModem() != RADIOLIB_SX127X_FSK_OOK) {
-    Serial.println("ERROR40");
     return(RADIOLIB_ERR_WRONG_MODEM);
   }
 
@@ -1157,7 +1125,6 @@ int16_t SX127x::setEncoding(uint8_t encoding) {
     case RADIOLIB_ENCODING_WHITENING:
       return(_mod->SPIsetRegValue(RADIOLIB_SX127X_REG_PACKET_CONFIG_1, RADIOLIB_SX127X_DC_FREE_WHITENING, 6, 5));
     default:
-      Serial.println("ERROR41");
       return(RADIOLIB_ERR_INVALID_ENCODING);
   }
 }
