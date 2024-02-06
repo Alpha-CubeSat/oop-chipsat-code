@@ -39,23 +39,25 @@ bool GPSMonitor::encode(char c)
     switch (c) {
     case ',':
         // clear term buffer and udpate sfr if needed
-        Serial.print("Term: ");
+        // Serial.print("Term: ");
+        // for (int i = 0; i < char_count; i++) {
+        //     Serial.print(term_buffer[i]);
+        // }
+        // Serial.println();
 
-        for (int i = 0; i < char_count; i++) {
-            Serial.print(term_buffer[i]);
-        }
-        Serial.println();
         if (!valid_msg)
             break;
         switch (term_count) {
         case 0:
             if (!check_GPGGA()) {
                 valid_msg = false;
-                Serial.println("INVALID MESSAGE");
+#ifdef VERBOSE
+                Serial.println("INVALID GPS MESSAGE");
+#endif
             }
             break;
         case 1: // UTC
-            Serial.println("UTC");
+            // Serial.println("UTC");
 
             char temp_buf[11];
             strncpy(temp_buf, term_buffer, 10);
@@ -66,14 +68,11 @@ bool GPSMonitor::encode(char c)
             break;
         case 2: // Latitude value
         {
-            Serial.println("Latitude val");
+            // Serial.println("Latitude val");
             char temp_buf[11];
 
             strncpy(temp_buf, term_buffer, 10);
             temp_buf[10] = '\0';
-
-            Serial.print("Valid: ");
-            Serial.println(atof(temp_buf));
 
             sfr::gps::latitude->set_value(atof(temp_buf));
             break;
@@ -84,19 +83,16 @@ bool GPSMonitor::encode(char c)
                 float latitude;
                 sfr::gps::latitude->get_value(&latitude);
                 sfr::gps::latitude->set_value(-latitude);
-                Serial.println(latitude);
+                // Serial.println(latitude);
             }
             break;
         }
         case 4: // Longitude value
         {
-            Serial.println("Longitude val");
+            // Serial.println("Longitude val");
             char temp_buf[12];
             strncpy(temp_buf, term_buffer, 11);
             temp_buf[11] = '\0';
-
-            Serial.print("Valid: ");
-            Serial.println(atof(temp_buf));
 
             sfr::gps::longitude->set_value(atof(temp_buf));
             break;
@@ -107,13 +103,13 @@ bool GPSMonitor::encode(char c)
                 float longitude;
                 sfr::gps::longitude->get_value(&longitude);
                 sfr::gps::longitude->set_value(-longitude);
-                Serial.println(longitude);
+                // Serial.println(longitude);
             }
             break;
         }
         case 9: // Altitude
         {
-            Serial.println("Altitude");
+            // Serial.println("Altitude");
 
             char temp_buf[char_count];
             strncpy(temp_buf, term_buffer, char_count - 1);
@@ -149,14 +145,18 @@ bool GPSMonitor::encode(char c)
 void GPSMonitor::execute()
 {
     // Check to see if anything is available in the serial receive buffer
-    // while (*gpsStream) {
-    //     if (encode(*gpsStream++)) {
-
-    //     }
-    // }
-
     while (ss.available() > 0) {
+
         if (encode(ss.read())) {
+#ifdef VERBOSE
+            Serial.println(F("NEW GPS MESSAGE"));
+#endif
         }
     }
+
+    // for testing
+    // while (*gpsStream) {
+    //     if (encode(*gpsStream++)) {
+    //     }
+    // }
 }

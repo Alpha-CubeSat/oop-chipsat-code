@@ -7,7 +7,7 @@ MainControlLoop::MainControlLoop()
       radio_control_task()
 
 {
-    // delay(1000);
+
 }
 
 int freeRam()
@@ -76,6 +76,7 @@ void MainControlLoop::execute()
     temp_monitor.execute();
     imu_monitor.execute();
     gps_monitor.execute();
+    delay(5000);
     radio_control_task.execute();
 
 #ifdef VERBOSE

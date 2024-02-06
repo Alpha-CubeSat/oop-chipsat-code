@@ -18,22 +18,28 @@ void IMUMonitor::IMU_init()
 void IMUMonitor::execute()
 {
     if (!sfr::imu::initialized) {
+#ifdef VERBOSE
         Serial.println(F("Turning on IMU"));
+#endif
 
         IMUMonitor::IMU_init();
         if (sfr::imu::init_mode == sensor_init_mode_type::complete) {
             transition_to_normal();
             sfr::imu::initialized = true;
+#ifdef VERBOSE
             Serial.println(F("IMU on"));
+#endif
         } else {
             if (sfr::imu::failed_times == sfr::imu::failed_limit) {
                 sfr::imu::failed_times = 0; // reset
                 transition_to_abnormal_init();
+#ifdef VERBOSE
                 Serial.println(F("IMU failed"));
+#endif
             } else {
                 sfr::imu::failed_times = sfr::imu::failed_times + 1;
-                Serial.print(F("IMU initialization failed times: "));
-                Serial.println(sfr::imu::failed_times);
+                // Serial.print(F("IMU initialization failed times: "));
+                // Serial.println(sfr::imu::failed_times);
                 sfr::imu::init_mode = sensor_init_mode_type::init;
             }
         }
@@ -49,8 +55,6 @@ void IMUMonitor::capture_imu_values()
 
     if (IMU.gyroscopeAvailable()) {             // check if the gyroscope has new data available
         IMU.readGyroscope(gyroX, gyroY, gyroZ); // library function to read from the gyroscope
-        // Serial.print("Gyro X: ");
-        // Serial.println(gyroX);
         sfr::imu::gyro_x->set_value(gyroX);
         sfr::imu::gyro_y->set_value(gyroY);
         sfr::imu::gyro_z->set_value(gyroZ);
