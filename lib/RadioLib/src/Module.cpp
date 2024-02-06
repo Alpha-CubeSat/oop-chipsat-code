@@ -129,6 +129,7 @@ void Module::term() {
 
 int16_t Module::SPIgetRegValue(uint8_t reg, uint8_t msb, uint8_t lsb) {
   if((msb > 7) || (lsb > 7) || (lsb > msb)) {
+    Serial.println("ERROR2");
     return(RADIOLIB_ERR_INVALID_BIT_RANGE);
   }
 
@@ -139,6 +140,7 @@ int16_t Module::SPIgetRegValue(uint8_t reg, uint8_t msb, uint8_t lsb) {
 
 int16_t Module::SPIsetRegValue(uint8_t reg, uint8_t value, uint8_t msb, uint8_t lsb, uint8_t checkInterval, uint8_t checkMask) {
   if((msb > 7) || (lsb > 7) || (lsb > msb)) {
+    Serial.println("ERROR3");
     return(RADIOLIB_ERR_INVALID_BIT_RANGE);
   }
 
@@ -156,6 +158,7 @@ int16_t Module::SPIsetRegValue(uint8_t reg, uint8_t value, uint8_t msb, uint8_t 
       readValue = SPIreadRegister(reg);
       if((readValue & checkMask) == (newValue & checkMask)) {
         // check passed, we can stop the loop
+        Serial.println("ERROR1");
         return(RADIOLIB_ERR_NONE);
       }
     }
@@ -179,9 +182,10 @@ int16_t Module::SPIsetRegValue(uint8_t reg, uint8_t value, uint8_t msb, uint8_t 
     RADIOLIB_DEBUG_PRINT(F("read:\t\t0b"));
     RADIOLIB_DEBUG_PRINTLN(readValue, BIN);
     RADIOLIB_DEBUG_PRINTLN();
-
+    Serial.println("ERROR4");
     return(RADIOLIB_ERR_SPI_WRITE_FAILED);
   #else
+    Serial.println("ERROR5");
     return(RADIOLIB_ERR_NONE);
   #endif
 }
