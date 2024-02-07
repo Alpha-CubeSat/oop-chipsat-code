@@ -13,12 +13,6 @@ namespace constants {
         constexpr int radio_rst_pin = 9;
         constexpr int radio_busy_pin = A2;
 
-        constexpr int err_none = 0;
-        constexpr int err_crc_mismatch = -7;
-        constexpr int err_packet_too_long = -4;
-        constexpr int err_tx_timeout = -5;
-        constexpr int err_rx_timeout = -6;
-
         constexpr float freq = 433.0;
         constexpr float bw = 125.0;
         constexpr int sf = 12;
