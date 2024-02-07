@@ -15,7 +15,7 @@ void RadioControlTask::init()
             // initialize SX1278 with default settings
             code = radio.begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,
                                constants::radio::sw, constants::radio::pwr, constants::radio::pl, constants::radio::gn);
-            if (code == constants::radio::err_none) {
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
 #ifdef VERBOSE
@@ -30,7 +30,7 @@ void RadioControlTask::init()
 #endif
             // check to make sure frequency is set correctly
             code = radio.setFrequency(constants::radio::freq);
-            if (code == constants::radio::err_none) {
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
 #ifdef VERBOSE
@@ -46,7 +46,7 @@ void RadioControlTask::init()
             // adjust output power, avialable ranges: -3 to 15 dBm
             // increasing power increases range of transmission
             code = radio.setOutputPower(constants::radio::pwr);
-            if (code == constants::radio::err_none) {
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
 #ifdef VERBOSE
@@ -62,7 +62,7 @@ void RadioControlTask::init()
             // adjust spreading factor, avialable ranges: SF7 to SF12 (7 to 12)
             // increasing spreading factor increases range of transmission, but increases the time to transmit the message
             code = radio.setSpreadingFactor(constants::radio::sf);
-            if (code == constants::radio::err_none) {
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
 #ifdef VERBOSE
@@ -77,7 +77,7 @@ void RadioControlTask::init()
 #endif
             // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
             code = radio.setCRC(true);
-            if (code == constants::radio::err_none) {
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
 #ifdef VERBOSE
@@ -92,7 +92,7 @@ void RadioControlTask::init()
 #endif
             // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
             code = radio.forceLDRO(true);
-            if (code == constants::radio::err_none) {
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
 #ifdef VERBOSE
@@ -115,7 +115,7 @@ bool RadioControlTask::transmit(String packet)
     buf[1] = 'i';
     code = radio.transmit(buf, 2);
 
-    if (code == constants::radio::err_none) {
+    if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
 #ifdef VERBOSE
         Serial.println(F("success!"));
@@ -126,10 +126,10 @@ bool RadioControlTask::transmit(String packet)
         return true;
     } else {
 #ifdef VERBOSE
-        if (code == constants::radio::err_packet_too_long) {
+        if (code == RADIOLIB_ERR_PACKET_TOO_LONG) {
             // the supplied packet was longer than 256 bytes
             Serial.println(F("too long!"));
-        } else if (code == constants::radio::err_tx_timeout) {
+        } else if (code == RADIOLIB_ERR_TX_TIMEOUT) {
             // timeout occurred while transmitting packet
             Serial.println(F("timeout!"));
         } else {
@@ -152,7 +152,7 @@ bool RadioControlTask::receive()
     code = radio.receive(str, sizeof(str));
     sfr::radio::received = command;
 
-    if (code == constants::radio::err_none) {
+    if (code == RADIOLIB_ERR_NONE) {
 #ifdef VERBOSE
         // packet was successfully received
         Serial.println(F("success!"));
@@ -181,10 +181,10 @@ bool RadioControlTask::receive()
         return true;
     } else {
 #ifdef VERBOSE
-        if (code == constants::radio::err_rx_timeout) {
+        if (code == RADIOLIB_ERR_RX_TIMEOUT) {
             // timeout occurred while waiting for a packet
             Serial.println(F("timeout!"));
-        } else if (code == constants::radio::err_crc_mismatch) {
+        } else if (code == RADIOLIB_ERR_CRC_MISMATCH) {
             // packet was received, but is malformed
             Serial.println(F("CRC error!"));
         } else {
@@ -229,11 +229,11 @@ void RadioControlTask::execute()
 #ifdef VERBOSE
         Serial.println(F("Radio: Downlink State"));
 #endif
-        String normal_report = buildDownlink();
+        // String normal_report = buildDownlink();
 #ifdef VERBOSE
 // Serial.println(normal_report);
 #endif
-        bool transmit_success = transmit(normal_report);
+        bool transmit_success = transmit(""); // transmit(normal_report);
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful
         if (transmit_success) {
