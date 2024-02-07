@@ -184,7 +184,7 @@ bool RadioControlTask::receive()
         if (code == RADIOLIB_ERR_RX_TIMEOUT) {
             // timeout occurred while waiting for a packet
             Serial.println(F("timeout!"));
-        } else if (code ==RADIOLIB_ERR_CRC_MISMATCH) {
+        } else if (code == RADIOLIB_ERR_CRC_MISMATCH) {
             // packet was received, but is malformed
             Serial.println(F("CRC error!"));
         } else {
@@ -233,7 +233,7 @@ void RadioControlTask::execute()
 #ifdef VERBOSE
 // Serial.println(normal_report);
 #endif
-        bool transmit_success = transmit(""); //transmit(normal_report);
+        bool transmit_success = transmit(""); // transmit(normal_report);
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful
         if (transmit_success) {
