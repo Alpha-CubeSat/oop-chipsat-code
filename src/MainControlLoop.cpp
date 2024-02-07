@@ -7,7 +7,6 @@ MainControlLoop::MainControlLoop()
       radio_control_task()
 
 {
-
 }
 
 int freeRam()

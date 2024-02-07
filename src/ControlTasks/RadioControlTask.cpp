@@ -229,11 +229,11 @@ void RadioControlTask::execute()
 #ifdef VERBOSE
         Serial.println(F("Radio: Downlink State"));
 #endif
-        String normal_report = buildDownlink();
+        // String normal_report = buildDownlink();
 #ifdef VERBOSE
 // Serial.println(normal_report);
 #endif
-        bool transmit_success = transmit(normal_report);
+        bool transmit_success = transmit(""); //transmit(normal_report);
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful
         if (transmit_success) {

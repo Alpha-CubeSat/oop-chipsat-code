@@ -14,7 +14,7 @@ public:
 private:
     RFM96 radio = new Module(constants::radio::radio_cs_pin, constants::radio::radio_di0_pin,
                              constants::radio::radio_rst_pin, constants::radio::radio_busy_pin);
-    int8_t code;
+    int16_t code;
     void init();
     bool transmit(String packet);
     bool receive();
