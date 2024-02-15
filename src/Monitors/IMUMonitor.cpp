@@ -54,14 +54,14 @@ void IMUMonitor::capture_imu_values()
 {
 
     if (IMU.gyroscopeAvailable()) {             // check if the gyroscope has new data available
-        IMU.readGyroscope(gyroX, gyroY, gyroZ); // library function to read from the gyroscope
+        IMU.readGyroscope(gyroX, gyroY, gyroZ); // data is in degrees/s
         sfr::imu::gyro_x->set_value(gyroX);
         sfr::imu::gyro_y->set_value(gyroY);
         sfr::imu::gyro_z->set_value(gyroZ);
     }
 
-    if (IMU.accelerationAvailable()) { // check if accelerometer is available
-        IMU.readAcceleration(accX, accY, accZ);
+    if (IMU.accelerationAvailable()) {          // check if accelerometer is available
+        IMU.readAcceleration(accX, accY, accZ); // data is in m/s^2
 
         sfr::imu::acc_x->set_value(accX);
         sfr::imu::acc_y->set_value(accY);

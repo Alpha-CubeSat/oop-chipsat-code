@@ -14,8 +14,8 @@ public:
     bool check_GPGGA();
 
 private:
-    SoftwareSerial ss = SoftwareSerial(4, 3); // RX, TX
-    char term_buffer[15];
+    SoftwareSerial ss = SoftwareSerial(constants::gps::rx_pin, constants::gps::tx_pin);
+    char term_buffer[11];
     bool valid_msg = true;
     uint8_t char_count = 0;
     uint8_t term_count = 0;

@@ -5,13 +5,14 @@ namespace sfr {
     namespace imu {
 
         // TODO set min and max to good values
-        SensorReading *gyro_x = new SensorReading(-2550, 2550);
-        SensorReading *gyro_y = new SensorReading(-2550, 2550);
-        SensorReading *gyro_z = new SensorReading(-2550, 2550);
+        // cubesat target spin is 5 rad/s -> 286 deg/s
+        SensorReading *gyro_x = new SensorReading(-400, 400);
+        SensorReading *gyro_y = new SensorReading(-400, 400);
+        SensorReading *gyro_z = new SensorReading(-400, 400);
 
-        SensorReading *acc_x = new SensorReading(-2550, 2550);
-        SensorReading *acc_y = new SensorReading(-2550, 2550);
-        SensorReading *acc_z = new SensorReading(-2550, 2550);
+        SensorReading *acc_x = new SensorReading(-10, 10);
+        SensorReading *acc_y = new SensorReading(-10, 10);
+        SensorReading *acc_z = new SensorReading(-10, 10);
 
         bool initialized = false;
         uint16_t failed_times = 0;
@@ -22,7 +23,7 @@ namespace sfr {
     } // namespace imu
 
     namespace temperature {
-        SensorReading *temp_c = new SensorReading(-5000, 5000);
+        SensorReading *temp_c = new SensorReading(-100, 200);
 
     } // namespace temperature
     namespace gps {

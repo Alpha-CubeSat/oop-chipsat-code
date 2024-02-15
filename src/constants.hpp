@@ -11,7 +11,7 @@ namespace constants {
         constexpr int radio_cs_pin = 10;
         constexpr int radio_di0_pin = 2;
         constexpr int radio_rst_pin = 9;
-        constexpr int radio_busy_pin = A2;
+        constexpr int radio_busy_pin = 16;
 
         constexpr float freq = 433.0;
         constexpr float bw = 125.0;
@@ -24,8 +24,12 @@ namespace constants {
 
     } // namespace radio
     namespace temperature {
-        constexpr int i2c_address = 0x4A;
+        constexpr int i2c_address = 74;
     } // namespace temperature
+    namespace gps {
+        constexpr int rx_pin = 4;
+        constexpr int tx_pin = 3;
+    } // namespace gps
 
 }; // namespace constants
 
