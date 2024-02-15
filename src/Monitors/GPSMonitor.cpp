@@ -48,7 +48,7 @@ bool GPSMonitor::encode(char c)
         // Serial.println(c);
         // Serial.print("char_count: ");
         // Serial.println(char_count);
-        if (char_count > 11) {
+        if (char_count > constants::gps::buffer_size) {
             valid_msg = false;
             Serial.println("INVALID GPS MESSAGE");
         }

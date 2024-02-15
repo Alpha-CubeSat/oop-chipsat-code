@@ -29,6 +29,7 @@ namespace constants {
     namespace gps {
         constexpr int rx_pin = 4;
         constexpr int tx_pin = 3;
+        constexpr int buffer_size = 11;
     } // namespace gps
 
 }; // namespace constants
