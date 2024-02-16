@@ -19,6 +19,8 @@ public:
     void set_invalid();
     void set_valid();
     bool is_valid();
+    float get_min();
+    float get_max();
 };
 
 #endif

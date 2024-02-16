@@ -108,12 +108,9 @@ void RadioControlTask::init()
     }
 }
 
-bool RadioControlTask::transmit(String packet)
+bool RadioControlTask::transmit(uint8_t *packet)
 {
-    uint8_t buf[2];
-    buf[0] = 'h';
-    buf[1] = 'i';
-    code = radio.transmit(buf, 2);
+    code = radio.transmit(packet, 12);
 
     if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
@@ -229,11 +226,7 @@ void RadioControlTask::execute()
 #ifdef VERBOSE
         Serial.println(F("Radio: Downlink State"));
 #endif
-        // String normal_report = buildDownlink();
-#ifdef VERBOSE
-// Serial.println(normal_report);
-#endif
-        bool transmit_success = transmit(""); // transmit(normal_report);
+        bool transmit_success = executeDownlink();
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful
         if (transmit_success) {
@@ -264,23 +257,29 @@ void RadioControlTask::execute()
     }
 }
 
-String RadioControlTask::buildDownlink()
+bool RadioControlTask::executeDownlink()
 {
-    String packet = "";
-    packet += sensorReadingString(sfr::imu::gyro_x) + ",";
-    packet += sensorReadingString(sfr::imu::gyro_y) + ",";
-    packet += sensorReadingString(sfr::imu::gyro_z) + ",";
-    packet += sensorReadingString(sfr::imu::acc_x) + ",";
-    packet += sensorReadingString(sfr::imu::acc_y) + ",";
-    packet += sensorReadingString(sfr::imu::acc_z) + ",";
-    packet += sensorReadingString(sfr::temperature::temp_c) + ",";
-    // packet = sensorReadingString(sfr::gps::latitude) + ",";
-    // packet += sensorReadingString(sfr::gps::longitude) + ",";
-    packet += sensorReadingString(sfr::gps::altitude) + ",";
-    // packet += sensorReadingString(sfr::gps::utc_h) + ",";
-    // packet += sensorReadingString(sfr::gps::utc_m) + ",";
-    // packet += sensorReadingString(sfr::gps::utc_s);
-    return packet;
+    uint8_t dlink[] = {
+        serialize(sfr::gps::altitude),
+        serialize(sfr::gps::latitude),
+        serialize(sfr::gps::longitude),
+        serialize(sfr::gps::utc_time),
+        serialize(sfr::imu::acc_x),
+        serialize(sfr::imu::acc_y),
+        serialize(sfr::imu::acc_z),
+        serialize(sfr::imu::gyro_x),
+        serialize(sfr::imu::gyro_y),
+        serialize(sfr::imu::gyro_z),
+        serialize(sfr::temperature::temp_c),
+        sfr::radio::mode == radio_mode_type::listen};
+    return transmit(dlink);
+}
+
+uint8_t RadioControlTask::serialize(SensorReading *valueObj)
+{
+    float value;
+    valueObj->get_value(&value);
+    return round(map(value, valueObj->get_min(), valueObj->get_max(), 0, 255));
 }
 
 String RadioControlTask::sensorReadingString(SensorReading *sr)

@@ -45,3 +45,13 @@ bool SensorReading::is_valid()
 {
     return valid;
 }
+
+float SensorReading::get_min()
+{
+    return min;
+}
+
+float SensorReading::get_max()
+{
+    return max;
+}
