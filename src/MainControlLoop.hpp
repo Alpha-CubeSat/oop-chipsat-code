@@ -5,6 +5,7 @@
 #include "Monitors/GPSMonitor.hpp"
 #include "Monitors/IMUMonitor.hpp"
 #include "Monitors/TempMonitor.hpp"
+#include <avr/wdt.h>
 
 class MainControlLoop
 {

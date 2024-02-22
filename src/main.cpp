@@ -1,4 +1,5 @@
 #include "MainControlLoop.hpp"
+#include <avr/wdt.h>
 
 MainControlLoop mcl;
 
@@ -6,10 +7,10 @@ MainControlLoop mcl;
 
 void setup()
 {
-    // delay for 2 hours
-    // delay(7200000);
+    wdt_disable();
+    wdt_enable(WDTO_8S);
     Serial.begin(9600);
-    delay(5000);
+    Serial.println("in setup");
 }
 
 void loop()

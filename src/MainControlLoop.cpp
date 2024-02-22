@@ -77,6 +77,11 @@ void MainControlLoop::execute()
     gps_monitor.execute();
     radio_control_task.execute();
 
+    wdt_reset();
+
+    //delay(5000);
+    //Serial.println("you should not be seeing this");
+
 #ifdef VERBOSE
     Serial.println(F("-------------------- END LOOP --------------------"));
 #endif
