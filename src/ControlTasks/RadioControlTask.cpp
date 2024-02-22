@@ -9,78 +9,96 @@ void RadioControlTask::init()
     if (sfr::radio::init_mode == sensor_init_mode_type::init) {
         switch (sfr::radio::start_progress) {
         case 0:
-            // initialize SX1278 with default settings
+#ifdef VERBOSE
             Serial.print(F("Radio: Initializing ... "));
+#endif
+            // initialize SX1278 with default settings
             code = radio.begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,
                                constants::radio::sw, constants::radio::pwr, constants::radio::pl, constants::radio::gn);
-            if (code == constants::radio::err_none) {
-                Serial.println(F("success!"));
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
+#ifdef VERBOSE
                 Serial.print(F("failed, code "));
                 Serial.println(code);
+#endif
             }
             break;
         case 1:
-            // saftey check to make sure frequency is set correctly
+#ifdef VERBOSE
             Serial.print(F("Radio: Setting frequency ... "));
+#endif
+            // check to make sure frequency is set correctly
             code = radio.setFrequency(constants::radio::freq);
-            if (code == constants::radio::err_none) {
-                Serial.println(F("success!"));
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
+#ifdef VERBOSE
                 Serial.print(F("failed, code "));
                 Serial.println(code);
+#endif
             }
             break;
         case 2:
+#ifdef VERBOSE
+            Serial.print(F("Radio: Setting Output Power parameter ... "));
+#endif
             // adjust output power, avialable ranges: -3 to 15 dBm
             // increasing power increases range of transmission
-            Serial.print(F("Radio: Setting Output Power parameter ... "));
             code = radio.setOutputPower(constants::radio::pwr);
-            if (code == constants::radio::err_none) {
-                Serial.println(F("success!"));
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
-                Serial.print(F("Output Power initialization error"));
+#ifdef VERBOSE
+                Serial.print(F("failed, code "));
                 Serial.println(code);
+#endif
             }
             break;
         case 3:
+#ifdef VERBOSE
+            Serial.print(F("Radio: Setting Spreading Factor parameter ... "));
+#endif
             // adjust spreading factor, avialable ranges: SF7 to SF12 (7 to 12)
             // increasing spreading factor increases range of transmission, but increases the time to transmit the message
-            Serial.print(F("Radio: Setting Spreading Factor parameter ... "));
             code = radio.setSpreadingFactor(constants::radio::sf);
-            if (code == constants::radio::err_none) {
-                Serial.println(F("success!"));
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
-                Serial.print(F("Spreading Factor initialization error"));
+#ifdef VERBOSE
+                Serial.print(F("failed, code "));
                 Serial.println(code);
+#endif
             }
             break;
         case 4:
-            // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
+#ifdef VERBOSE
             Serial.print(F("Radio: Setting CRC parameter ... "));
+#endif
+            // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
             code = radio.setCRC(true);
-            if (code == constants::radio::err_none) {
-                Serial.println(F("success!"));
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
-                Serial.print(F("CRC initialization error"));
+#ifdef VERBOSE
+                Serial.print(F("failed, code "));
                 Serial.println(code);
+#endif
             }
             break;
         case 5:
-            // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
+#ifdef VERBOSE
             Serial.print(F("Radio: Setting forceLDRO parameter ... "));
+#endif
+            // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
             code = radio.forceLDRO(true);
-            if (code == constants::radio::err_none) {
-                Serial.println(F("success!"));
+            if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
             } else {
-                Serial.print(F("forceLDRO initialization error"));
+#ifdef VERBOSE
+                Serial.print(F("failed, code "));
                 Serial.println(code);
+#endif
             }
             break;
         case 6: // completed initialization
@@ -90,25 +108,25 @@ void RadioControlTask::init()
     }
 }
 
-bool RadioControlTask::transmit(String packet)
+bool RadioControlTask::transmit(uint8_t *packet)
 {
-    code = radio.transmit(packet);
+    code = radio.transmit(packet, 12);
 
-    if (code == constants::radio::err_none) {
+    if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
+#ifdef VERBOSE
         Serial.println(F("success!"));
-
-        // print measured data rate
         Serial.print(F("[SX1278] Datarate:\t"));
         Serial.print(radio.getDataRate());
         Serial.println(F(" bps"));
-
+#endif
         return true;
     } else {
-        if (code == constants::radio::err_packet_too_long) {
+#ifdef VERBOSE
+        if (code == RADIOLIB_ERR_PACKET_TOO_LONG) {
             // the supplied packet was longer than 256 bytes
             Serial.println(F("too long!"));
-        } else if (code == constants::radio::err_tx_timeout) {
+        } else if (code == RADIOLIB_ERR_TX_TIMEOUT) {
             // timeout occurred while transmitting packet
             Serial.println(F("timeout!"));
         } else {
@@ -116,17 +134,23 @@ bool RadioControlTask::transmit(String packet)
             Serial.print(F("failed, code "));
             Serial.println(code);
         }
+#endif
         return false;
     }
 }
 
 bool RadioControlTask::receive()
 {
+    // don't use Arduino strings
     String command;
-    code = radio.receive(command);
+    // code = radio.receive(command);
+
+    uint8_t str[8];
+    code = radio.receive(str, sizeof(str));
     sfr::radio::received = command;
 
-    if (code == constants::radio::err_none) {
+    if (code == RADIOLIB_ERR_NONE) {
+#ifdef VERBOSE
         // packet was successfully received
         Serial.println(F("success!"));
 
@@ -150,22 +174,22 @@ bool RadioControlTask::receive()
         Serial.print(F("[SX1278] Frequency error:\t"));
         Serial.print(radio.getFrequencyError());
         Serial.println(F(" Hz"));
-
+#endif
         return true;
     } else {
-        if (code == constants::radio::err_rx_timeout) {
+#ifdef VERBOSE
+        if (code == RADIOLIB_ERR_RX_TIMEOUT) {
             // timeout occurred while waiting for a packet
             Serial.println(F("timeout!"));
-
-        } else if (code == constants::radio::err_crc_mismatch) {
+        } else if (code == RADIOLIB_ERR_CRC_MISMATCH) {
             // packet was received, but is malformed
             Serial.println(F("CRC error!"));
-
         } else {
             // some other error occurred
             Serial.print(F("failed, code "));
             Serial.println(code);
         }
+#endif
         return false;
     }
 }
@@ -175,7 +199,9 @@ void RadioControlTask::execute()
     // implements the state machine described in: https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki
     switch (sfr::radio::mode) {
     case radio_mode_type::init: {
+#ifdef VERBOSE
         Serial.println(F("Radio: Init State"));
+#endif
         init();
         if (sfr::radio::init_mode == sensor_init_mode_type::complete) {
             sfr::radio::mode = radio_mode_type::waiting;
@@ -185,7 +211,9 @@ void RadioControlTask::execute()
         break;
     }
     case radio_mode_type::waiting: {
+#ifdef VERBOSE
         Serial.println(F("Radio: Waiting State"));
+#endif
         if (millis() - sfr::radio::listen_period_start >= sfr::radio::listen_period) {
             sfr::radio::mode = radio_mode_type::listen;
             sfr::radio::command_wait_start = millis();
@@ -195,10 +223,10 @@ void RadioControlTask::execute()
         break;
     }
     case radio_mode_type::downlink: {
+#ifdef VERBOSE
         Serial.println(F("Radio: Downlink State"));
-        String normal_report = buildDownlink();
-        Serial.println(normal_report);
-        bool transmit_success = transmit(normal_report);
+#endif
+        bool transmit_success = executeDownlink();
         sfr::radio::mode = radio_mode_type::waiting;
         // reset downlink period if downlink successful
         if (transmit_success) {
@@ -207,15 +235,19 @@ void RadioControlTask::execute()
         break;
     }
     case radio_mode_type::listen: {
+#ifdef VERBOSE
         Serial.println(F("Radio: Listen State"));
+#endif
         // built in timeout is 100 LoRa symbols
         bool receive_success = receive();
+#ifdef VERBOSE
         if (receive_success) {
-            Serial.print("Received: ");
+            Serial.print(F("Received: "));
             Serial.println(sfr::radio::received);
         } else {
-            Serial.println("Receive Failed");
+            Serial.println(F("Receive Failed"));
         }
+#endif
         if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
             sfr::radio::mode = radio_mode_type::waiting;
             sfr::radio::listen_period_start = millis();
@@ -225,24 +257,29 @@ void RadioControlTask::execute()
     }
 }
 
-String RadioControlTask::buildDownlink()
+bool RadioControlTask::executeDownlink()
 {
-    String packet = "";
-    packet += sensorReadingString(sfr::imu::gyro_x) + ",";
-    packet += sensorReadingString(sfr::imu::gyro_y) + ",";
-    packet += sensorReadingString(sfr::imu::gyro_z) + ",";
-    packet += sensorReadingString(sfr::imu::acc_x) + ",";
-    packet += sensorReadingString(sfr::imu::acc_y) + ",";
-    packet += sensorReadingString(sfr::imu::acc_z) + ",";
-    packet += sensorReadingString(sfr::temperature::temp_c) + ",";
-    packet += sensorReadingString(sfr::temperature::temp_f) + ",";
-    packet = sensorReadingString(sfr::gps::latitude) + ",";
-    packet += sensorReadingString(sfr::gps::longitude) + ",";
-    packet += sensorReadingString(sfr::gps::altitude) + ",";
-    packet += sensorReadingString(sfr::gps::utc_h) + ",";
-    packet += sensorReadingString(sfr::gps::utc_m) + ",";
-    packet += sensorReadingString(sfr::gps::utc_s);
-    return packet;
+    uint8_t dlink[] = {
+        serialize(sfr::gps::altitude),
+        serialize(sfr::gps::latitude),
+        serialize(sfr::gps::longitude),
+        serialize(sfr::gps::utc_time),
+        serialize(sfr::imu::acc_x),
+        serialize(sfr::imu::acc_y),
+        serialize(sfr::imu::acc_z),
+        serialize(sfr::imu::gyro_x),
+        serialize(sfr::imu::gyro_y),
+        serialize(sfr::imu::gyro_z),
+        serialize(sfr::temperature::temp_c),
+        sfr::radio::mode == radio_mode_type::listen};
+    return transmit(dlink);
+}
+
+uint8_t RadioControlTask::serialize(SensorReading *valueObj)
+{
+    float value;
+    valueObj->get_value(&value);
+    return round(map(value, valueObj->get_min(), valueObj->get_max(), 0, 255));
 }
 
 String RadioControlTask::sensorReadingString(SensorReading *sr)

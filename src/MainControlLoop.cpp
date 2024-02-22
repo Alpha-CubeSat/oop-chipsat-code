@@ -3,85 +3,86 @@
 MainControlLoop::MainControlLoop()
     : imu_monitor(),
       temp_monitor(),
-      /*gps_monitor(),*/
+      gps_monitor(),
       radio_control_task()
 
 {
-    // delay(1000);
+}
+
+int freeRam()
+{
+    extern int __heap_start, *__brkval;
+    int v;
+    return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 }
 
 void MainControlLoop::execute()
 {
 
 #ifdef VERBOSE
-    Serial.println("-------------------- START LOOP --------------------");
+    Serial.println(F("-------------------- START LOOP --------------------"));
     if (sfr::imu::gyro_x->get_value(&val)) {
-        Serial.print("Gyro X: ");
+        Serial.print(F("Gyro X: "));
         Serial.println(val);
     }
     if (sfr::imu::gyro_y->get_value(&val)) {
-        Serial.print("Gyro Y: ");
+        Serial.print(F("Gyro Y: "));
         Serial.println(val);
     }
     if (sfr::imu::gyro_z->get_value(&val)) {
-        Serial.print("Gyro Z: ");
+        Serial.print(F("Gyro Z: "));
         Serial.println(val);
     }
     if (sfr::imu::acc_x->get_value(&val)) {
-        Serial.print("Accel X: ");
+        Serial.print(F("Accel X: "));
         Serial.println(val);
     }
     if (sfr::imu::acc_y->get_value(&val)) {
-        Serial.print("Accel Y: ");
+        Serial.print(F("Accel Y: "));
         Serial.println(val);
     }
     if (sfr::imu::acc_z->get_value(&val)) {
-        Serial.print("Accel Z: ");
+        Serial.print(F("Accel Z: "));
         Serial.println(val);
     }
     if (sfr::temperature::temp_c->get_value(&val)) {
-        Serial.print("Temperature (C): ");
+        Serial.print(F("Temperature (C): "));
         Serial.print(val);
-        Serial.println(" C");
-    }
-    if (sfr::temperature::temp_f->get_value(&val)) {
-        Serial.print("Temperature (F): ");
-        Serial.print(val);
-        Serial.println(" F");
+        Serial.println(F(" C"));
     }
     if (sfr::gps::latitude->get_value(&val)) {
-        Serial.print("GPS Latitude (degrees): ");
+        Serial.print(F("GPS Latitude: "));
         Serial.println(val);
     }
     if (sfr::gps::longitude->get_value(&val)) {
-        Serial.print("GPS Longitude (degrees): ");
+        Serial.print(F("GPS Longitude: "));
         Serial.println(val);
     }
     if (sfr::gps::altitude->get_value(&val)) {
-        Serial.print("GPS Alitude (m): ");
+        Serial.print(F("GPS Altitude (m): "));
         Serial.println(val);
     }
-    if (sfr::gps::utc_h->get_value(&val)) {
-        Serial.print("UTC Hour: ");
+    if (sfr::gps::utc_time->get_value(&val)) {
+        Serial.print("UTC Time: ");
         Serial.println(val);
     }
-    if (sfr::gps::utc_m->get_value(&val)) {
-        Serial.print("UTC Min: ");
-        Serial.println(val);
-    }
-    if (sfr::gps::utc_s->get_value(&val)) {
-        Serial.print("UTC Sec: ");
-        Serial.println(val);
-    }
+
+    Serial.print("Free RAM: ");
+    Serial.println(freeRam());
 
 #endif
 
     temp_monitor.execute();
     imu_monitor.execute();
-    // gps_monitor.execute();
+    gps_monitor.execute();
     radio_control_task.execute();
 
+    wdt_reset();
+
+    // delay(5000);
+    // Serial.println("you should not be seeing this");
+
 #ifdef VERBOSE
-    Serial.println("-------------------- END LOOP --------------------");
+    Serial.println(F("-------------------- END LOOP --------------------"));
 #endif
 }

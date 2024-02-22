@@ -18,22 +18,28 @@ void IMUMonitor::IMU_init()
 void IMUMonitor::execute()
 {
     if (!sfr::imu::initialized) {
-        Serial.println("Turning on IMU");
+#ifdef VERBOSE
+        Serial.println(F("Turning on IMU"));
+#endif
 
         IMUMonitor::IMU_init();
         if (sfr::imu::init_mode == sensor_init_mode_type::complete) {
             transition_to_normal();
             sfr::imu::initialized = true;
-            Serial.println("IMU on");
+#ifdef VERBOSE
+            Serial.println(F("IMU on"));
+#endif
         } else {
             if (sfr::imu::failed_times == sfr::imu::failed_limit) {
                 sfr::imu::failed_times = 0; // reset
                 transition_to_abnormal_init();
-                Serial.println("IMU failed");
+#ifdef VERBOSE
+                Serial.println(F("IMU failed"));
+#endif
             } else {
                 sfr::imu::failed_times = sfr::imu::failed_times + 1;
-                Serial.print("IMU initialization failed times: ");
-                Serial.println(sfr::imu::failed_times);
+                // Serial.print(F("IMU initialization failed times: "));
+                // Serial.println(sfr::imu::failed_times);
                 sfr::imu::init_mode = sensor_init_mode_type::init;
             }
         }
@@ -48,16 +54,14 @@ void IMUMonitor::capture_imu_values()
 {
 
     if (IMU.gyroscopeAvailable()) {             // check if the gyroscope has new data available
-        IMU.readGyroscope(gyroX, gyroY, gyroZ); // library function to read from the gyroscope
-        // Serial.print("Gyro X: ");
-        // Serial.println(gyroX);
+        IMU.readGyroscope(gyroX, gyroY, gyroZ); // data is in degrees/s
         sfr::imu::gyro_x->set_value(gyroX);
         sfr::imu::gyro_y->set_value(gyroY);
         sfr::imu::gyro_z->set_value(gyroZ);
     }
 
-    if (IMU.accelerationAvailable()) { // check if accelerometer is available
-        IMU.readAcceleration(accX, accY, accZ);
+    if (IMU.accelerationAvailable()) {          // check if accelerometer is available
+        IMU.readAcceleration(accX, accY, accZ); // data is in m/s^2
 
         sfr::imu::acc_x->set_value(accX);
         sfr::imu::acc_y->set_value(accY);

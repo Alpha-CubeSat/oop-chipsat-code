@@ -26,7 +26,6 @@ namespace sfr {
     } // namespace imu
     namespace temperature {
         extern SensorReading *temp_c;
-        extern SensorReading *temp_f;
     } // namespace temperature
     namespace radio {
         extern sensor_init_mode_type init_mode;
@@ -43,15 +42,11 @@ namespace sfr {
 
     } // namespace radio
     namespace gps {
-        extern SensorReading *utc_h;
-        extern SensorReading *utc_m;
-        extern SensorReading *utc_s;
+        extern SensorReading *utc_time;
 
         extern SensorReading *latitude;
         extern SensorReading *longitude;
         extern SensorReading *altitude;
-
-        extern char watch_dog[constants::gps::dog_size + 1];
     } // namespace gps
 
 }; // namespace sfr
