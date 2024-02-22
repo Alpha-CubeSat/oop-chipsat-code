@@ -79,8 +79,8 @@ void MainControlLoop::execute()
 
     wdt_reset();
 
-    //delay(5000);
-    //Serial.println("you should not be seeing this");
+    // delay(5000);
+    // Serial.println("you should not be seeing this");
 
 #ifdef VERBOSE
     Serial.println(F("-------------------- END LOOP --------------------"));
