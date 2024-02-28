@@ -31,6 +31,10 @@ namespace constants {
         constexpr int tx_pin = 3;
         constexpr int buffer_size = 11;
     } // namespace gps
+    namespace opcodes {
+        constexpr int no_op = 0x00;
+        constexpr int change_downlink_period = 0x11;
+    } // namespace opcodes
 
 }; // namespace constants
 

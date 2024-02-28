@@ -141,14 +141,8 @@ bool RadioControlTask::transmit(uint8_t *packet)
 
 bool RadioControlTask::receive()
 {
-    // don't use Arduino strings
-    String command;
-    // code = radio.receive(command);
-
-    uint8_t str[8];
+    uint8_t str[3];
     code = radio.receive(str, sizeof(str));
-    sfr::radio::received = command;
-
     if (code == RADIOLIB_ERR_NONE) {
 #ifdef VERBOSE
         // packet was successfully received
@@ -175,6 +169,16 @@ bool RadioControlTask::receive()
         Serial.print(radio.getFrequencyError());
         Serial.println(F(" Hz"));
 #endif
+        switch (str[0]) {
+        case constants::opcodes::no_op: // No-Op
+            break;
+        case constants::opcodes::change_downlink_period: // Change downlink period
+            uint16_t combined = (static_cast<uint16_t>(str[1]) << 8) | str[2];
+            sfr::radio::downlink_period = combined * constants::time::one_second;
+            break;
+        default:
+            break;
+        }
         return true;
     } else {
 #ifdef VERBOSE
