@@ -15,12 +15,13 @@ private:
                              constants::radio::radio_rst_pin, constants::radio::radio_busy_pin);
     int16_t code;
     void init();
-    bool transmit(uint8_t *packet);
+    bool transmit(uint8_t *packet, uint8_t size);
     bool receive();
-    // Command *commandFactory(RawCommand raw);
     bool executeDownlink();
-    static uint8_t serialize(SensorReading *valueObj);
-    String sensorReadingString(SensorReading *sr);
+    void processUplink();
+    uint8_t serialize(SensorReading *valueObj);
+    uint16_t serialize_uint16(SensorReading *valueObj);
+    uint8_t *received;
 };
 
 #endif

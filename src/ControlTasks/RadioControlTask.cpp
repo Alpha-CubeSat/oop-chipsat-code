@@ -108,9 +108,9 @@ void RadioControlTask::init()
     }
 }
 
-bool RadioControlTask::transmit(uint8_t *packet)
+bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
-    code = radio.transmit(packet, 12);
+    code = radio.transmit(packet, size);
 
     if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
@@ -141,8 +141,10 @@ bool RadioControlTask::transmit(uint8_t *packet)
 
 bool RadioControlTask::receive()
 {
-    uint8_t str[3];
-    code = radio.receive(str, sizeof(str));
+    uint8_t uplink[3];
+    code = radio.receive(uplink, sizeof(uplink));
+    received = uplink;
+
     if (code == RADIOLIB_ERR_NONE) {
 #ifdef VERBOSE
         // packet was successfully received
@@ -169,16 +171,6 @@ bool RadioControlTask::receive()
         Serial.print(radio.getFrequencyError());
         Serial.println(F(" Hz"));
 #endif
-        switch (str[0]) {
-        case constants::opcodes::no_op: // No-Op
-            break;
-        case constants::opcodes::change_downlink_period: // Change downlink period
-            uint16_t combined = (static_cast<uint16_t>(str[1]) << 8) | str[2];
-            sfr::radio::downlink_period = combined * constants::time::one_second;
-            break;
-        default:
-            break;
-        }
         return true;
     } else {
 #ifdef VERBOSE
@@ -239,19 +231,23 @@ void RadioControlTask::execute()
         break;
     }
     case radio_mode_type::listen: {
+        // TODO: Downlink when listen starts
 #ifdef VERBOSE
         Serial.println(F("Radio: Listen State"));
 #endif
         // built in timeout is 100 LoRa symbols
         bool receive_success = receive();
-#ifdef VERBOSE
         if (receive_success) {
-            Serial.print(F("Received: "));
-            Serial.println(sfr::radio::received);
-        } else {
-            Serial.println(F("Receive Failed"));
-        }
+#ifdef VERBOSE
+            Serial.println(F("Receive Success"));
 #endif
+            processUplink();
+        } else {
+#ifdef VERBOSE
+            Serial.println(F("Receive Failed"));
+#endif
+        }
+
         if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
             sfr::radio::mode = radio_mode_type::waiting;
             sfr::radio::listen_period_start = millis();
@@ -263,20 +259,58 @@ void RadioControlTask::execute()
 
 bool RadioControlTask::executeDownlink()
 {
+
+    uint16_t lat = serialize_uint16(sfr::gps::latitude);
+    uint16_t lon = serialize_uint16(sfr::gps::longitude);
+    uint16_t alt = serialize_uint16(sfr::gps::altitude);
+
     uint8_t dlink[] = {
-        serialize(sfr::gps::altitude),
-        serialize(sfr::gps::latitude),
-        serialize(sfr::gps::longitude),
         serialize(sfr::gps::utc_time),
-        serialize(sfr::imu::acc_x),
-        serialize(sfr::imu::acc_y),
-        serialize(sfr::imu::acc_z),
+        (uint8_t)(lat >> 8), (uint8_t)lat,
+        (uint8_t)(lon >> 8), (uint8_t)lon,
+        (uint8_t)(alt >> 8), (uint8_t)alt,
         serialize(sfr::imu::gyro_x),
         serialize(sfr::imu::gyro_y),
         serialize(sfr::imu::gyro_z),
+        serialize(sfr::imu::acc_x),
+        serialize(sfr::imu::acc_y),
+        serialize(sfr::imu::acc_z),
         serialize(sfr::temperature::temp_c),
         sfr::radio::mode == radio_mode_type::listen};
-    return transmit(dlink);
+
+    Serial.println(F("Normal Report: "));
+    for (size_t i = 0; i < sizeof(dlink); i++) {
+        Serial.println(dlink[i]);
+    }
+
+    return transmit(dlink, sizeof(dlink));
+}
+
+void RadioControlTask::processUplink()
+{
+
+    switch (received[0]) {
+    case constants::opcodes::no_op: // No-Op
+#ifdef VERBOSE
+        Serial.println(F("No-Op Command"));
+#endif
+        break;
+    case constants::opcodes::change_downlink_period: { // Change downlink period
+        uint16_t combined = ((uint16_t)received[1] << 8) | received[2];
+        sfr::radio::downlink_period = combined * constants::time::one_second;
+#ifdef VERBOSE
+        Serial.print(F("Change Downlink Command: "));
+        Serial.println(combined);
+#endif
+
+        break;
+    }
+    default:
+#ifdef VERBOSE
+        Serial.println(F("Unknown Command"));
+#endif
+        break;
+    }
 }
 
 uint8_t RadioControlTask::serialize(SensorReading *valueObj)
@@ -286,26 +320,9 @@ uint8_t RadioControlTask::serialize(SensorReading *valueObj)
     return round(map(value, valueObj->get_min(), valueObj->get_max(), 0, 255));
 }
 
-String RadioControlTask::sensorReadingString(SensorReading *sr)
+uint16_t RadioControlTask::serialize_uint16(SensorReading *valueObj)
 {
-    float val;
-    sr->get_value(&val);
-    return String(val);
+    float value;
+    valueObj->get_value(&value);
+    return round(map(value, valueObj->get_min(), valueObj->get_max(), 0, 65536));
 }
-
-// Command *RadioControlTask::commandFactory(RawCommand raw)
-// {
-//     // Create Specific Child Class of command depending on the OP Code
-//     uint16_t op_code = raw.get_f_opcode();
-
-//     // if (op_code == constants::radio::opcodes::downlink_period) {
-//     if (true) {
-//         Serial.println("Received new downlink period");
-//         return new SFROverrideCommand(raw);
-//     } else {
-
-//         Serial.print("Unknown Command with opcode: ");
-//         Serial.println(op_code, HEX);
-//         return new UnknownCommand(raw);
-//     }
-// }
