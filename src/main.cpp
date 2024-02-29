@@ -9,8 +9,8 @@ void setup()
 {
     wdt_disable();
     wdt_enable(WDTO_8S);
+
     Serial.begin(9600);
-    Serial.println("in setup");
 }
 
 void loop()
