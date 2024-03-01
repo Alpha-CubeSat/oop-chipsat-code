@@ -35,16 +35,16 @@ bool GPSMonitor::encode(char c)
         // new sentence
         char_count = 0;
         term_count = 0;
-        valid_msg = true;
+        sfr::gps::valid_msg = true;
         Serial.println(F("NEW GPS SENTENCE"));
-    } else if (valid_msg) {
+    } else if (sfr::gps::valid_msg) {
 
         // Serial.print("char: ");
         // Serial.println(c);
         // Serial.print("char_count: ");
         // Serial.println(char_count);
         if (char_count > constants::gps::buffer_size) {
-            valid_msg = false;
+            sfr::gps::valid_msg = false;
             Serial.println("INVALID GPS MESSAGE");
         }
         if (c == ',') {
@@ -58,7 +58,7 @@ bool GPSMonitor::encode(char c)
             switch (term_count) {
             case 0:
                 if (!check_GPGGA()) {
-                    valid_msg = false;
+                    sfr::gps::valid_msg = false;
 #ifdef VERBOSE
                     Serial.println("INVALID GPS MESSAGE");
 #endif

@@ -26,7 +26,7 @@ namespace sfr {
         float longitude;
         float altitude;
 
-        bool is_valid = false;
+        bool valid_msg = false;
 
     } // namespace gps
     namespace radio {

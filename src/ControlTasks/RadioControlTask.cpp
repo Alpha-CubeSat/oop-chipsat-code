@@ -259,10 +259,11 @@ void RadioControlTask::execute()
 
 bool RadioControlTask::executeDownlink()
 {
-
     uint16_t lat = round(map(sfr::gps::latitude, constants::gps::lat_min, constants::gps::lat_max, 0, 65536));
     uint16_t lon = round(map(sfr::gps::longitude, constants::gps::lon_min, constants::gps::lon_max, 0, 65536));
     uint16_t alt = round(map(sfr::gps::altitude, constants::gps::alt_min, constants::gps::alt_max, 0, 65536));
+
+    uint8_t flags = ((sfr::radio::mode == radio_mode_type::listen) ? 0xF0 : 0x00) | (sfr::gps::valid_msg ? 0x0F : 0x00);
 
     uint8_t dlink[] = {
         (uint8_t)(lat >> 8), (uint8_t)lat,
@@ -275,12 +276,14 @@ bool RadioControlTask::executeDownlink()
         (uint8_t)round(map(sfr::imu::acc_y, constants::imu::acc_min, constants::imu::acc_max, 0, 255)),
         (uint8_t)round(map(sfr::imu::acc_z, constants::imu::acc_min, constants::imu::acc_max, 0, 255)),
         (uint8_t)round(map(sfr::temperature::temp_c, constants::temperature::min, constants::temperature::max, 0, 255)),
-        sfr::radio::mode == radio_mode_type::listen};
+        flags};
 
+#ifdef VERBOSE
     Serial.println(F("Normal Report: "));
     for (size_t i = 0; i < sizeof(dlink); i++) {
         Serial.println(dlink[i]);
     }
+#endif
 
     return transmit(dlink, sizeof(dlink));
 }
@@ -301,7 +304,6 @@ void RadioControlTask::processUplink()
         Serial.print(F("Change Downlink Command: "));
         Serial.println(combined);
 #endif
-
         break;
     }
     default:

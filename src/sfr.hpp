@@ -46,7 +46,7 @@ namespace sfr {
         extern float longitude;
         extern float altitude;
 
-        extern bool is_valid;
+        extern bool valid_msg;
     } // namespace gps
 
 }; // namespace sfr
