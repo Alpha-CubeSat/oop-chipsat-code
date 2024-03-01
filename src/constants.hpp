@@ -45,7 +45,7 @@ namespace constants {
         constexpr int lon_min = -18000;
         constexpr int lon_max = 18000;
         constexpr int alt_min = 0;
-        constexpr int32_t alt_max = 500000;
+        constexpr int alt_max = 50000; // In 10's of meters
     } // namespace gps
     namespace opcodes {
         constexpr int no_op = 0x00;

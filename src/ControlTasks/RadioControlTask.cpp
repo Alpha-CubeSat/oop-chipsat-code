@@ -261,7 +261,7 @@ bool RadioControlTask::executeDownlink()
 {
     uint16_t lat = round(map(sfr::gps::latitude, constants::gps::lat_min, constants::gps::lat_max, 0, 65536));
     uint16_t lon = round(map(sfr::gps::longitude, constants::gps::lon_min, constants::gps::lon_max, 0, 65536));
-    uint16_t alt = round(map(sfr::gps::altitude, constants::gps::alt_min, constants::gps::alt_max, 0, 65536));
+    uint16_t alt = round(map(sfr::gps::altitude / 10, constants::gps::alt_min, constants::gps::alt_max, 0, 65536));
 
     uint8_t flags = ((sfr::radio::mode == radio_mode_type::listen) ? 0xF0 : 0x00) | (sfr::gps::valid_msg ? 0x0F : 0x00);
 
