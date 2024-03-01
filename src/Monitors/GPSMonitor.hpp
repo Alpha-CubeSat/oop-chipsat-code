@@ -1,7 +1,6 @@
 #ifndef GPS_MONITOR_HPP_
 #define GPS_MONITOR_HPP_
 
-#include "SensorReading.hpp"
 #include "sfr.hpp"
 #include <Arduino.h>
 #include <SoftwareSerial.h>

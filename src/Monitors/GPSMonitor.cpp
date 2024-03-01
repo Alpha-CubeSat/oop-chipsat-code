@@ -17,11 +17,6 @@ GPSMonitor::GPSMonitor()
     // delay(500);
     // ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
     // delay(1000);
-
-    sfr::gps::altitude->set_valid();
-    sfr::gps::latitude->set_valid();
-    sfr::gps::longitude->set_valid();
-    sfr::gps::utc_time->set_valid();
 }
 
 bool GPSMonitor::check_GPGGA()
@@ -75,7 +70,7 @@ bool GPSMonitor::encode(char c)
                 char temp_buf[11];
                 strncpy(temp_buf, term_buffer, 10);
                 temp_buf[10] = '\0';
-                sfr::gps::utc_time->set_value(atof(temp_buf));
+                sfr::gps::utc_time = atof(temp_buf);
                 Serial.println(atof(temp_buf));
 
                 break;
@@ -86,7 +81,7 @@ bool GPSMonitor::encode(char c)
                 char temp_buf[11];
                 strncpy(temp_buf, term_buffer, 10);
                 temp_buf[10] = '\0';
-                sfr::gps::latitude->set_value(atof(temp_buf));
+                sfr::gps::latitude = atof(temp_buf);
                 Serial.println(atof(temp_buf));
 
                 break;
@@ -94,9 +89,7 @@ bool GPSMonitor::encode(char c)
             case 3: // Latitude hemisphere
             {
                 if (term_buffer[0] == 'S') {
-                    float latitude;
-                    sfr::gps::latitude->get_value(&latitude);
-                    sfr::gps::latitude->set_value(-latitude);
+                    sfr::gps::latitude = -sfr::gps::latitude;
                     // Serial.println(latitude);
                 }
                 break;
@@ -108,7 +101,7 @@ bool GPSMonitor::encode(char c)
                 char temp_buf[12];
                 strncpy(temp_buf, term_buffer, 11);
                 temp_buf[11] = '\0';
-                sfr::gps::longitude->set_value(atof(temp_buf));
+                sfr::gps::longitude = atof(temp_buf);
                 Serial.println(atof(temp_buf));
 
                 break;
@@ -116,9 +109,7 @@ bool GPSMonitor::encode(char c)
             case 5: // Longitude hemisphere
             {
                 if (term_buffer[0] == 'W') {
-                    float longitude;
-                    sfr::gps::longitude->get_value(&longitude);
-                    sfr::gps::longitude->set_value(-longitude);
+                    sfr::gps::longitude = -sfr::gps::longitude;
                     // Serial.println(longitude);
                 }
                 break;
@@ -130,7 +121,7 @@ bool GPSMonitor::encode(char c)
                 char temp_buf[char_count];
                 strncpy(temp_buf, term_buffer, char_count - 1);
                 temp_buf[char_count - 1] = '\0';
-                sfr::gps::altitude->set_value(atof(temp_buf));
+                sfr::gps::altitude = atof(temp_buf);
                 Serial.println(atof(temp_buf));
 
                 break;

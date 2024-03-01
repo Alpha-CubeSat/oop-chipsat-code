@@ -19,8 +19,6 @@ private:
     bool receive();
     bool executeDownlink();
     void processUplink();
-    uint8_t serialize(SensorReading *valueObj);
-    uint16_t serialize_uint16(SensorReading *valueObj);
     uint8_t *received;
 };
 
