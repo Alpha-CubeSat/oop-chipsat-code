@@ -110,7 +110,11 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
+    long start = millis();
     code = radio.transmit(packet, size);
+    long time = millis() - start;
+    Serial.print(F("Time to transmit (ms): "));
+    Serial.println(time);
 
     if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
@@ -259,9 +263,9 @@ void RadioControlTask::execute()
 
 bool RadioControlTask::executeDownlink()
 {
-    uint16_t lat = map(sfr::gps::latitude, constants::gps::lat_min, constants::gps::lat_max, 0, 65536);
-    uint16_t lon = map(sfr::gps::longitude, constants::gps::lon_min, constants::gps::lon_max, 0, 65536);
-    uint16_t alt = map(sfr::gps::altitude / 10, constants::gps::alt_min, constants::gps::alt_max, 0, 65536);
+    uint16_t lat = map_range_16(sfr::gps::latitude, constants::gps::lat_min, constants::gps::lat_max);
+    uint16_t lon = map_range_16(sfr::gps::longitude, constants::gps::lon_min, constants::gps::lon_max);
+    uint16_t alt = map_range_16(sfr::gps::altitude / 10, constants::gps::alt_min, constants::gps::alt_max);
 
     uint8_t flags = ((sfr::radio::mode == radio_mode_type::listen) ? 0xF0 : 0x00) | (sfr::gps::valid_msg ? 0x0F : 0x00);
 
@@ -288,15 +292,21 @@ bool RadioControlTask::executeDownlink()
     return transmit(dlink, sizeof(dlink));
 }
 
-uint8_t RadioControlTask::map_range(float value, int min, int max) {
-    long raw = map(value, min, max, 0, 255);
-    if (raw > 255) {
-        raw = 255;
-    }
-    if (raw < 0) {
-        raw = 0;
-    }
+uint8_t RadioControlTask::map_range(float value, int min_val, int max_val)
+{
+    long raw = map(value, min_val, max_val, 0, 255);
+    raw = min(raw, 255);
+    raw = max(raw, 0);
     return (uint8_t)raw;
+}
+
+uint16_t RadioControlTask::map_range_16(float value, int min_val, int max_val)
+{
+    long raw = map(value, min_val, max_val, 0, 65536);
+    Serial.println(raw);
+    raw = min(raw, 65536);
+    raw = max(raw, 0);
+    return (uint16_t)raw;
 }
 
 void RadioControlTask::processUplink()
