@@ -259,9 +259,9 @@ void RadioControlTask::execute()
 
 bool RadioControlTask::executeDownlink()
 {
-    uint16_t lat = round(map(sfr::gps::latitude, constants::gps::lat_min, constants::gps::lat_max, 0, 65536));
-    uint16_t lon = round(map(sfr::gps::longitude, constants::gps::lon_min, constants::gps::lon_max, 0, 65536));
-    uint16_t alt = round(map(sfr::gps::altitude / 10, constants::gps::alt_min, constants::gps::alt_max, 0, 65536));
+    uint16_t lat = map(sfr::gps::latitude, constants::gps::lat_min, constants::gps::lat_max, 0, 65536);
+    uint16_t lon = map(sfr::gps::longitude, constants::gps::lon_min, constants::gps::lon_max, 0, 65536);
+    uint16_t alt = map(sfr::gps::altitude / 10, constants::gps::alt_min, constants::gps::alt_max, 0, 65536);
 
     uint8_t flags = ((sfr::radio::mode == radio_mode_type::listen) ? 0xF0 : 0x00) | (sfr::gps::valid_msg ? 0x0F : 0x00);
 
@@ -269,13 +269,13 @@ bool RadioControlTask::executeDownlink()
         (uint8_t)(lat >> 8), (uint8_t)lat,
         (uint8_t)(lon >> 8), (uint8_t)lon,
         (uint8_t)(alt >> 8), (uint8_t)alt,
-        (uint8_t)round(map(sfr::imu::gyro_x, constants::imu::gyro_min, constants::imu::gyro_max, 0, 255)),
-        (uint8_t)round(map(sfr::imu::gyro_y, constants::imu::gyro_min, constants::imu::gyro_max, 0, 255)),
-        (uint8_t)round(map(sfr::imu::gyro_z, constants::imu::gyro_min, constants::imu::gyro_max, 0, 255)),
-        (uint8_t)round(map(sfr::imu::acc_x, constants::imu::acc_min, constants::imu::acc_max, 0, 255)),
-        (uint8_t)round(map(sfr::imu::acc_y, constants::imu::acc_min, constants::imu::acc_max, 0, 255)),
-        (uint8_t)round(map(sfr::imu::acc_z, constants::imu::acc_min, constants::imu::acc_max, 0, 255)),
-        (uint8_t)round(map(sfr::temperature::temp_c, constants::temperature::min, constants::temperature::max, 0, 255)),
+        map_range(sfr::imu::gyro_x, constants::imu::gyro_min, constants::imu::gyro_max),
+        map_range(sfr::imu::gyro_y, constants::imu::gyro_min, constants::imu::gyro_max),
+        map_range(sfr::imu::gyro_z, constants::imu::gyro_min, constants::imu::gyro_max),
+        map_range(sfr::imu::acc_x, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::imu::acc_y, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::imu::acc_z, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::temperature::temp_c, constants::temperature::min, constants::temperature::max),
         flags};
 
 #ifdef VERBOSE
@@ -286,6 +286,17 @@ bool RadioControlTask::executeDownlink()
 #endif
 
     return transmit(dlink, sizeof(dlink));
+}
+
+uint8_t RadioControlTask::map_range(float value, int min, int max) {
+    long raw = map(value, min, max, 0, 255);
+    if (raw > 255) {
+        raw = 255;
+    }
+    if (raw < 0) {
+        raw = 0;
+    }
+    return (uint8_t)raw;
 }
 
 void RadioControlTask::processUplink()

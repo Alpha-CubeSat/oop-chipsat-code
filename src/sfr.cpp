@@ -4,9 +4,13 @@ namespace sfr {
 
     namespace imu {
 
-        float gyro_x, gyro_y, gyro_z;
+        float gyro_x = -250;
+        float gyro_y = 250;
+        float gyro_z = 500;
 
-        float acc_x, acc_y, acc_z;
+        float acc_x = 30;
+        float acc_y = -30;
+        float acc_z = -50;
 
         bool initialized = false;
         uint16_t failed_times = 0;

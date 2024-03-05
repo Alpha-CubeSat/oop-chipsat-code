@@ -18,6 +18,7 @@ private:
     bool transmit(uint8_t *packet, uint8_t size);
     bool receive();
     bool executeDownlink();
+    uint8_t map_range(float value, int min, int max);
     void processUplink();
     uint8_t *received;
 };
