@@ -9,13 +9,6 @@ MainControlLoop::MainControlLoop()
 {
 }
 
-int freeRam()
-{
-    extern int __heap_start, *__brkval;
-    int v;
-    return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
-}
-
 void MainControlLoop::execute()
 {
 
@@ -56,9 +49,6 @@ void MainControlLoop::execute()
     Serial.print("UTC Time: ");
     Serial.println(sfr::gps::utc_time);
 
-    Serial.print("Free RAM: ");
-    Serial.println(freeRam());
-
 #endif
 
     temp_monitor.execute();
@@ -67,9 +57,6 @@ void MainControlLoop::execute()
     radio_control_task.execute();
 
     wdt_reset();
-
-    // delay(5000);
-    // Serial.println("you should not be seeing this");
 
 #ifdef VERBOSE
     Serial.println(F("-------------------- END LOOP --------------------"));

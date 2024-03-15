@@ -263,8 +263,8 @@ void RadioControlTask::execute()
 
 bool RadioControlTask::executeDownlink()
 {
-    uint16_t lat = map_range_16(sfr::gps::latitude, constants::gps::lat_min, constants::gps::lat_max);
-    uint16_t lon = map_range_16(sfr::gps::longitude, constants::gps::lon_min, constants::gps::lon_max);
+    uint16_t lat = map_range_16(sfr::gps::latitude * 10, constants::gps::lat_min, constants::gps::lat_max);
+    uint16_t lon = map_range_16(sfr::gps::longitude * 10, constants::gps::lon_min, constants::gps::lon_max);
     uint16_t alt = map_range_16(sfr::gps::altitude / 10, constants::gps::alt_min, constants::gps::alt_max);
 
     uint8_t flags = ((sfr::radio::mode == radio_mode_type::listen) ? 0xF0 : 0x00) | (sfr::gps::valid_msg ? 0x0F : 0x00);
@@ -302,9 +302,9 @@ uint8_t RadioControlTask::map_range(float value, int min_val, int max_val)
 
 uint16_t RadioControlTask::map_range_16(float value, int min_val, int max_val)
 {
-    long raw = map(value, min_val, max_val, 0, 65536);
+    long raw = map(value, min_val, max_val, 0, 65535);
     Serial.println(raw);
-    raw = min(raw, 65536);
+    raw = min(raw, 65535);
     raw = max(raw, 0);
     return (uint16_t)raw;
 }

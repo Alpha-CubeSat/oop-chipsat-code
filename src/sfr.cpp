@@ -4,14 +4,8 @@ namespace sfr {
 
     namespace imu {
 
-        // TEMP Values
-        float gyro_x = -250;
-        float gyro_y = 250;
-        float gyro_z = 500;
-
-        float acc_x = 30;
-        float acc_y = 0;
-        float acc_z = -50;
+        float gyro_x, gyro_y, gyro_z;
+        float acc_x, acc_y, acc_z;
 
         bool initialized = false;
         uint16_t failed_times = 0;
@@ -25,13 +19,7 @@ namespace sfr {
         float temp_c;
     } // namespace temperature
     namespace gps {
-        float utc_time;
-
-        // TEMP values
-        float latitude = 9000;
-        float longitude = 18000;
-        float altitude = 500000;
-
+        float utc_time, latitude, longitude, altitude;
         bool valid_msg = false;
 
     } // namespace gps

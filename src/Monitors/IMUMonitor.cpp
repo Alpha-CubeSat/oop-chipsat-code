@@ -53,19 +53,19 @@ void IMUMonitor::execute()
 void IMUMonitor::capture_imu_values()
 {
 
-    // if (IMU.gyroscopeAvailable()) { // check if the gyroscope has new data available
-    //     IMU.readGyroscope(
-    //         sfr::imu::gyro_x,
-    //         sfr::imu::gyro_y,
-    //         sfr::imu::gyro_z); // data is in degrees/s
-    // }
+    if (IMU.gyroscopeAvailable()) { // check if the gyroscope has new data available
+        IMU.readGyroscope(
+            sfr::imu::gyro_x,
+            sfr::imu::gyro_y,
+            sfr::imu::gyro_z); // data is in degrees/s
+    }
 
-    // if (IMU.accelerationAvailable()) { // check if accelerometer is available
-    //     IMU.readAcceleration(
-    //         sfr::imu::acc_x,
-    //         sfr::imu::acc_y,
-    //         sfr::imu::acc_z); // data is in m/s^2
-    // }
+    if (IMU.accelerationAvailable()) { // check if accelerometer is available
+        IMU.readAcceleration(
+            sfr::imu::acc_x,
+            sfr::imu::acc_y,
+            sfr::imu::acc_z); // data is in m/s^2
+    }
 }
 
 void IMUMonitor::transition_to_normal()

@@ -40,13 +40,13 @@ namespace constants {
         constexpr int tx_pin = 3;
         constexpr int buffer_size = 11;
 
-        constexpr int lat_min = -9000;
+        constexpr int lat_min = -9000; // In (10 * degrees)
         constexpr int lat_max = 9000;
-        constexpr int lon_min = -18000;
+        constexpr int lon_min = -18000; // In (10 * degrees)
         constexpr int lon_max = 18000;
         constexpr int alt_min = 0;
         constexpr int alt_max = 50000; // In 10's of meters
-    } // namespace gps
+    }                                  // namespace gps
     namespace opcodes {
         constexpr int no_op = 0x00;
         constexpr int change_downlink_period = 0x11;
