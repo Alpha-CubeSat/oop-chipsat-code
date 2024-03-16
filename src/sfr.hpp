@@ -38,6 +38,9 @@ namespace sfr {
         extern uint32_t listen_period_start;
         extern uint32_t command_wait_start;
 
+        extern uint8_t valid_uplinks;
+        extern uint8_t invalid_uplinks;
+
     } // namespace radio
     namespace gps {
         extern float utc_time;
@@ -47,6 +50,7 @@ namespace sfr {
         extern float altitude;
 
         extern bool valid_msg;
+        extern bool on;
     } // namespace gps
 
 }; // namespace sfr

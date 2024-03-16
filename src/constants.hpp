@@ -22,6 +22,8 @@ namespace constants {
         constexpr int pl = 8;
         constexpr int gn = 0;
 
+        constexpr int chipsat_id = 1;
+
     } // namespace radio
     namespace imu {
         constexpr int gyro_min = -245;
