@@ -51,6 +51,8 @@ namespace sfr {
 
         extern bool valid_msg;
         extern bool on;
+
+        extern uint32_t boot_time;
     } // namespace gps
 
 }; // namespace sfr

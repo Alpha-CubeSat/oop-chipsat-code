@@ -4,7 +4,7 @@ IMUMonitor::IMUMonitor()
 {
 }
 
-void IMUMonitor::IMU_init()
+void IMUMonitor::init()
 {
     if (sfr::imu::init_mode == sensor_init_mode_type::init) {
         if (!IMU.begin()) {
@@ -22,7 +22,7 @@ void IMUMonitor::execute()
         Serial.println(F("Turning on IMU"));
 #endif
 
-        IMUMonitor::IMU_init();
+        IMUMonitor::init();
         if (sfr::imu::init_mode == sensor_init_mode_type::complete) {
             transition_to_normal();
             sfr::imu::initialized = true;

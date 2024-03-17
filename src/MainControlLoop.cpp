@@ -37,6 +37,9 @@ void MainControlLoop::execute()
     Serial.print(sfr::temperature::temp_c);
     Serial.println(F(" C"));
 
+    Serial.print(F("GPS On: "));
+    Serial.println(sfr::gps::on);
+
     Serial.print(F("GPS Latitude: "));
     Serial.println(sfr::gps::latitude);
 

@@ -13,7 +13,7 @@ public:
     void execute();
 
 private:
-    void IMU_init();
+    void init();
     void transition_to_normal();
     void transition_to_abnormal_init();
     void capture_imu_values();

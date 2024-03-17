@@ -6,17 +6,18 @@
 
 GPSMonitor::GPSMonitor()
 {
+}
+
+void GPSMonitor::init() 
+{
+    digitalWrite(constants::gps::reset_pin, LOW);
+    sfr::gps::on = true;
+
     uint8_t SetNMEA[] = {
         0xA0, 0xA1, 0x00, 0x03, 0x09, 0x01, 0x01, 0x09, 0x0D, 0x0A};
 
     ss.begin(115200);
-    // delay(1000);
     ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
-    // delay(500);
-    // ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
-    // delay(500);
-    // ss.write((uint8_t *)&SetNMEA, sizeof(SetNMEA));
-    // delay(1000);
 }
 
 bool GPSMonitor::check_GPGGA()
@@ -153,6 +154,14 @@ bool GPSMonitor::encode(char c)
 
 void GPSMonitor::execute()
 {
+    if (!sfr::gps::on) {
+        if (millis() - sfr::gps::boot_time > constants::time::one_second * 30) {
+            init();
+        } else {
+            return;
+        } 
+    }
+
     // Check to see if anything is available in the serial receive buffer
     while (ss.available() > 0) {
         if (encode(ss.read())) {

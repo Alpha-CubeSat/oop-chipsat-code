@@ -40,6 +40,7 @@ namespace constants {
     namespace gps {
         constexpr int rx_pin = 4;
         constexpr int tx_pin = 3;
+        constexpr int reset_pin = 7;
         constexpr int buffer_size = 11;
 
         constexpr int lat_min = -9000; // In (10 * degrees)

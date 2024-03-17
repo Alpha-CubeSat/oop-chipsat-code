@@ -21,7 +21,9 @@ namespace sfr {
     namespace gps {
         float utc_time, latitude, longitude, altitude;
         bool valid_msg = false;
-        bool on = true;
+        bool on = false;
+
+        uint32_t boot_time = 0;
 
     } // namespace gps
     namespace radio {

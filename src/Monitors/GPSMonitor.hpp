@@ -9,6 +9,7 @@ class GPSMonitor
 {
 public:
     GPSMonitor();
+    void init();
     void execute();
     bool check_GPGGA();
 
