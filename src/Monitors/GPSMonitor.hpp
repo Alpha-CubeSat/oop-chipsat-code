@@ -1,7 +1,6 @@
 #ifndef GPS_MONITOR_HPP_
 #define GPS_MONITOR_HPP_
 
-#include "SensorReading.hpp"
 #include "sfr.hpp"
 #include <Arduino.h>
 #include <SoftwareSerial.h>
@@ -18,7 +17,6 @@ private:
     bool encode(char c);
 
     char term_buffer[constants::gps::buffer_size];
-    bool valid_msg = true;
     uint8_t char_count = 0;
     uint8_t term_count = 0;
 

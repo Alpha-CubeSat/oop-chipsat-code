@@ -5,18 +5,17 @@
 #include "Modes/radio_mode_type.enum"
 #include "Modes/sensor_init_mode_type.enum"
 #include "Modes/sensor_mode_type.enum"
-#include "SensorReading.hpp"
 #include "constants.hpp"
 
 namespace sfr {
     namespace imu {
-        extern SensorReading *gyro_x;
-        extern SensorReading *gyro_y;
-        extern SensorReading *gyro_z;
+        extern float gyro_x;
+        extern float gyro_y;
+        extern float gyro_z;
 
-        extern SensorReading *acc_x;
-        extern SensorReading *acc_y;
-        extern SensorReading *acc_z;
+        extern float acc_x;
+        extern float acc_y;
+        extern float acc_z;
 
         extern bool initialized;
         extern uint16_t failed_times;
@@ -25,7 +24,7 @@ namespace sfr {
         extern sensor_mode_type mode;
     } // namespace imu
     namespace temperature {
-        extern SensorReading *temp_c;
+        extern float temp_c;
     } // namespace temperature
     namespace radio {
         extern sensor_init_mode_type init_mode;
@@ -39,13 +38,19 @@ namespace sfr {
         extern uint32_t listen_period_start;
         extern uint32_t command_wait_start;
 
+        extern uint8_t valid_uplinks;
+        extern uint8_t invalid_uplinks;
+
     } // namespace radio
     namespace gps {
-        extern SensorReading *utc_time;
+        extern float utc_time;
 
-        extern SensorReading *latitude;
-        extern SensorReading *longitude;
-        extern SensorReading *altitude;
+        extern float latitude;
+        extern float longitude;
+        extern float altitude;
+
+        extern bool valid_msg;
+        extern bool on;
     } // namespace gps
 
 }; // namespace sfr

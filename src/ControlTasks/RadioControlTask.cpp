@@ -110,7 +110,11 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
+    long start = millis();
     code = radio.transmit(packet, size);
+    long time = millis() - start;
+    Serial.print(F("Time to transmit (ms): "));
+    Serial.println(time);
 
     if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
@@ -259,32 +263,57 @@ void RadioControlTask::execute()
 
 bool RadioControlTask::executeDownlink()
 {
+    uint16_t lat = sfr::gps::latitude * 10;
+    uint16_t lon = sfr::gps::longitude * 10;
+    uint16_t alt = sfr::gps::altitude / 10;
 
-    uint16_t lat = serialize_uint16(sfr::gps::latitude);
-    uint16_t lon = serialize_uint16(sfr::gps::longitude);
-    uint16_t alt = serialize_uint16(sfr::gps::altitude);
+    uint8_t flags = 0;
+    flags |= constants::radio::chipsat_id << 6;
+    flags |= sfr::gps::valid_msg << 5;                           // gps valid
+    flags |= sfr::imu::initialized << 4;                         // imu valid
+    flags |= sfr::gps::on << 3;                                  // boot mode flag
+    flags |= (sfr::radio::mode == radio_mode_type::listen) << 2; // listen flag
 
     uint8_t dlink[] = {
-        serialize(sfr::gps::utc_time),
         (uint8_t)(lat >> 8), (uint8_t)lat,
         (uint8_t)(lon >> 8), (uint8_t)lon,
         (uint8_t)(alt >> 8), (uint8_t)alt,
-        serialize(sfr::imu::gyro_x),
-        serialize(sfr::imu::gyro_y),
-        serialize(sfr::imu::gyro_z),
-        serialize(sfr::imu::acc_x),
-        serialize(sfr::imu::acc_y),
-        serialize(sfr::imu::acc_z),
-        serialize(sfr::temperature::temp_c),
-        sfr::radio::mode == radio_mode_type::listen};
+        map_range(sfr::imu::gyro_x, constants::imu::gyro_min, constants::imu::gyro_max),
+        map_range(sfr::imu::gyro_y, constants::imu::gyro_min, constants::imu::gyro_max),
+        map_range(sfr::imu::gyro_z, constants::imu::gyro_min, constants::imu::gyro_max),
+        map_range(sfr::imu::acc_x, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::imu::acc_y, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::imu::acc_z, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::temperature::temp_c, constants::temperature::min, constants::temperature::max),
+        (uint8_t)(sfr::radio::valid_uplinks << 4 | (sfr::radio::invalid_uplinks & 0x0F)),
+        flags};
 
+#ifdef VERBOSE
     Serial.println(F("Normal Report: "));
     for (size_t i = 0; i < sizeof(dlink); i++) {
         Serial.println(dlink[i]);
     }
+#endif
 
     return transmit(dlink, sizeof(dlink));
 }
+
+uint8_t RadioControlTask::map_range(float value, int min_val, int max_val)
+{
+    long raw = map(value, min_val, max_val, 0, 255);
+    raw = min(raw, 255);
+    raw = max(raw, 0);
+    return (uint8_t)raw;
+}
+
+// uint16_t RadioControlTask::map_range_16(float value, int min_val, int max_val)
+// {
+//     long raw = map(value, min_val, max_val, 0, 65535);
+//     Serial.println(raw);
+//     raw = min(raw, 65535);
+//     raw = max(raw, 0);
+//     return (uint16_t)raw;
+// }
 
 void RadioControlTask::processUplink()
 {
@@ -294,35 +323,23 @@ void RadioControlTask::processUplink()
 #ifdef VERBOSE
         Serial.println(F("No-Op Command"));
 #endif
+        sfr::radio::valid_uplinks++;
         break;
     case constants::opcodes::change_downlink_period: { // Change downlink period
         uint16_t combined = ((uint16_t)received[1] << 8) | received[2];
         sfr::radio::downlink_period = combined * constants::time::one_second;
+        sfr::radio::valid_uplinks++;
 #ifdef VERBOSE
         Serial.print(F("Change Downlink Command: "));
         Serial.println(combined);
 #endif
-
         break;
     }
     default:
 #ifdef VERBOSE
         Serial.println(F("Unknown Command"));
 #endif
+        sfr::radio::invalid_uplinks++;
         break;
     }
-}
-
-uint8_t RadioControlTask::serialize(SensorReading *valueObj)
-{
-    float value;
-    valueObj->get_value(&value);
-    return round(map(value, valueObj->get_min(), valueObj->get_max(), 0, 255));
-}
-
-uint16_t RadioControlTask::serialize_uint16(SensorReading *valueObj)
-{
-    float value;
-    valueObj->get_value(&value);
-    return round(map(value, valueObj->get_min(), valueObj->get_max(), 0, 65536));
 }

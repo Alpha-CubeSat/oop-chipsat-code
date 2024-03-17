@@ -3,8 +3,6 @@
 
 MainControlLoop mcl;
 
-#ifndef UNIT_TEST
-
 void setup()
 {
     wdt_disable();
@@ -17,4 +15,3 @@ void loop()
 {
     mcl.execute();
 }
-#endif

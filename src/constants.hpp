@@ -22,15 +22,33 @@ namespace constants {
         constexpr int pl = 8;
         constexpr int gn = 0;
 
+        constexpr int chipsat_id = 1;
+
     } // namespace radio
+    namespace imu {
+        constexpr int gyro_min = -245;
+        constexpr int gyro_max = 245;
+        constexpr int acc_min = -20;
+        constexpr int acc_max = 20;
+    } // namespace imu
     namespace temperature {
         constexpr int i2c_address = 74;
+
+        constexpr int min = -40;
+        constexpr int max = 125;
     } // namespace temperature
     namespace gps {
         constexpr int rx_pin = 4;
         constexpr int tx_pin = 3;
         constexpr int buffer_size = 11;
-    } // namespace gps
+
+        constexpr int lat_min = -9000; // In (10 * degrees)
+        constexpr int lat_max = 9000;
+        constexpr int lon_min = -18000; // In (10 * degrees)
+        constexpr int lon_max = 18000;
+        constexpr int alt_min = 0;
+        constexpr int alt_max = 50000; // In 10's of meters
+    }                                  // namespace gps
     namespace opcodes {
         constexpr int no_op = 0x00;
         constexpr int change_downlink_period = 0x11;

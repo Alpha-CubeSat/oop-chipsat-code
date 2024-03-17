@@ -9,7 +9,7 @@ TempMonitor::TempMonitor()
 void TempMonitor::execute()
 {
     if (!initialized) {
-        sfr::temperature::temp_c->set_valid();
+        // TODO: Change
         initialized = true;
     }
 
@@ -32,5 +32,5 @@ void TempMonitor::execute()
     uint32_t rawtemp = (data[0] * 256 + data[1]) & 0xFFFC;
     float temp_c = -46.85 + (175.72 * (rawtemp / 65536.0));
 
-    sfr::temperature::temp_c->set_value(temp_c);
+    sfr::temperature::temp_c = temp_c;
 }

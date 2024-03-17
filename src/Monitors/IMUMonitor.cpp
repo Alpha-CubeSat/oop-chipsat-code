@@ -53,42 +53,29 @@ void IMUMonitor::execute()
 void IMUMonitor::capture_imu_values()
 {
 
-    if (IMU.gyroscopeAvailable()) {             // check if the gyroscope has new data available
-        IMU.readGyroscope(gyroX, gyroY, gyroZ); // data is in degrees/s
-        sfr::imu::gyro_x->set_value(gyroX);
-        sfr::imu::gyro_y->set_value(gyroY);
-        sfr::imu::gyro_z->set_value(gyroZ);
+    if (IMU.gyroscopeAvailable()) { // check if the gyroscope has new data available
+        IMU.readGyroscope(
+            sfr::imu::gyro_x,
+            sfr::imu::gyro_y,
+            sfr::imu::gyro_z); // data is in degrees/s
     }
 
-    if (IMU.accelerationAvailable()) {          // check if accelerometer is available
-        IMU.readAcceleration(accX, accY, accZ); // data is in m/s^2
-
-        sfr::imu::acc_x->set_value(accX);
-        sfr::imu::acc_y->set_value(accY);
-        sfr::imu::acc_z->set_value(accZ);
+    if (IMU.accelerationAvailable()) { // check if accelerometer is available
+        IMU.readAcceleration(
+            sfr::imu::acc_x,
+            sfr::imu::acc_y,
+            sfr::imu::acc_z); // data is in m/s^2
     }
 }
 
 void IMUMonitor::transition_to_normal()
 {
     sfr::imu::mode = sensor_mode_type::normal;
-    sfr::imu::gyro_x->set_valid();
-    sfr::imu::gyro_y->set_valid();
-    sfr::imu::gyro_z->set_valid();
-    sfr::imu::acc_x->set_valid();
-    sfr::imu::acc_y->set_valid();
-    sfr::imu::acc_z->set_valid();
 }
 
 void IMUMonitor::transition_to_abnormal_init()
 {
     sfr::imu::mode = sensor_mode_type::abnormal_init;
-    sfr::imu::gyro_x->set_invalid();
-    sfr::imu::gyro_y->set_invalid();
-    sfr::imu::gyro_z->set_invalid();
-    sfr::imu::acc_x->set_invalid();
-    sfr::imu::acc_y->set_invalid();
-    sfr::imu::acc_y->set_invalid();
 
     sfr::imu::initialized = false;
     sfr::imu::init_mode = sensor_init_mode_type::init;
