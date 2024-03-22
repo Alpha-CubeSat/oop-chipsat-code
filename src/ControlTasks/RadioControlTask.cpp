@@ -268,7 +268,7 @@ bool RadioControlTask::executeDownlink()
     uint16_t alt = sfr::gps::altitude / 10;
 
     uint8_t flags = 0;
-    flags |= constants::radio::chipsat_id << 6;
+    flags |= constants::radio::id << 6;
     flags |= sfr::gps::valid_msg << 5;                           // gps valid
     flags |= sfr::imu::initialized << 4;                         // imu valid
     flags |= sfr::gps::on << 3;                                  // boot mode flag

@@ -22,7 +22,12 @@ namespace constants {
         constexpr int pl = 8;
         constexpr int gn = 0;
 
-        constexpr int chipsat_id = 1;
+#ifdef CHIPSAT_ID
+        constexpr int id = CHIPSAT_ID;
+#else
+        constexpr int id = 0;
+#endif
+
 
     } // namespace radio
     namespace imu {
