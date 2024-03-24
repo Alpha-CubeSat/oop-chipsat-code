@@ -37,6 +37,7 @@ namespace sfr {
         uint32_t downlink_period_start;
         uint32_t listen_period_start;
         uint32_t command_wait_start;
+        uint32_t last_callsign_time;
 
         uint8_t valid_uplinks = 0;
         uint8_t invalid_uplinks = 0;

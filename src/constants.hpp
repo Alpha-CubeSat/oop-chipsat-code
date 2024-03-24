@@ -3,9 +3,9 @@
 
 namespace constants {
     namespace time {
-        constexpr unsigned long one_second = 1000;
-        constexpr unsigned long one_minute = 60 * one_second;
-        constexpr unsigned long one_hour = 60 * one_minute;
+        constexpr uint32_t one_second = 1000;
+        constexpr uint32_t one_minute = 60 * one_second;
+        constexpr uint32_t one_hour = 60 * one_minute;
     } // namespace time
     namespace radio {
         constexpr int radio_cs_pin = 10;
@@ -23,11 +23,12 @@ namespace constants {
         constexpr int gn = 0;
 
 #ifdef CHIPSAT_ID
-        constexpr int id = CHIPSAT_ID;
+        constexpr uint8_t id = CHIPSAT_ID;
 #else
-        constexpr int id = 0;
+        constexpr uint8_t id = 0;
 #endif
 
+        constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
 
     } // namespace radio
     namespace imu {
@@ -56,8 +57,8 @@ namespace constants {
         constexpr int alt_max = 50000; // In 10's of meters
     }                                  // namespace gps
     namespace opcodes {
-        constexpr int no_op = 0x00;
-        constexpr int change_downlink_period = 0x11;
+        constexpr uint8_t no_op = 0x00;
+        constexpr uint8_t change_downlink_period = 0x11;
     } // namespace opcodes
 
 }; // namespace constants

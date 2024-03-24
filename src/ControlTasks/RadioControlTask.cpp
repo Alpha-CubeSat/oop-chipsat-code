@@ -217,6 +217,12 @@ void RadioControlTask::execute()
         if (millis() - sfr::radio::listen_period_start >= sfr::radio::listen_period) {
             sfr::radio::mode = radio_mode_type::listen;
             sfr::radio::command_wait_start = millis();
+
+#ifdef VERBOSE
+            Serial.println(F("Radio: Listen Flag Downlink"));
+#endif
+            // downlink with listen flag = true
+            normalReportDownlink();
         } else if (millis() - sfr::radio::downlink_period_start >= sfr::radio::downlink_period) {
             sfr::radio::mode = radio_mode_type::downlink;
         }
@@ -235,7 +241,6 @@ void RadioControlTask::execute()
         break;
     }
     case radio_mode_type::listen: {
-        // TODO: Downlink when listen starts
 #ifdef VERBOSE
         Serial.println(F("Radio: Listen State"));
 #endif
@@ -262,6 +267,21 @@ void RadioControlTask::execute()
 }
 
 bool RadioControlTask::executeDownlink()
+{
+    if (millis() - sfr::radio::last_callsign_time < constants::radio::callsign_interval) {
+        return normalReportDownlink();
+    } else {
+        uint8_t dlink[] = {'K', 'D', '2', 'W', 'T', 'Q'};
+        sfr::radio::last_callsign_time = millis();
+#ifdef VERBOSE
+        Serial.println(F("Callsign Report"));
+#endif
+
+        return transmit(dlink, sizeof(dlink));
+    }
+}
+
+bool RadioControlTask::normalReportDownlink()
 {
     uint16_t lat = sfr::gps::latitude * 10;
     uint16_t lon = sfr::gps::longitude * 10;
@@ -305,15 +325,6 @@ uint8_t RadioControlTask::map_range(float value, int min_val, int max_val)
     raw = max(raw, 0);
     return (uint8_t)raw;
 }
-
-// uint16_t RadioControlTask::map_range_16(float value, int min_val, int max_val)
-// {
-//     long raw = map(value, min_val, max_val, 0, 65535);
-//     Serial.println(raw);
-//     raw = min(raw, 65535);
-//     raw = max(raw, 0);
-//     return (uint16_t)raw;
-// }
 
 void RadioControlTask::processUplink()
 {
