@@ -18,9 +18,6 @@ protected:
 public:
     MainControlLoop();
     void execute();
-
-private:
-    float val;
 };
 
 #endif

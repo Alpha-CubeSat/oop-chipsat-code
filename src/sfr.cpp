@@ -31,13 +31,14 @@ namespace sfr {
         radio_mode_type mode = radio_mode_type::init;
         uint8_t start_progress = 0;
 
-        uint32_t downlink_period = 10 * constants::time::one_second;
-        uint32_t listen_period = 30 * constants::time::one_second;
-        uint32_t command_wait_period = 30 * constants::time::one_second;
-        uint32_t downlink_period_start;
+        uint32_t downlink_window_length = 10 * constants::time::one_second;
+        uint32_t downlink_window_start;
         uint32_t listen_period_start;
         uint32_t command_wait_start;
         uint32_t last_callsign_time;
+
+        uint8_t downlink_slot;
+        bool downlinked_in_slot = false;
 
         uint8_t valid_uplinks = 0;
         uint8_t invalid_uplinks = 0;

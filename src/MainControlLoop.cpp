@@ -52,6 +52,9 @@ void MainControlLoop::execute()
     Serial.print("UTC Time: ");
     Serial.println(sfr::gps::utc_time);
 
+    Serial.print("Downlink Slot: ");
+    Serial.println(sfr::radio::downlink_slot);
+
 #endif
 
     temp_monitor.execute();

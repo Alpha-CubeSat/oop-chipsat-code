@@ -8,7 +8,7 @@ GPSMonitor::GPSMonitor()
 {
 }
 
-void GPSMonitor::init() 
+void GPSMonitor::init()
 {
     digitalWrite(constants::gps::reset_pin, LOW);
     sfr::gps::on = true;
@@ -159,7 +159,7 @@ void GPSMonitor::execute()
             init();
         } else {
             return;
-        } 
+        }
     }
 
     // Check to see if anything is available in the serial receive buffer

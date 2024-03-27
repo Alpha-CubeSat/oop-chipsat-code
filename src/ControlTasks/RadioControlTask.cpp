@@ -204,17 +204,24 @@ void RadioControlTask::execute()
 #endif
         init();
         if (sfr::radio::init_mode == sensor_init_mode_type::complete) {
-            sfr::radio::mode = radio_mode_type::waiting;
+            sfr::radio::mode = radio_mode_type::downlink;
             sfr::radio::listen_period_start = millis();
-            sfr::radio::downlink_period_start = millis();
+            downlinkSettings();
         }
         break;
     }
-    case radio_mode_type::waiting: {
+    case radio_mode_type::downlink: {
 #ifdef VERBOSE
-        Serial.println(F("Radio: Waiting State"));
+        Serial.println(F("Radio: Downlink State"));
 #endif
-        if (millis() - sfr::radio::listen_period_start >= sfr::radio::listen_period) {
+        // downlink when slot reached
+        if (!sfr::radio::downlinked_in_slot && millis() - sfr::radio::downlink_window_start >= constants::radio::transmit_slot_length * sfr::radio::downlink_slot) {
+            executeDownlink();
+            sfr::radio::downlinked_in_slot = true;
+        }
+
+        // go into listen mode if listen period reached
+        if (millis() - sfr::radio::listen_period_start >= constants::radio::listen_period) {
             sfr::radio::mode = radio_mode_type::listen;
             sfr::radio::command_wait_start = millis();
 
@@ -223,20 +230,10 @@ void RadioControlTask::execute()
 #endif
             // downlink with listen flag = true
             normalReportDownlink();
-        } else if (millis() - sfr::radio::downlink_period_start >= sfr::radio::downlink_period) {
-            sfr::radio::mode = radio_mode_type::downlink;
         }
-        break;
-    }
-    case radio_mode_type::downlink: {
-#ifdef VERBOSE
-        Serial.println(F("Radio: Downlink State"));
-#endif
-        bool transmit_success = executeDownlink();
-        sfr::radio::mode = radio_mode_type::waiting;
-        // reset downlink period if downlink successful
-        if (transmit_success) {
-            sfr::radio::downlink_period_start = millis();
+        // reset window and choose slot for next downlink
+        else if (millis() - sfr::radio::downlink_window_start >= sfr::radio::downlink_window_length) {
+            downlinkSettings();
         }
         break;
     }
@@ -247,27 +244,34 @@ void RadioControlTask::execute()
         // built in timeout is 100 LoRa symbols
         bool receive_success = receive();
         if (receive_success) {
-#ifdef VERBOSE
-            Serial.println(F("Receive Success"));
-#endif
             processUplink();
-        } else {
-#ifdef VERBOSE
-            Serial.println(F("Receive Failed"));
-#endif
         }
 
-        if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
-            sfr::radio::mode = radio_mode_type::waiting;
+        if (receive_success || millis() - sfr::radio::command_wait_start >= constants::radio::command_wait_period) {
+            sfr::radio::mode = radio_mode_type::downlink;
             sfr::radio::listen_period_start = millis();
+            downlinkSettings();
         }
         break;
     }
     }
 }
 
+void RadioControlTask::downlinkSettings()
+{
+#ifdef VERBOSE
+    Serial.println(F("Downlink Window Start"));
+#endif
+    // Reset window start time and pick random slot
+    sfr::radio::downlink_window_start = millis();
+    int num_slots = (sfr::radio::downlink_window_length / constants::radio::transmit_slot_length) - 1;
+    sfr::radio::downlink_slot = random(0, num_slots + 1); // max is exclusive
+    sfr::radio::downlinked_in_slot = false;
+}
+
 bool RadioControlTask::executeDownlink()
 {
+    // Downlink callsign report once in a while
     if (millis() - sfr::radio::last_callsign_time < constants::radio::callsign_interval) {
         return normalReportDownlink();
     } else {
@@ -283,6 +287,7 @@ bool RadioControlTask::executeDownlink()
 
 bool RadioControlTask::normalReportDownlink()
 {
+    // see https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/2.-Telemetry for more info
     uint16_t lat = sfr::gps::latitude * 10;
     uint16_t lon = sfr::gps::longitude * 10;
     uint16_t alt = sfr::gps::altitude / 10;
@@ -328,7 +333,7 @@ uint8_t RadioControlTask::map_range(float value, int min_val, int max_val)
 
 void RadioControlTask::processUplink()
 {
-
+    // see https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/3.-Commands for more info
     switch (received[0]) {
     case constants::opcodes::no_op: // No-Op
 #ifdef VERBOSE
@@ -336,9 +341,9 @@ void RadioControlTask::processUplink()
 #endif
         sfr::radio::valid_uplinks++;
         break;
-    case constants::opcodes::change_downlink_period: { // Change downlink period
+    case constants::opcodes::change_downlink_window: { // Change downlink window length
         uint16_t combined = ((uint16_t)received[1] << 8) | received[2];
-        sfr::radio::downlink_period = combined * constants::time::one_second;
+        sfr::radio::downlink_window_length = combined * constants::time::one_second;
         sfr::radio::valid_uplinks++;
 #ifdef VERBOSE
         Serial.print(F("Change Downlink Command: "));

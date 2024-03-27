@@ -4,7 +4,6 @@
 enum class radio_mode_type : unsigned char
 {
     init = 0,
-    waiting,
     downlink,
     listen
 };

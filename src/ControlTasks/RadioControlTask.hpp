@@ -15,6 +15,7 @@ private:
                              constants::radio::radio_rst_pin, constants::radio::radio_busy_pin);
     int16_t code;
     void init();
+    void downlinkSettings();
     bool transmit(uint8_t *packet, uint8_t size);
     bool receive();
     bool executeDownlink();

@@ -28,7 +28,11 @@ namespace constants {
         constexpr uint8_t id = 0;
 #endif
 
+        constexpr uint32_t listen_period = 30 * constants::time::one_second;
+        constexpr uint32_t command_wait_period = 30 * constants::time::one_second;
         constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
+
+        constexpr uint32_t transmit_slot_length = 2 * constants::time::one_second;
 
     } // namespace radio
     namespace imu {
@@ -58,7 +62,7 @@ namespace constants {
     }                                  // namespace gps
     namespace opcodes {
         constexpr uint8_t no_op = 0x00;
-        constexpr uint8_t change_downlink_period = 0x11;
+        constexpr uint8_t change_downlink_window = 0x11;
     } // namespace opcodes
 
 }; // namespace constants

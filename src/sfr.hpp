@@ -31,13 +31,14 @@ namespace sfr {
         extern uint8_t start_progress;
         extern radio_mode_type mode;
 
-        extern uint32_t downlink_period;
-        extern uint32_t listen_period;
-        extern uint32_t command_wait_period;
-        extern uint32_t downlink_period_start;
+        extern uint32_t downlink_window_length;
+        extern uint32_t downlink_window_start;
         extern uint32_t listen_period_start;
         extern uint32_t command_wait_start;
         extern uint32_t last_callsign_time;
+
+        extern uint8_t downlink_slot;
+        extern bool downlinked_in_slot;
 
         extern uint8_t valid_uplinks;
         extern uint8_t invalid_uplinks;
