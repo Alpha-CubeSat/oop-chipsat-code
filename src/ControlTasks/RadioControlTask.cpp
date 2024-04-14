@@ -6,7 +6,7 @@ RadioControlTask::RadioControlTask()
 
 void RadioControlTask::init()
 {
-    if (sfr::radio::init_mode == sensor_init_mode_type::init) {
+    if (!sfr::radio::initialized) {
         switch (sfr::radio::start_progress) {
         case 0:
 #ifdef VERBOSE
@@ -26,53 +26,6 @@ void RadioControlTask::init()
             break;
         case 1:
 #ifdef VERBOSE
-            Serial.print(F("Radio: Setting frequency ... "));
-#endif
-            // check to make sure frequency is set correctly
-            code = radio.setFrequency(constants::radio::freq);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
-#ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
-#endif
-            }
-            break;
-        case 2:
-#ifdef VERBOSE
-            Serial.print(F("Radio: Setting Output Power parameter ... "));
-#endif
-            // adjust output power, avialable ranges: -3 to 15 dBm
-            // increasing power increases range of transmission
-            code = radio.setOutputPower(constants::radio::pwr);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
-#ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
-#endif
-            }
-            break;
-        case 3:
-#ifdef VERBOSE
-            Serial.print(F("Radio: Setting Spreading Factor parameter ... "));
-#endif
-            // adjust spreading factor, avialable ranges: SF7 to SF12 (7 to 12)
-            // increasing spreading factor increases range of transmission, but increases the time to transmit the message
-            code = radio.setSpreadingFactor(constants::radio::sf);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
-#ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
-#endif
-            }
-            break;
-        case 4:
-#ifdef VERBOSE
             Serial.print(F("Radio: Setting CRC parameter ... "));
 #endif
             // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
@@ -86,7 +39,7 @@ void RadioControlTask::init()
 #endif
             }
             break;
-        case 5:
+        case 2:
 #ifdef VERBOSE
             Serial.print(F("Radio: Setting forceLDRO parameter ... "));
 #endif
@@ -101,8 +54,8 @@ void RadioControlTask::init()
 #endif
             }
             break;
-        case 6: // completed initialization
-            sfr::radio::init_mode = sensor_init_mode_type::complete;
+        case 3: // completed initialization
+            sfr::radio::initialized = true;
             break;
         }
     }
@@ -110,9 +63,9 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
-    long start = millis();
+    uint32_t start = millis();
     code = radio.transmit(packet, size);
-    long time = millis() - start;
+    uint32_t time = millis() - start;
     Serial.print(F("Time to transmit (ms): "));
     Serial.println(time);
 
@@ -127,10 +80,7 @@ bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
         return true;
     } else {
 #ifdef VERBOSE
-        if (code == RADIOLIB_ERR_PACKET_TOO_LONG) {
-            // the supplied packet was longer than 256 bytes
-            Serial.println(F("too long!"));
-        } else if (code == RADIOLIB_ERR_TX_TIMEOUT) {
+        if (code == RADIOLIB_ERR_TX_TIMEOUT) {
             // timeout occurred while transmitting packet
             Serial.println(F("timeout!"));
         } else {
@@ -203,7 +153,7 @@ void RadioControlTask::execute()
         Serial.println(F("Radio: Init State"));
 #endif
         init();
-        if (sfr::radio::init_mode == sensor_init_mode_type::complete) {
+        if (sfr::radio::initialized) {
             sfr::radio::mode = radio_mode_type::downlink;
             sfr::radio::listen_period_start = millis();
             downlinkSettings();
@@ -223,13 +173,13 @@ void RadioControlTask::execute()
         // go into listen mode if listen period reached
         if (millis() - sfr::radio::listen_period_start >= constants::radio::listen_period) {
             sfr::radio::mode = radio_mode_type::listen;
-            sfr::radio::command_wait_start = millis();
 
 #ifdef VERBOSE
             Serial.println(F("Radio: Listen Flag Downlink"));
 #endif
             // downlink with listen flag = true
             normalReportDownlink();
+            sfr::radio::command_wait_start = millis();
         }
         // reset window and choose slot for next downlink
         else if (millis() - sfr::radio::downlink_window_start >= sfr::radio::downlink_window_length) {

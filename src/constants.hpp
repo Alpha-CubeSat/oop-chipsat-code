@@ -53,13 +53,8 @@ namespace constants {
         constexpr int reset_pin = 7;
         constexpr int buffer_size = 11;
 
-        constexpr int lat_min = -9000; // In (10 * degrees)
-        constexpr int lat_max = 9000;
-        constexpr int lon_min = -18000; // In (10 * degrees)
-        constexpr int lon_max = 18000;
-        constexpr int alt_min = 0;
-        constexpr int alt_max = 50000; // In 10's of meters
-    }                                  // namespace gps
+        constexpr uint32_t boot_time = constants::time::one_second * 30;
+    } // namespace gps
     namespace opcodes {
         constexpr uint8_t no_op = 0x00;
         constexpr uint8_t change_downlink_window = 0x11;

@@ -3,8 +3,6 @@
 
 #include "Arduino.h"
 #include "Modes/radio_mode_type.enum"
-#include "Modes/sensor_init_mode_type.enum"
-#include "Modes/sensor_mode_type.enum"
 #include "constants.hpp"
 
 namespace sfr {
@@ -18,16 +16,12 @@ namespace sfr {
         extern float acc_z;
 
         extern bool initialized;
-        extern uint16_t failed_times;
-        extern uint16_t failed_limit;
-        extern sensor_init_mode_type init_mode;
-        extern sensor_mode_type mode;
     } // namespace imu
     namespace temperature {
         extern float temp_c;
     } // namespace temperature
     namespace radio {
-        extern sensor_init_mode_type init_mode;
+        extern bool initialized;
         extern uint8_t start_progress;
         extern radio_mode_type mode;
 

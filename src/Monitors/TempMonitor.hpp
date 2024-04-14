@@ -16,14 +16,9 @@ public:
 
 private:
     /**
-     * @brief Whether or not the sensor has been initialized (TODO: Unnecessary)
-     */
-    bool initialized = false;
-
-    /**
      * @brief Buffer to store data read from the sensor
      */
-    unsigned int data[2];
+    unsigned int data[2]; // TODO: uint32_t?
 };
 
 #endif

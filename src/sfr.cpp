@@ -8,10 +8,6 @@ namespace sfr {
         float acc_x, acc_y, acc_z;
 
         bool initialized = false;
-        uint16_t failed_times = 0;
-        uint16_t failed_limit = 5;
-        sensor_init_mode_type init_mode = sensor_init_mode_type::init;
-        sensor_mode_type mode = sensor_mode_type::init;
 
     } // namespace imu
 
@@ -27,7 +23,7 @@ namespace sfr {
 
     } // namespace gps
     namespace radio {
-        sensor_init_mode_type init_mode = sensor_init_mode_type::init;
+        bool initialized = false;
         radio_mode_type mode = radio_mode_type::init;
         uint8_t start_progress = 0;
 

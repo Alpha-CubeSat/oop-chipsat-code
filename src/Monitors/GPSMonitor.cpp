@@ -13,6 +13,7 @@ void GPSMonitor::init()
     digitalWrite(constants::gps::reset_pin, LOW);
     sfr::gps::on = true;
 
+    // writes NMEA output message type to SRAM and Flash
     uint8_t SetNMEA[] = {
         0xA0, 0xA1, 0x00, 0x03, 0x09, 0x01, 0x01, 0x09, 0x0D, 0x0A};
 
@@ -29,7 +30,6 @@ bool GPSMonitor::check_GPGGA()
     }
 }
 
-// return true at end of term
 bool GPSMonitor::encode(char c)
 {
     if (c == '$') {
@@ -155,20 +155,24 @@ bool GPSMonitor::encode(char c)
 void GPSMonitor::execute()
 {
     if (!sfr::gps::on) {
-        if (millis() - sfr::gps::boot_time > constants::time::one_second * 30) {
+        if (millis() - sfr::gps::boot_time > constants::gps::boot_time) {
             init();
         } else {
             return;
         }
     }
 
+    // TODO: verify max buffer size and look into GPS parsing lib
+    int max_buffer_read = 0;
+
     // Check to see if anything is available in the serial receive buffer
-    while (ss.available() > 0) {
+    while (ss.available() > 0 && max_buffer_read < 64) {
         if (encode(ss.read())) {
 #ifdef VERBOSE
             Serial.println(F("NEW GPS MESSAGE"));
 #endif
         }
+        max_buffer_read++;
     }
 
     // for testing
