@@ -6,6 +6,7 @@ namespace sfr {
 
         float gyro_x, gyro_y, gyro_z;
         float acc_x, acc_y, acc_z;
+        float mag_x, mag_y, mag_z;
 
         bool initialized = false;
 

@@ -15,6 +15,10 @@ namespace sfr {
         extern float acc_y;
         extern float acc_z;
 
+        extern float mag_x;
+        extern float mag_y;
+        extern float mag_z;
+
         extern bool initialized;
     } // namespace imu
     namespace temperature {

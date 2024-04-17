@@ -259,6 +259,9 @@ bool RadioControlTask::normalReportDownlink()
         map_range(sfr::imu::acc_x, constants::imu::acc_min, constants::imu::acc_max),
         map_range(sfr::imu::acc_y, constants::imu::acc_min, constants::imu::acc_max),
         map_range(sfr::imu::acc_z, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::imu::mag_x, constants::imu::mag_min, constants::imu::mag_max),
+        map_range(sfr::imu::mag_y, constants::imu::mag_min, constants::imu::mag_max),
+        map_range(sfr::imu::mag_z, constants::imu::mag_min, constants::imu::mag_max),
         map_range(sfr::temperature::temp_c, constants::temperature::min, constants::temperature::max),
         (uint8_t)(sfr::radio::valid_uplinks << 4 | (sfr::radio::invalid_uplinks & 0x0F)),
         flags};

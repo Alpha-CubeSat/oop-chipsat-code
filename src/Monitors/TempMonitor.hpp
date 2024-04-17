@@ -18,7 +18,7 @@ private:
     /**
      * @brief Buffer to store data read from the sensor
      */
-    unsigned int data[2]; // TODO: uint32_t?
+    uint32_t data[2];
 };
 
 #endif

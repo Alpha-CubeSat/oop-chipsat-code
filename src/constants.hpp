@@ -36,10 +36,12 @@ namespace constants {
 
     } // namespace radio
     namespace imu {
-        constexpr int gyro_min = -245;
+        constexpr int gyro_min = -245; // default gyro range is +/- 245 dps
         constexpr int gyro_max = 245;
-        constexpr int acc_min = -20;
+        constexpr int acc_min = -20; // default accel range is +/- 2 G
         constexpr int acc_max = 20;
+        constexpr int mag_min = -100; // default mag range is +/- 4 guass -> 100 uT
+        constexpr int mag_max = 100;
     } // namespace imu
     namespace temperature {
         constexpr int i2c_address = 74;

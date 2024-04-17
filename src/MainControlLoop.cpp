@@ -33,12 +33,24 @@ void MainControlLoop::execute()
     Serial.print(F("Accel Z: "));
     Serial.println(sfr::imu::acc_z);
 
+    Serial.print(F("Mag X: "));
+    Serial.println(sfr::imu::mag_x);
+
+    Serial.print(F("Mag Y: "));
+    Serial.println(sfr::imu::mag_y);
+
+    Serial.print(F("Mag Z: "));
+    Serial.println(sfr::imu::mag_z);
+
     Serial.print(F("Temperature (C): "));
     Serial.print(sfr::temperature::temp_c);
     Serial.println(F(" C"));
 
     Serial.print(F("GPS On: "));
     Serial.println(sfr::gps::on);
+
+    Serial.print("UTC Time: ");
+    Serial.println(sfr::gps::utc_time);
 
     Serial.print(F("GPS Latitude: "));
     Serial.println(sfr::gps::latitude);
@@ -48,9 +60,6 @@ void MainControlLoop::execute()
 
     Serial.print(F("GPS Altitude (m): "));
     Serial.println(sfr::gps::altitude);
-
-    Serial.print("UTC Time: ");
-    Serial.println(sfr::gps::utc_time);
 
     Serial.print("Downlink Slot: ");
     Serial.println(sfr::radio::downlink_slot);

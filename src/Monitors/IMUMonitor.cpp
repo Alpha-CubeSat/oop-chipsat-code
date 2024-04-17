@@ -26,18 +26,25 @@ void IMUMonitor::execute()
 
 void IMUMonitor::capture_imu_values()
 {
-    // TODO: Add magnetometer readings
-    if (IMU.gyroscopeAvailable()) { // check if the gyroscope has new data available
+    // check if the gyroscope, accelerometer, or magnetometer has new data available
+    if (IMU.gyroscopeAvailable()) {
         IMU.readGyroscope(
             sfr::imu::gyro_x,
             sfr::imu::gyro_y,
             sfr::imu::gyro_z); // data is in degrees/s
     }
 
-    if (IMU.accelerationAvailable()) { // check if accelerometer is available
+    if (IMU.accelerationAvailable()) {
         IMU.readAcceleration(
             sfr::imu::acc_x,
             sfr::imu::acc_y,
             sfr::imu::acc_z); // data is in m/s^2
+    }
+
+    if (IMU.magneticFieldAvailable()) {
+        IMU.readMagneticField(
+            sfr::imu::mag_x,
+            sfr::imu::mag_y,
+            sfr::imu::mag_z); // data in uT
     }
 }
