@@ -238,8 +238,8 @@ bool RadioControlTask::executeDownlink()
 bool RadioControlTask::normalReportDownlink()
 {
     // see https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/2.-Telemetry for more info
-    uint16_t lat = sfr::gps::latitude * 10;
-    uint16_t lon = sfr::gps::longitude * 10;
+    uint16_t lat = sfr::gps::latitude * 100;
+    uint16_t lon = sfr::gps::longitude * 100;
     uint16_t alt = sfr::gps::altitude / 10;
 
     uint8_t flags = 0;
