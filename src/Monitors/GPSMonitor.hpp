@@ -4,6 +4,9 @@
 #include "sfr.hpp"
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <string.h>
+
+#include "TinyGPS++.h"
 
 class GPSMonitor
 {
@@ -16,6 +19,8 @@ public:
     void execute();
 
 private:
+    TinyGPSPlus gps;
+
     /**
      * @brief Software serial instance to communicate with the GPS receiver
      */
@@ -31,28 +36,28 @@ private:
      *
      * @param c The character to add
      */
-    bool encode(char c);
+    // bool encode(char c);
 
     /**
      * @brief Checks to see if the first 5 characters match those of the expected
      * full GPS message
      */
-    bool check_GPGGA();
+    // bool check_GPGGA();
 
     /**
      * @brief Buffer that holds the current constructed GPS message
      */
-    char term_buffer[constants::gps::buffer_size];
+    // char term_buffer[constants::gps::buffer_size];
 
     /**
      * @brief The number of characters in the current term
      */
-    uint8_t char_count = 0;
+    // uint8_t char_count = 0;
 
     /**
      * @brief The number of terms in the GPS message
      */
-    uint8_t term_count = 0;
+    // uint8_t term_count = 0;
 
     // TODO: Test edge cases for lat, lon, alt
     //     const char *gpsStream =
