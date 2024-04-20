@@ -250,9 +250,9 @@ bool RadioControlTask::normalReportDownlink()
     flags |= (sfr::radio::mode == radio_mode_type::listen) << 2; // listen flag
 
     uint8_t dlink[] = {
-        (uint8_t)(lat >> 8), (uint8_t)lat,
-        (uint8_t)(lon >> 8), (uint8_t)lon,
-        (uint8_t)(alt >> 8), (uint8_t)alt,
+        (uint8_t)lat, (uint8_t)(lat >> 8),
+        (uint8_t)lon, (uint8_t)(lon >> 8),
+        (uint8_t)alt, (uint8_t)(alt >> 8),
         map_range(sfr::imu::gyro_x, constants::imu::gyro_min, constants::imu::gyro_max),
         map_range(sfr::imu::gyro_y, constants::imu::gyro_min, constants::imu::gyro_max),
         map_range(sfr::imu::gyro_z, constants::imu::gyro_min, constants::imu::gyro_max),
