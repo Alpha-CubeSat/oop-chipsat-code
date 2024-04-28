@@ -3,7 +3,7 @@
 
 #include "sfr.hpp"
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+#include "SoftwareSerial.h"
 #include <string.h>
 
 #include "TinyGPS++.h"
@@ -60,10 +60,9 @@ private:
     // uint8_t term_count = 0;
 
     // TODO: Test edge cases for lat, lon, alt
-    //     const char *gpsStream =
-    //   "$GPGGA,045104.000,3014.1985,N,09749.2873,W,1,09,1.2,211.6,M,-22.5,M,,0000*62\r\n"
-    //   "$GPGGA,045201.000,3014.3864,N,09748.9411,W,1,10,1.2,200.8,M,-22.5,M,,0000*6C\r\n"
-    //   "$GPGG@,045252.000,3014.4273,S,09749.0628,W,1,09,1.3,206.9,M,-22.5,M,,0000*6F\r\n";
+    const char *gpsStream = "$GPGGA,045104.000,3014.1985,N,09749.2873,W,1,09,1.2,211.6,M,-22.5,M,,0000*62\r\n"
+                            "$GPGGA,045201.000,3014.3864,N,09748.9411,W,1,10,1.2,200.8,M,-22.5,M,,0000*6C\r\n"
+    "$GPGG@,045252.000,3014.4273,S,09749.0628,W,1,09,1.3,206.9,M,-22.5,M,,0000*6F\r\n";
 };
 
 #endif
