@@ -2,23 +2,23 @@
 #define IMU_MONITOR_HPP_
 
 #include "Arduino_LSM9DS1.h"
-#include "Modes/sensor_init_mode_type.enum"
-#include "Modes/sensor_mode_type.enum"
 #include "sfr.hpp"
 
 class IMUMonitor
 {
 public:
     IMUMonitor();
+
+    /**
+     * @brief Initializes the IMU once and reads IMU data every time after
+     */
     void execute();
 
 private:
-    void IMU_init();
-    void transition_to_normal();
-    void transition_to_abnormal_init();
+    /**
+     * @brief Reads IMU data
+     */
     void capture_imu_values();
-
-    sensor_mode_type mode;
 };
 
 #endif

@@ -6,7 +6,7 @@ RadioControlTask::RadioControlTask()
 
 void RadioControlTask::init()
 {
-    if (sfr::radio::init_mode == sensor_init_mode_type::init) {
+    if (!sfr::radio::initialized) {
         switch (sfr::radio::start_progress) {
         case 0:
 #ifdef VERBOSE
@@ -26,53 +26,6 @@ void RadioControlTask::init()
             break;
         case 1:
 #ifdef VERBOSE
-            Serial.print(F("Radio: Setting frequency ... "));
-#endif
-            // check to make sure frequency is set correctly
-            code = radio.setFrequency(constants::radio::freq);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
-#ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
-#endif
-            }
-            break;
-        case 2:
-#ifdef VERBOSE
-            Serial.print(F("Radio: Setting Output Power parameter ... "));
-#endif
-            // adjust output power, avialable ranges: -3 to 15 dBm
-            // increasing power increases range of transmission
-            code = radio.setOutputPower(constants::radio::pwr);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
-#ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
-#endif
-            }
-            break;
-        case 3:
-#ifdef VERBOSE
-            Serial.print(F("Radio: Setting Spreading Factor parameter ... "));
-#endif
-            // adjust spreading factor, avialable ranges: SF7 to SF12 (7 to 12)
-            // increasing spreading factor increases range of transmission, but increases the time to transmit the message
-            code = radio.setSpreadingFactor(constants::radio::sf);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
-#ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
-#endif
-            }
-            break;
-        case 4:
-#ifdef VERBOSE
             Serial.print(F("Radio: Setting CRC parameter ... "));
 #endif
             // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
@@ -86,7 +39,7 @@ void RadioControlTask::init()
 #endif
             }
             break;
-        case 5:
+        case 2:
 #ifdef VERBOSE
             Serial.print(F("Radio: Setting forceLDRO parameter ... "));
 #endif
@@ -101,8 +54,8 @@ void RadioControlTask::init()
 #endif
             }
             break;
-        case 6: // completed initialization
-            sfr::radio::init_mode = sensor_init_mode_type::complete;
+        case 3: // completed initialization
+            sfr::radio::initialized = true;
             break;
         }
     }
@@ -110,9 +63,9 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
-    long start = millis();
+    uint32_t start = millis();
     code = radio.transmit(packet, size);
-    long time = millis() - start;
+    uint32_t time = millis() - start;
     Serial.print(F("Time to transmit (ms): "));
     Serial.println(time);
 
@@ -127,10 +80,7 @@ bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
         return true;
     } else {
 #ifdef VERBOSE
-        if (code == RADIOLIB_ERR_PACKET_TOO_LONG) {
-            // the supplied packet was longer than 256 bytes
-            Serial.println(F("too long!"));
-        } else if (code == RADIOLIB_ERR_TX_TIMEOUT) {
+        if (code == RADIOLIB_ERR_TX_TIMEOUT) {
             // timeout occurred while transmitting packet
             Serial.println(F("timeout!"));
         } else {
@@ -203,22 +153,10 @@ void RadioControlTask::execute()
         Serial.println(F("Radio: Init State"));
 #endif
         init();
-        if (sfr::radio::init_mode == sensor_init_mode_type::complete) {
-            sfr::radio::mode = radio_mode_type::waiting;
-            sfr::radio::listen_period_start = millis();
-            sfr::radio::downlink_period_start = millis();
-        }
-        break;
-    }
-    case radio_mode_type::waiting: {
-#ifdef VERBOSE
-        Serial.println(F("Radio: Waiting State"));
-#endif
-        if (millis() - sfr::radio::listen_period_start >= sfr::radio::listen_period) {
-            sfr::radio::mode = radio_mode_type::listen;
-            sfr::radio::command_wait_start = millis();
-        } else if (millis() - sfr::radio::downlink_period_start >= sfr::radio::downlink_period) {
+        if (sfr::radio::initialized) {
             sfr::radio::mode = radio_mode_type::downlink;
+            sfr::radio::listen_period_start = millis();
+            downlinkSettings();
         }
         break;
     }
@@ -226,64 +164,104 @@ void RadioControlTask::execute()
 #ifdef VERBOSE
         Serial.println(F("Radio: Downlink State"));
 #endif
-        bool transmit_success = executeDownlink();
-        sfr::radio::mode = radio_mode_type::waiting;
-        // reset downlink period if downlink successful
-        if (transmit_success) {
-            sfr::radio::downlink_period_start = millis();
+        // downlink when slot reached
+        if (!sfr::radio::downlinked_in_slot && millis() - sfr::radio::downlink_window_start >= constants::radio::transmit_slot_length * sfr::radio::downlink_slot) {
+            executeDownlink();
+            sfr::radio::downlinked_in_slot = true;
+        }
+
+        // go into listen mode if listen period reached
+        if (millis() - sfr::radio::listen_period_start >= constants::radio::listen_period) {
+            sfr::radio::mode = radio_mode_type::listen;
+
+#ifdef VERBOSE
+            Serial.println(F("Radio: Listen Flag Downlink"));
+#endif
+            // downlink with listen flag = true
+            normalReportDownlink();
+            sfr::radio::command_wait_start = millis();
+        }
+        // reset window and choose slot for next downlink
+        else if (millis() - sfr::radio::downlink_window_start >= sfr::radio::downlink_window_length) {
+            downlinkSettings();
         }
         break;
     }
     case radio_mode_type::listen: {
-        // TODO: Downlink when listen starts
 #ifdef VERBOSE
         Serial.println(F("Radio: Listen State"));
 #endif
         // built in timeout is 100 LoRa symbols
         bool receive_success = receive();
         if (receive_success) {
-#ifdef VERBOSE
-            Serial.println(F("Receive Success"));
-#endif
             processUplink();
-        } else {
-#ifdef VERBOSE
-            Serial.println(F("Receive Failed"));
-#endif
         }
 
-        if (receive_success || millis() - sfr::radio::command_wait_start >= sfr::radio::command_wait_period) {
-            sfr::radio::mode = radio_mode_type::waiting;
+        if (receive_success || millis() - sfr::radio::command_wait_start >= constants::radio::command_wait_period) {
+            sfr::radio::mode = radio_mode_type::downlink;
             sfr::radio::listen_period_start = millis();
+            downlinkSettings();
         }
         break;
     }
     }
 }
 
+void RadioControlTask::downlinkSettings()
+{
+#ifdef VERBOSE
+    Serial.println(F("Downlink Window Start"));
+#endif
+    // Reset window start time and pick random slot
+    sfr::radio::downlink_window_start = millis();
+    int num_slots = (sfr::radio::downlink_window_length / constants::radio::transmit_slot_length) - 1;
+    sfr::radio::downlink_slot = random(0, num_slots + 1); // max is exclusive
+    sfr::radio::downlinked_in_slot = false;
+}
+
 bool RadioControlTask::executeDownlink()
 {
-    uint16_t lat = sfr::gps::latitude * 10;
-    uint16_t lon = sfr::gps::longitude * 10;
+    // Downlink callsign report once in a while
+    if (millis() - sfr::radio::last_callsign_time < constants::radio::callsign_interval) {
+        return normalReportDownlink();
+    } else {
+        uint8_t dlink[] = {'K', 'D', '2', 'W', 'T', 'Q'};
+        sfr::radio::last_callsign_time = millis();
+#ifdef VERBOSE
+        Serial.println(F("Callsign Report"));
+#endif
+
+        return transmit(dlink, sizeof(dlink));
+    }
+}
+
+bool RadioControlTask::normalReportDownlink()
+{
+    // see https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/2.-Telemetry for more info
+    uint16_t lat = sfr::gps::latitude * 100;
+    uint16_t lon = sfr::gps::longitude * 100;
     uint16_t alt = sfr::gps::altitude / 10;
 
     uint8_t flags = 0;
-    flags |= constants::radio::chipsat_id << 6;
+    flags |= constants::radio::id << 6;
     flags |= sfr::gps::valid_msg << 5;                           // gps valid
     flags |= sfr::imu::initialized << 4;                         // imu valid
     flags |= sfr::gps::on << 3;                                  // boot mode flag
     flags |= (sfr::radio::mode == radio_mode_type::listen) << 2; // listen flag
 
     uint8_t dlink[] = {
-        (uint8_t)(lat >> 8), (uint8_t)lat,
-        (uint8_t)(lon >> 8), (uint8_t)lon,
-        (uint8_t)(alt >> 8), (uint8_t)alt,
+        (uint8_t)lat, (uint8_t)(lat >> 8),
+        (uint8_t)lon, (uint8_t)(lon >> 8),
+        (uint8_t)alt, (uint8_t)(alt >> 8),
         map_range(sfr::imu::gyro_x, constants::imu::gyro_min, constants::imu::gyro_max),
         map_range(sfr::imu::gyro_y, constants::imu::gyro_min, constants::imu::gyro_max),
         map_range(sfr::imu::gyro_z, constants::imu::gyro_min, constants::imu::gyro_max),
         map_range(sfr::imu::acc_x, constants::imu::acc_min, constants::imu::acc_max),
         map_range(sfr::imu::acc_y, constants::imu::acc_min, constants::imu::acc_max),
         map_range(sfr::imu::acc_z, constants::imu::acc_min, constants::imu::acc_max),
+        map_range(sfr::imu::mag_x, constants::imu::mag_min, constants::imu::mag_max),
+        map_range(sfr::imu::mag_y, constants::imu::mag_min, constants::imu::mag_max),
+        map_range(sfr::imu::mag_z, constants::imu::mag_min, constants::imu::mag_max),
         map_range(sfr::temperature::temp_c, constants::temperature::min, constants::temperature::max),
         (uint8_t)(sfr::radio::valid_uplinks << 4 | (sfr::radio::invalid_uplinks & 0x0F)),
         flags};
@@ -306,18 +284,9 @@ uint8_t RadioControlTask::map_range(float value, int min_val, int max_val)
     return (uint8_t)raw;
 }
 
-// uint16_t RadioControlTask::map_range_16(float value, int min_val, int max_val)
-// {
-//     long raw = map(value, min_val, max_val, 0, 65535);
-//     Serial.println(raw);
-//     raw = min(raw, 65535);
-//     raw = max(raw, 0);
-//     return (uint16_t)raw;
-// }
-
 void RadioControlTask::processUplink()
 {
-
+    // see https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/3.-Commands for more info
     switch (received[0]) {
     case constants::opcodes::no_op: // No-Op
 #ifdef VERBOSE
@@ -325,9 +294,9 @@ void RadioControlTask::processUplink()
 #endif
         sfr::radio::valid_uplinks++;
         break;
-    case constants::opcodes::change_downlink_period: { // Change downlink period
+    case constants::opcodes::change_downlink_window: { // Change downlink window length
         uint16_t combined = ((uint16_t)received[1] << 8) | received[2];
-        sfr::radio::downlink_period = combined * constants::time::one_second;
+        sfr::radio::downlink_window_length = combined * constants::time::one_second;
         sfr::radio::valid_uplinks++;
 #ifdef VERBOSE
         Serial.print(F("Change Downlink Command: "));

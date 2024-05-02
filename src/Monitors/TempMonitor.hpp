@@ -8,11 +8,17 @@ class TempMonitor
 {
 public:
     TempMonitor();
+
+    /**
+     * @brief Reads data from the temperature sensor
+     */
     void execute();
 
 private:
-    bool initialized = false;
-    unsigned int data[2];
+    /**
+     * @brief Buffer to store data read from the sensor
+     */
+    uint32_t data[2];
 };
 
 #endif
