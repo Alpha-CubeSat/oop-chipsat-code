@@ -10,7 +10,7 @@ namespace constants {
     namespace radio {
         constexpr int radio_cs_pin = 10;
         constexpr int radio_di0_pin = 2;
-        constexpr int radio_rst_pin = 9;
+        constexpr int radio_rst_pin = 5;
         constexpr int radio_busy_pin = 16;
 
         constexpr float freq = 433.0;
