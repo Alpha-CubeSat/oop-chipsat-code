@@ -11,11 +11,13 @@ void setup()
     Serial.begin(9600);
 #endif
 
+    // cuts off power to GPS
     pinMode(constants::gps::reset_pin, OUTPUT);
     digitalWrite(constants::gps::reset_pin, HIGH);
 
-    // pinMode(constants::gps::tx_pin, OUTPUT);
-    // digitalWrite(constants::gps::tx_pin, LOW);
+    // prevents current from leaking over GPS serial line (~79mA -> ~22mA)
+    pinMode(constants::gps::tx_pin, OUTPUT);
+    digitalWrite(constants::gps::tx_pin, LOW);
 
     sfr::gps::boot_time = millis();
 
