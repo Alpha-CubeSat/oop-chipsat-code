@@ -27,10 +27,11 @@ void GPSMonitor::execute()
         }
     }
 
-    int max_buffer_read = 0;
+    int serial_reads = 0;
 
-    while (ss.available() > 0 && max_buffer_read < _SS_MAX_RX_BUFF) {
+    while (ss.available() > 0 && serial_reads < _SS_MAX_RX_BUFF) {
         gps.encode(ss.read());
+        serial_reads++;
     }
     // while (*gpsStream) {
     //     gps.encode(*gpsStream++);
