@@ -13,9 +13,9 @@ namespace constants {
         constexpr int radio_rst_pin = 5;
         constexpr int radio_busy_pin = 16;
 
-        constexpr float freq = 433.0;
-        constexpr float bw = 125.0;
-        constexpr int sf = 12;
+        constexpr float freq = 431.5;
+        constexpr float bw = 62.5;
+        constexpr int sf = 10;
         constexpr int cr = 5;
         constexpr int sw = 18;
         constexpr int pwr = 20;
