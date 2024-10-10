@@ -32,7 +32,7 @@ namespace constants {
         constexpr uint32_t command_wait_period = 30 * constants::time::one_second;
         constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
 
-        constexpr uint32_t transmit_slot_length = 2 * constants::time::one_second;
+        constexpr uint32_t transmit_slot_length = 1 * constants::time::one_second;
 
     } // namespace radio
     namespace imu {
