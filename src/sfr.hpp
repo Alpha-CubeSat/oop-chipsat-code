@@ -50,8 +50,8 @@ namespace sfr {
         extern float longitude;
         extern float altitude;
 
-        extern bool valid_location = false;
-        extern bool valid_altitude = false;
+        extern bool valid_location;
+        extern bool valid_altitude;
         extern bool on;
 
         extern uint32_t boot_time;
