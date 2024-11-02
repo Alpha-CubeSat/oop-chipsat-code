@@ -26,8 +26,9 @@ namespace sfr {
     } // namespace temperature
     namespace radio {
         extern bool initialized;
-        extern uint8_t start_progress;
         extern radio_mode_type mode;
+        extern uint8_t start_progress;
+        extern uint8_t alive_signal_dlinks;
 
         extern uint32_t downlink_window_length;
         extern uint32_t downlink_window_start;
@@ -49,7 +50,8 @@ namespace sfr {
         extern float longitude;
         extern float altitude;
 
-        extern bool valid_msg;
+        extern bool valid_location = false;
+        extern bool valid_altitude = false;
         extern bool on;
 
         extern uint32_t boot_time;

@@ -154,6 +154,17 @@ void RadioControlTask::execute()
 #endif
         init();
         if (sfr::radio::initialized) {
+            sfr::radio::mode = radio_mode_type::aliveSignal;
+        }
+        break;
+    }
+    case radio_mode_type::aliveSignal: {
+#ifdef VERBOSE
+        Serial.println(F("Radio: Alive Signal State"));
+#endif
+        normalReportDownlink();
+        sfr::radio::alive_signal_dlinks++;
+        if (sfr::radio::alive_signal_dlinks == constants::radio::max_alive_signal_dlinks) {
             sfr::radio::mode = radio_mode_type::downlink;
             sfr::radio::listen_period_start = millis();
             downlinkSettings();
@@ -243,8 +254,9 @@ bool RadioControlTask::normalReportDownlink()
     uint16_t alt = sfr::gps::altitude / 10;
 
     uint8_t flags = 0;
-    flags |= constants::radio::id << 6;
-    flags |= sfr::gps::valid_msg << 5;                           // gps valid
+    flags |= constants::radio::id << 7;
+    flags |= sfr::gps::valid_location << 6;
+    flags |= sfr::gps::valid_altitude << 5;                      // gps valid
     flags |= sfr::imu::initialized << 4;                         // imu valid
     flags |= sfr::gps::on << 3;                                  // boot mode flag
     flags |= (sfr::radio::mode == radio_mode_type::listen) << 2; // listen flag

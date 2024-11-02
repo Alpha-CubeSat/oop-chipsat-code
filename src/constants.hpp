@@ -22,6 +22,8 @@ namespace constants {
         constexpr int pl = 8;
         constexpr int gn = 0;
 
+        constexpr uint8_t max_alive_signal_dlinks = 3;
+
 #ifdef CHIPSAT_ID
         constexpr uint8_t id = CHIPSAT_ID;
 #else
@@ -32,7 +34,7 @@ namespace constants {
         constexpr uint32_t command_wait_period = 30 * constants::time::one_second;
         constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
 
-        constexpr uint32_t transmit_slot_length = 1 * constants::time::one_second;
+        constexpr uint32_t transmit_slot_length = constants::time::one_second / 5; // 200 ms
 
     } // namespace radio
     namespace imu {
@@ -55,7 +57,7 @@ namespace constants {
         constexpr int reset_pin = 7;
         constexpr int buffer_size = 11;
 
-        constexpr uint32_t boot_time = constants::time::one_second * 30;
+        constexpr uint32_t boot_time = 30 * constants::time::one_second;
     } // namespace gps
     namespace opcodes {
         constexpr uint8_t no_op = 0x00;

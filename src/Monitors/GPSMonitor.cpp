@@ -33,6 +33,7 @@ void GPSMonitor::execute()
         gps.encode(ss.read());
         serial_reads++;
     }
+    // for testing only
     // while (*gpsStream) {
     //     gps.encode(*gpsStream++);
     // }
@@ -49,6 +50,9 @@ void GPSMonitor::execute()
     if (gps.time.isUpdated() && gps.time.isValid()) {
         sfr::gps::utc_time = gps.time.value();
     }
+
+    sfr::gps::valid_location = gps.location.isValid();
+    sfr::gps::valid_altitude = gps.altitude.isValid();
 
 #ifdef VERBOSE
     Serial.print(F("Chars="));
