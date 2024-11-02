@@ -63,9 +63,11 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
+    // digitalWrite(constants::led::led_pin, HIGH);
     uint32_t start = millis();
     code = radio.transmit(packet, size);
     uint32_t time = millis() - start;
+    // digitalWrite(constants::led::led_pin, LOW);
     Serial.print(F("Time to transmit (ms): "));
     Serial.println(time);
 

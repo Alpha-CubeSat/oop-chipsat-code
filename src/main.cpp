@@ -11,6 +11,10 @@ void setup()
     Serial.begin(9600);
 #endif
 
+    // sets ChipSat LED high for debugging
+    pinMode(constants::led::led_pin, OUTPUT);
+    digitalWrite(constants::led::led_pin, HIGH);
+
     // cuts off power to GPS
     pinMode(constants::gps::reset_pin, OUTPUT);
     digitalWrite(constants::gps::reset_pin, HIGH);
