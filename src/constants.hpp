@@ -67,8 +67,7 @@ namespace constants {
     namespace led {
         constexpr int led_pin = 9;
         constexpr uint32_t led_on_time = 5 * constants::time::one_second;
-    }
-    
+    } // namespace led
 
 }; // namespace constants
 
