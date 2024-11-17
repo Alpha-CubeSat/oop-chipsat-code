@@ -14,7 +14,7 @@ namespace constants {
         constexpr int radio_busy_pin = 16;
 
         constexpr float freq = 435;
-        constexpr float bw = 250;
+        constexpr float bw = 62.5;
         constexpr int sf = 10;
         constexpr int cr = 5;
         constexpr int sw = 18;
@@ -34,7 +34,7 @@ namespace constants {
         constexpr uint32_t command_wait_period = 30 * constants::time::one_second;
         constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
 
-        constexpr uint32_t transmit_slot_length = constants::time::one_second / 5; // 200 ms
+        constexpr uint32_t transmit_slot_length = 700; // ms
 
     } // namespace radio
     namespace imu {

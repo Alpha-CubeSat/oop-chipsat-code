@@ -256,12 +256,12 @@ bool RadioControlTask::normalReportDownlink()
     uint16_t alt = sfr::gps::altitude / 10;
 
     uint8_t flags = 0;
-    flags |= constants::radio::id << 7;
-    flags |= sfr::gps::valid_location << 6;
-    flags |= sfr::gps::valid_altitude << 5;                      // gps valid
-    flags |= sfr::imu::initialized << 4;                         // imu valid
-    flags |= sfr::gps::on << 3;                                  // boot mode flag
-    flags |= (sfr::radio::mode == radio_mode_type::listen) << 2; // listen flag
+    flags |= constants::radio::id << 6;
+    flags |= sfr::gps::valid_location << 5;
+    flags |= sfr::gps::valid_altitude << 4;                      // gps valid
+    flags |= sfr::imu::initialized << 3;                         // imu valid
+    flags |= sfr::gps::on << 2;                                  // boot mode flag
+    flags |= (sfr::radio::mode == radio_mode_type::listen) << 1; // listen flag
 
     uint8_t dlink[] = {
         (uint8_t)lat, (uint8_t)(lat >> 8),

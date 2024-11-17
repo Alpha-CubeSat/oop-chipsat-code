@@ -31,7 +31,7 @@ namespace sfr {
         uint8_t alive_signal_dlinks = 0;
 
         // try to keep window 10x the slot length
-        uint32_t downlink_window_length = 2 * constants::time::one_second;
+        uint32_t downlink_window_length = 3500;
         uint32_t downlink_window_start;
         uint32_t listen_period_start;
         uint32_t command_wait_start;
