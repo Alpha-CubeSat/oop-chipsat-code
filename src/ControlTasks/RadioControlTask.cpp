@@ -63,13 +63,21 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
-    // digitalWrite(constants::led::led_pin, HIGH);
+    if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
+        digitalWrite(constants::led::led_pin, HIGH);
+    }
+
     uint32_t start = millis();
     code = radio.transmit(packet, size);
     uint32_t time = millis() - start;
-    // digitalWrite(constants::led::led_pin, LOW);
+
+    if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
+        digitalWrite(constants::led::led_pin, LOW);
+    }
+#ifdef VERBOSE
     Serial.print(F("Time to transmit (ms): "));
     Serial.println(time);
+#endif
 
     if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
