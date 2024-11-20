@@ -71,6 +71,7 @@ void MainControlLoop::execute()
     gps_monitor.execute();
     radio_control_task.execute();
 
+    // turn off LED 5 seconds after boot
     if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
         digitalWrite(constants::led::led_pin, LOW);
     }

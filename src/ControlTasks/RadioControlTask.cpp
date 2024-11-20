@@ -63,6 +63,7 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
+    // blink LED during transmit
     if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
         digitalWrite(constants::led::led_pin, HIGH);
     }
@@ -114,23 +115,13 @@ bool RadioControlTask::receive()
         // packet was successfully received
         Serial.println(F("success!"));
 
-        // print the data of the packet
         Serial.print(F("[SX1278] Data:\t\t\t"));
-
-        // print the RSSI (Received Signal Strength Indicator)
-        // of the last received packet
         Serial.print(F("[SX1278] RSSI:\t\t\t"));
         Serial.print(radio.getRSSI());
         Serial.println(F(" dBm"));
-
-        // print the SNR (Signal-to-Noise Ratio)
-        // of the last received packet
         Serial.print(F("[SX1278] SNR:\t\t\t"));
         Serial.print(radio.getSNR());
         Serial.println(F(" dB"));
-
-        // print frequency error
-        // of the last received packet
         Serial.print(F("[SX1278] Frequency error:\t"));
         Serial.print(radio.getFrequencyError());
         Serial.println(F(" Hz"));
@@ -264,9 +255,9 @@ bool RadioControlTask::normalReportDownlink()
     uint16_t alt = sfr::gps::altitude / 10;
 
     uint8_t flags = 0;
-    flags |= constants::radio::id << 6;
-    flags |= sfr::gps::valid_location << 5;
-    flags |= sfr::gps::valid_altitude << 4;                      // gps valid
+    flags |= constants::radio::id << 6;                          // chipsat ID #
+    flags |= sfr::gps::valid_location << 5;                      // gps position valid
+    flags |= sfr::gps::valid_altitude << 4;                      // gps altiude valid
     flags |= sfr::imu::initialized << 3;                         // imu valid
     flags |= sfr::gps::on << 2;                                  // boot mode flag
     flags |= (sfr::radio::mode == radio_mode_type::listen) << 1; // listen flag

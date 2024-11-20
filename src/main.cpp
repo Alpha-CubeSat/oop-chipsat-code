@@ -5,6 +5,7 @@ MainControlLoop mcl;
 
 void setup()
 {
+    // configure watchdog timer
     wdt_disable();
     wdt_enable(WDTO_8S);
 #ifdef VERBOSE
