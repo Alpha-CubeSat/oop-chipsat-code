@@ -19,6 +19,7 @@ void GPSMonitor::init()
 
 void GPSMonitor::execute()
 {
+    // turn on GPS after boot mode is over (30 seconds)
     if (!sfr::gps::on) {
         if (millis() - sfr::gps::boot_time > constants::gps::boot_time) {
             init();
@@ -33,10 +34,8 @@ void GPSMonitor::execute()
         gps.encode(ss.read());
         serial_reads++;
     }
-    // while (*gpsStream) {
-    //     gps.encode(*gpsStream++);
-    // }
 
+    // read GPS values if they are valid
     if (gps.location.isUpdated() && gps.location.isValid()) {
         sfr::gps::latitude = gps.location.lat();
         sfr::gps::longitude = gps.location.lng();
@@ -49,6 +48,9 @@ void GPSMonitor::execute()
     if (gps.time.isUpdated() && gps.time.isValid()) {
         sfr::gps::utc_time = gps.time.value();
     }
+
+    sfr::gps::valid_location = gps.location.isValid();
+    sfr::gps::valid_altitude = gps.altitude.isValid();
 
 #ifdef VERBOSE
     Serial.print(F("Chars="));

@@ -5,11 +5,16 @@ MainControlLoop mcl;
 
 void setup()
 {
+    // configure watchdog timer
     wdt_disable();
     wdt_enable(WDTO_8S);
 #ifdef VERBOSE
     Serial.begin(9600);
 #endif
+
+    // sets ChipSat LED high for debugging
+    pinMode(constants::led::led_pin, OUTPUT);
+    digitalWrite(constants::led::led_pin, HIGH);
 
     // cuts off power to GPS
     pinMode(constants::gps::reset_pin, OUTPUT);
