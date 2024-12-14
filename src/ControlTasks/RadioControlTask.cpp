@@ -7,10 +7,9 @@ RadioControlTask::RadioControlTask()
 void RadioControlTask::init()
 {
     if (!sfr::radio::initialized) {
-        switch (sfr::radio::start_progress) {
-        case 0:
+        if (sfr::radio::start_progress == 0) {
 #ifdef VERBOSE
-            Serial.print(F("Radio: Initializing ... "));
+            Serial.println(F("Radio: Initializing ... "));
 #endif
             // initialize SX1278 with default settings
             code = radio.begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,
@@ -23,10 +22,11 @@ void RadioControlTask::init()
                 Serial.println(code);
 #endif
             }
-            break;
-        case 1:
+        }
+
+        if (sfr::radio::start_progress == 1) {
 #ifdef VERBOSE
-            Serial.print(F("Radio: Setting CRC parameter ... "));
+            Serial.println(F("Radio: Setting CRC parameter ... "));
 #endif
             // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
             code = radio.setCRC(true);
@@ -38,25 +38,22 @@ void RadioControlTask::init()
                 Serial.println(code);
 #endif
             }
-            break;
-        case 2:
+
+            if (sfr::radio::start_progress == 2) {
 #ifdef VERBOSE
-            Serial.print(F("Radio: Setting forceLDRO parameter ... "));
+                Serial.println(F("Radio: Setting forceLDRO parameter ... "));
 #endif
-            // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
-            code = radio.forceLDRO(true);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
+                // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
+                code = radio.forceLDRO(true);
+                if (code == RADIOLIB_ERR_NONE) {
+                    sfr::radio::initialized = true;
+                } else {
 #ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
+                    Serial.print(F("failed, code "));
+                    Serial.println(code);
 #endif
+                }
             }
-            break;
-        case 3: // completed initialization
-            sfr::radio::initialized = true;
-            break;
         }
     }
 }

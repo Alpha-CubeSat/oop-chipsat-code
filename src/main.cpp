@@ -12,6 +12,8 @@ void setup()
     Serial.begin(9600);
 #endif
 
+    sfr::gps::boot_time = millis();
+
     // sets ChipSat LED high for debugging
     pinMode(constants::led::led_pin, OUTPUT);
     digitalWrite(constants::led::led_pin, HIGH);
@@ -23,8 +25,6 @@ void setup()
     // prevents current from leaking over GPS serial line (~79mA -> ~22mA)
     pinMode(constants::gps::tx_pin, OUTPUT);
     digitalWrite(constants::gps::tx_pin, LOW);
-
-    sfr::gps::boot_time = millis();
 
     // seed random number gen with noise from unconnected analog pin
     randomSeed(analogRead(A0));
