@@ -13,11 +13,10 @@ void TempMonitor::execute()
     // Select no hold master
     Wire.write(0xF3);
     Wire.endTransmission();
-    delay(300); // TODO: Look at this delay
+    delay(300); // TODO: Look at this delay (for real)
 
     // Request 2 bytes of data
     Wire.requestFrom(constants::temperature::i2c_address, 2);
-    // TODO: Delay here?
 
     if (Wire.available() == 2) {
         data[0] = Wire.read();

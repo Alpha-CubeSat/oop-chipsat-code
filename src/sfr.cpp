@@ -17,7 +17,8 @@ namespace sfr {
     } // namespace temperature
     namespace gps {
         float utc_time, latitude, longitude, altitude;
-        bool valid_msg = false;
+        bool valid_location = false;
+        bool valid_altitude = false;
         bool on = false;
 
         uint32_t boot_time = 0;
@@ -27,8 +28,11 @@ namespace sfr {
         bool initialized = false;
         radio_mode_type mode = radio_mode_type::init;
         uint8_t start_progress = 0;
+        uint8_t alive_signal_dlinks = 0;
 
-        uint32_t downlink_window_length = 10 * constants::time::one_second;
+        // This must be a multiple of constants::radio::transmit_slot_length
+        // Ideally window should be 10x the slot length
+        uint32_t downlink_window_length = 3500; // ms
         uint32_t downlink_window_start;
         uint32_t listen_period_start;
         uint32_t command_wait_start;

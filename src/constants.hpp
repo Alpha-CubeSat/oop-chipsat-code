@@ -12,15 +12,17 @@ namespace constants {
         constexpr int radio_di0_pin = 2;
         constexpr int radio_rst_pin = 5;
         constexpr int radio_busy_pin = 16;
-
-        constexpr float freq = 433.0;
-        constexpr float bw = 125.0;
-        constexpr int sf = 12;
+        // TODO: Document units
+        constexpr float freq = 437.4;
+        constexpr float bw = 62.5;
+        constexpr int sf = 10;
         constexpr int cr = 5;
         constexpr int sw = 18;
         constexpr int pwr = 20;
         constexpr int pl = 8;
         constexpr int gn = 0;
+
+        constexpr uint8_t max_alive_signal_dlinks = 3;
 
 #ifdef CHIPSAT_ID
         constexpr uint8_t id = CHIPSAT_ID;
@@ -28,12 +30,12 @@ namespace constants {
         constexpr uint8_t id = 0;
 #endif
 
-        constexpr uint32_t listen_period = 30 * constants::time::one_second;
+        constexpr uint32_t listen_period = 30 * constants::time::one_minute;
         constexpr uint32_t command_wait_period = 30 * constants::time::one_second;
         constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
 
-        constexpr uint32_t transmit_slot_length = 2 * constants::time::one_second;
-
+        constexpr uint32_t transmit_slot_length = 700; // ms
+    // TODO: Verify sensor data on alive signal
     } // namespace radio
     namespace imu {
         constexpr int gyro_min = -245; // default gyro range is +/- 245 dps
@@ -55,12 +57,17 @@ namespace constants {
         constexpr int reset_pin = 7;
         constexpr int buffer_size = 11;
 
-        constexpr uint32_t boot_time = constants::time::one_second * 30;
+        constexpr uint32_t boot_time = 10 * constants::time::one_second;
     } // namespace gps
     namespace opcodes {
         constexpr uint8_t no_op = 0x00;
         constexpr uint8_t change_downlink_window = 0x11;
     } // namespace opcodes
+
+    namespace led {
+        constexpr int led_pin = 9;
+        constexpr uint32_t led_on_time = 5 * constants::time::one_second;
+    } // namespace led
 
 }; // namespace constants
 

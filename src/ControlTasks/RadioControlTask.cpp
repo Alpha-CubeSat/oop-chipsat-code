@@ -7,10 +7,9 @@ RadioControlTask::RadioControlTask()
 void RadioControlTask::init()
 {
     if (!sfr::radio::initialized) {
-        switch (sfr::radio::start_progress) {
-        case 0:
+        if (sfr::radio::start_progress == 0) {
 #ifdef VERBOSE
-            Serial.print(F("Radio: Initializing ... "));
+            Serial.println(F("Radio: Initializing ... "));
 #endif
             // initialize SX1278 with default settings
             code = radio.begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,
@@ -23,10 +22,11 @@ void RadioControlTask::init()
                 Serial.println(code);
 #endif
             }
-            break;
-        case 1:
+        }
+
+        if (sfr::radio::start_progress == 1) {
 #ifdef VERBOSE
-            Serial.print(F("Radio: Setting CRC parameter ... "));
+            Serial.println(F("Radio: Setting CRC parameter ... "));
 #endif
             // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
             code = radio.setCRC(true);
@@ -38,36 +38,48 @@ void RadioControlTask::init()
                 Serial.println(code);
 #endif
             }
-            break;
-        case 2:
+
+            if (sfr::radio::start_progress == 2) {
 #ifdef VERBOSE
-            Serial.print(F("Radio: Setting forceLDRO parameter ... "));
+                Serial.println(F("Radio: Setting forceLDRO parameter ... "));
 #endif
-            // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
-            code = radio.forceLDRO(true);
-            if (code == RADIOLIB_ERR_NONE) {
-                sfr::radio::start_progress++;
-            } else {
+                // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
+                code = radio.forceLDRO(true);
+                if (code == RADIOLIB_ERR_NONE) {
+                    sfr::radio::initialized = true;
+                } else {
 #ifdef VERBOSE
-                Serial.print(F("failed, code "));
-                Serial.println(code);
+                    Serial.print(F("failed, code "));
+                    Serial.println(code);
 #endif
+                }
             }
-            break;
-        case 3: // completed initialization
-            sfr::radio::initialized = true;
-            break;
         }
     }
 }
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
+    // blink LED during transmit
+    if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
+        digitalWrite(constants::led::led_pin, HIGH);
+    }
+
+#ifdef VERBOSE
     uint32_t start = millis();
+#endif
     code = radio.transmit(packet, size);
+#ifdef VERBOSE
     uint32_t time = millis() - start;
+#endif
+
+    if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
+        digitalWrite(constants::led::led_pin, LOW);
+    }
+#ifdef VERBOSE
     Serial.print(F("Time to transmit (ms): "));
     Serial.println(time);
+#endif
 
     if (code == RADIOLIB_ERR_NONE) {
         // the packet was successfully transmitted
@@ -104,23 +116,13 @@ bool RadioControlTask::receive()
         // packet was successfully received
         Serial.println(F("success!"));
 
-        // print the data of the packet
         Serial.print(F("[SX1278] Data:\t\t\t"));
-
-        // print the RSSI (Received Signal Strength Indicator)
-        // of the last received packet
         Serial.print(F("[SX1278] RSSI:\t\t\t"));
         Serial.print(radio.getRSSI());
         Serial.println(F(" dBm"));
-
-        // print the SNR (Signal-to-Noise Ratio)
-        // of the last received packet
         Serial.print(F("[SX1278] SNR:\t\t\t"));
         Serial.print(radio.getSNR());
         Serial.println(F(" dB"));
-
-        // print frequency error
-        // of the last received packet
         Serial.print(F("[SX1278] Frequency error:\t"));
         Serial.print(radio.getFrequencyError());
         Serial.println(F(" Hz"));
@@ -154,6 +156,17 @@ void RadioControlTask::execute()
 #endif
         init();
         if (sfr::radio::initialized) {
+            sfr::radio::mode = radio_mode_type::aliveSignal;
+        }
+        break;
+    }
+    case radio_mode_type::aliveSignal: {
+#ifdef VERBOSE
+        Serial.println(F("Radio: Alive Signal State"));
+#endif
+        normalReportDownlink();
+        sfr::radio::alive_signal_dlinks++;
+        if (sfr::radio::alive_signal_dlinks == constants::radio::max_alive_signal_dlinks) {
             sfr::radio::mode = radio_mode_type::downlink;
             sfr::radio::listen_period_start = millis();
             downlinkSettings();
@@ -225,7 +238,7 @@ bool RadioControlTask::executeDownlink()
     if (millis() - sfr::radio::last_callsign_time < constants::radio::callsign_interval) {
         return normalReportDownlink();
     } else {
-        uint8_t dlink[] = {'K', 'D', '2', 'W', 'T', 'Q'};
+        uint8_t dlink[] = {'K', 'C', '3', 'V', 'A', 'T', 'K', 'D', '2', 'W', 'T', 'Q', 'K', 'E', '2', 'A', 'T', 'R'};
         sfr::radio::last_callsign_time = millis();
 #ifdef VERBOSE
         Serial.println(F("Callsign Report"));
@@ -243,11 +256,12 @@ bool RadioControlTask::normalReportDownlink()
     uint16_t alt = sfr::gps::altitude / 10;
 
     uint8_t flags = 0;
-    flags |= constants::radio::id << 6;
-    flags |= sfr::gps::valid_msg << 5;                           // gps valid
-    flags |= sfr::imu::initialized << 4;                         // imu valid
-    flags |= sfr::gps::on << 3;                                  // boot mode flag
-    flags |= (sfr::radio::mode == radio_mode_type::listen) << 2; // listen flag
+    flags |= constants::radio::id << 6;                          // chipsat ID #
+    flags |= sfr::gps::valid_location << 5;                      // gps position valid
+    flags |= sfr::gps::valid_altitude << 4;                      // gps altiude valid
+    flags |= sfr::imu::initialized << 3;                         // imu valid
+    flags |= sfr::gps::on << 2;                                  // boot mode flag
+    flags |= (sfr::radio::mode == radio_mode_type::listen) << 1; // listen flag
 
     uint8_t dlink[] = {
         (uint8_t)lat, (uint8_t)(lat >> 8),
