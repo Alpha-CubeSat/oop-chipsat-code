@@ -65,9 +65,13 @@ bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
         digitalWrite(constants::led::led_pin, HIGH);
     }
 
+#ifdef VERBOSE
     uint32_t start = millis();
+#endif
     code = radio.transmit(packet, size);
+#ifdef VERBOSE
     uint32_t time = millis() - start;
+#endif
 
     if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
         digitalWrite(constants::led::led_pin, LOW);
@@ -234,7 +238,7 @@ bool RadioControlTask::executeDownlink()
     if (millis() - sfr::radio::last_callsign_time < constants::radio::callsign_interval) {
         return normalReportDownlink();
     } else {
-        uint8_t dlink[] = {'K', 'D', '2', 'W', 'T', 'Q'};
+        uint8_t dlink[] = {'K', 'C', '3', 'V', 'A', 'T', 'K', 'D', '2', 'W', 'T', 'Q', 'K', 'E', '2', 'A', 'T', 'R'};
         sfr::radio::last_callsign_time = millis();
 #ifdef VERBOSE
         Serial.println(F("Callsign Report"));

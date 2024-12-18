@@ -12,8 +12,8 @@ namespace constants {
         constexpr int radio_di0_pin = 2;
         constexpr int radio_rst_pin = 5;
         constexpr int radio_busy_pin = 16;
-
-        constexpr float freq = 435;
+        // TODO: Document units
+        constexpr float freq = 437.4;
         constexpr float bw = 62.5;
         constexpr int sf = 10;
         constexpr int cr = 5;
@@ -35,7 +35,7 @@ namespace constants {
         constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
 
         constexpr uint32_t transmit_slot_length = 700; // ms
-
+    // TODO: Verify sensor data on alive signal
     } // namespace radio
     namespace imu {
         constexpr int gyro_min = -245; // default gyro range is +/- 245 dps
@@ -57,7 +57,7 @@ namespace constants {
         constexpr int reset_pin = 7;
         constexpr int buffer_size = 11;
 
-        constexpr uint32_t boot_time = 30 * constants::time::one_second;
+        constexpr uint32_t boot_time = 10 * constants::time::one_second;
     } // namespace gps
     namespace opcodes {
         constexpr uint8_t no_op = 0x00;

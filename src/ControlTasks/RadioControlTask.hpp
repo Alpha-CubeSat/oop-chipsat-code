@@ -26,12 +26,12 @@ private:
     void downlinkSettings();
 
     /**
-     * @brief Wrapper around RadioLib's transmit() to provide metadata (TODO: Redundant?)
+     * @brief Wrapper around RadioLib's transmit() to provide metadata
      */
     bool transmit(uint8_t *packet, uint8_t size);
 
     /**
-     * @brief Attempts to receive a 3 byte command (TODO: Redundant?)
+     * @brief Attempts to receive a 3 byte command
      */
     bool receive();
 
