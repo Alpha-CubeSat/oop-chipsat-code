@@ -18,7 +18,6 @@ void IMUMonitor::execute()
         } else {
             sfr::imu::initialized = true;
         }
-
     } else {
         capture_imu_values();
     }
@@ -26,25 +25,25 @@ void IMUMonitor::execute()
 
 void IMUMonitor::capture_imu_values()
 {
-    // check if the gyroscope, accelerometer, or magnetometer has new data available
+    // Check if the gyroscope, accelerometer, or magnetometer has new data available
     if (IMU.gyroscopeAvailable()) {
         IMU.readGyroscope(
             sfr::imu::gyro_x,
             sfr::imu::gyro_y,
-            sfr::imu::gyro_z); // data is in degrees/s
+            sfr::imu::gyro_z); // Data is in degrees/s
     }
 
     if (IMU.accelerationAvailable()) {
         IMU.readAcceleration(
             sfr::imu::acc_x,
             sfr::imu::acc_y,
-            sfr::imu::acc_z); // data is in m/s^2
+            sfr::imu::acc_z); // Data is in m/s^2
     }
 
     if (IMU.magneticFieldAvailable()) {
         IMU.readMagneticField(
             sfr::imu::mag_x,
             sfr::imu::mag_y,
-            sfr::imu::mag_z); // data in uT
+            sfr::imu::mag_z); // Data in uT
     }
 }

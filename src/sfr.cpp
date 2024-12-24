@@ -1,17 +1,14 @@
 #include "sfr.hpp"
 
 namespace sfr {
-
     namespace imu {
+        bool initialized = false;
 
         float gyro_x, gyro_y, gyro_z;
         float acc_x, acc_y, acc_z;
         float mag_x, mag_y, mag_z;
 
-        bool initialized = false;
-
     } // namespace imu
-
     namespace temperature {
         float temp_c;
     } // namespace temperature
@@ -31,7 +28,6 @@ namespace sfr {
         uint8_t alive_signal_dlinks = 0;
 
         // This must be a multiple of constants::radio::transmit_slot_length
-        // Ideally window should be 10x the slot length
         uint32_t downlink_window_length = 3500; // ms
         uint32_t downlink_window_start;
         uint32_t listen_period_start;
@@ -45,5 +41,4 @@ namespace sfr {
         uint8_t invalid_uplinks = 0;
 
     } // namespace radio
-
-}; // namespace sfr
+};    // namespace sfr

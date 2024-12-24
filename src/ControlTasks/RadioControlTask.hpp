@@ -21,7 +21,7 @@ private:
     void init();
 
     /**
-     * Resets the transmit window start time and picks a new slot
+     * @brief Resets the transmit window start time and picks a new slot
      */
     void downlinkSettings();
 

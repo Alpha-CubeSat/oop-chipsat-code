@@ -11,7 +11,7 @@ void RadioControlTask::init()
 #ifdef VERBOSE
             Serial.println(F("Radio: Initializing ... "));
 #endif
-            // initialize SX1278 with default settings
+            // Initialize SX1278 with default settings
             code = radio.begin(constants::radio::freq, constants::radio::bw, constants::radio::sf, constants::radio::cr,
                                constants::radio::sw, constants::radio::pwr, constants::radio::pl, constants::radio::gn);
             if (code == RADIOLIB_ERR_NONE) {
@@ -28,7 +28,7 @@ void RadioControlTask::init()
 #ifdef VERBOSE
             Serial.println(F("Radio: Setting CRC parameter ... "));
 #endif
-            // set CRC parameter to true so it matches the CRC parameter on the TinyGS side
+            // Set CRC parameter to true so it matches the CRC parameter on the TinyGS side
             code = radio.setCRC(true);
             if (code == RADIOLIB_ERR_NONE) {
                 sfr::radio::start_progress++;
@@ -43,7 +43,7 @@ void RadioControlTask::init()
 #ifdef VERBOSE
                 Serial.println(F("Radio: Setting forceLDRO parameter ... "));
 #endif
-                // set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
+                // Set forceLDRO parameter to true so it matches the forceLDRO parameter on the TinyGS side
                 code = radio.forceLDRO(true);
                 if (code == RADIOLIB_ERR_NONE) {
                     sfr::radio::initialized = true;
@@ -60,7 +60,7 @@ void RadioControlTask::init()
 
 bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 {
-    // blink LED during transmit
+    // Blink LED during transmit
     if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
         digitalWrite(constants::led::led_pin, HIGH);
     }
@@ -82,7 +82,7 @@ bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
 #endif
 
     if (code == RADIOLIB_ERR_NONE) {
-        // the packet was successfully transmitted
+        // The packet was successfully transmitted
 #ifdef VERBOSE
         Serial.println(F("success!"));
         Serial.print(F("[SX1278] Datarate:\t"));
@@ -93,10 +93,10 @@ bool RadioControlTask::transmit(uint8_t *packet, uint8_t size)
     } else {
 #ifdef VERBOSE
         if (code == RADIOLIB_ERR_TX_TIMEOUT) {
-            // timeout occurred while transmitting packet
+            // Timeout occurred while transmitting packet
             Serial.println(F("timeout!"));
         } else {
-            // some other error occurred
+            // Some other error occurred
             Serial.print(F("failed, code "));
             Serial.println(code);
         }
@@ -131,13 +131,13 @@ bool RadioControlTask::receive()
     } else {
 #ifdef VERBOSE
         if (code == RADIOLIB_ERR_RX_TIMEOUT) {
-            // timeout occurred while waiting for a packet
+            // Timeout occurred while waiting for a packet
             Serial.println(F("timeout!"));
         } else if (code == RADIOLIB_ERR_CRC_MISMATCH) {
-            // packet was received, but is malformed
+            // Packet was received, but is malformed
             Serial.println(F("CRC error!"));
         } else {
-            // some other error occurred
+            // Some other error occurred
             Serial.print(F("failed, code "));
             Serial.println(code);
         }
@@ -148,7 +148,7 @@ bool RadioControlTask::receive()
 
 void RadioControlTask::execute()
 {
-    // implements the state machine described in: https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki
+    // Implement the state machine described in https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki
     switch (sfr::radio::mode) {
     case radio_mode_type::init: {
 #ifdef VERBOSE
@@ -177,24 +177,24 @@ void RadioControlTask::execute()
 #ifdef VERBOSE
         Serial.println(F("Radio: Downlink State"));
 #endif
-        // downlink when slot reached
+        // Downlink when slot reached
         if (!sfr::radio::downlinked_in_slot && millis() - sfr::radio::downlink_window_start >= constants::radio::transmit_slot_length * sfr::radio::downlink_slot) {
             executeDownlink();
             sfr::radio::downlinked_in_slot = true;
         }
 
-        // go into listen mode if listen period reached
+        // Go into listen mode if listen period reached
         if (millis() - sfr::radio::listen_period_start >= constants::radio::listen_period) {
             sfr::radio::mode = radio_mode_type::listen;
 
 #ifdef VERBOSE
             Serial.println(F("Radio: Listen Flag Downlink"));
 #endif
-            // downlink with listen flag = true
+            // Downlink with listen flag = true
             normalReportDownlink();
             sfr::radio::command_wait_start = millis();
         }
-        // reset window and choose slot for next downlink
+        // Reset window and choose slot for next downlink
         else if (millis() - sfr::radio::downlink_window_start >= sfr::radio::downlink_window_length) {
             downlinkSettings();
         }
@@ -204,7 +204,7 @@ void RadioControlTask::execute()
 #ifdef VERBOSE
         Serial.println(F("Radio: Listen State"));
 #endif
-        // built in timeout is 100 LoRa symbols
+        // Built in timeout is 100 LoRa symbols
         bool receive_success = receive();
         if (receive_success) {
             processUplink();
@@ -250,7 +250,7 @@ bool RadioControlTask::executeDownlink()
 
 bool RadioControlTask::normalReportDownlink()
 {
-    // see https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/2.-Telemetry for more info
+    // See https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/2.-Telemetry for more info
     uint16_t lat = sfr::gps::latitude * 100;
     uint16_t lon = sfr::gps::longitude * 100;
     uint16_t alt = sfr::gps::altitude / 10;
@@ -300,7 +300,7 @@ uint8_t RadioControlTask::map_range(float value, int min_val, int max_val)
 
 void RadioControlTask::processUplink()
 {
-    // see https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/3.-Commands for more info
+    // See https://github.com/Alpha-CubeSat/oop-chipsat-code/wiki/3.-Commands for more info
     switch (received[0]) {
     case constants::opcodes::no_op: // No-Op
 #ifdef VERBOSE

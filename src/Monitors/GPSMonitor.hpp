@@ -27,7 +27,7 @@ private:
     SoftwareSerial ss = SoftwareSerial(constants::gps::rx_pin, constants::gps::tx_pin);
 
     /**
-     * Begins the software serial instance and configures the GPS receiver
+     * @brief Begins the software serial instance and configures the GPS receiver
      */
     void init();
 };

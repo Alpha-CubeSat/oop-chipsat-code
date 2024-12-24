@@ -7,6 +7,8 @@
 
 namespace sfr {
     namespace imu {
+        extern bool initialized;
+
         extern float gyro_x;
         extern float gyro_y;
         extern float gyro_z;
@@ -19,7 +21,6 @@ namespace sfr {
         extern float mag_y;
         extern float mag_z;
 
-        extern bool initialized;
     } // namespace imu
     namespace temperature {
         extern float temp_c;
@@ -56,7 +57,6 @@ namespace sfr {
 
         extern uint32_t boot_time;
     } // namespace gps
-
-}; // namespace sfr
+};    // namespace sfr
 
 #endif
