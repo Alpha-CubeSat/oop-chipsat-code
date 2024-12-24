@@ -61,8 +61,11 @@ void MainControlLoop::execute()
     Serial.print(F("GPS Altitude (m): "));
     Serial.println(sfr::gps::altitude);
 
-    Serial.print("Downlink Slot: ");
+    Serial.print(F("Downlink Slot: "));
     Serial.println(sfr::radio::downlink_slot);
+
+    Serial.print(F("Alive Time: "));
+    Serial.println(millis() - sfr::gps::boot_time);
 
 #endif
 
@@ -70,6 +73,11 @@ void MainControlLoop::execute()
     imu_monitor.execute();
     gps_monitor.execute();
     radio_control_task.execute();
+
+    // Turn off LED 5 seconds after boot
+    if (millis() - sfr::gps::boot_time > constants::led::led_on_time) {
+        digitalWrite(constants::led::led_pin, LOW);
+    }
 
     wdt_reset();
 

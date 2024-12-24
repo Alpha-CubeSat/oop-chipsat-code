@@ -7,6 +7,8 @@
 
 namespace sfr {
     namespace imu {
+        extern bool initialized;
+
         extern float gyro_x;
         extern float gyro_y;
         extern float gyro_z;
@@ -19,15 +21,15 @@ namespace sfr {
         extern float mag_y;
         extern float mag_z;
 
-        extern bool initialized;
     } // namespace imu
     namespace temperature {
         extern float temp_c;
     } // namespace temperature
     namespace radio {
         extern bool initialized;
-        extern uint8_t start_progress;
         extern radio_mode_type mode;
+        extern uint8_t start_progress;
+        extern uint8_t alive_signal_dlinks;
 
         extern uint32_t downlink_window_length;
         extern uint32_t downlink_window_start;
@@ -49,12 +51,12 @@ namespace sfr {
         extern float longitude;
         extern float altitude;
 
-        extern bool valid_msg;
+        extern bool valid_location;
+        extern bool valid_altitude;
         extern bool on;
 
         extern uint32_t boot_time;
     } // namespace gps
-
-}; // namespace sfr
+};    // namespace sfr
 
 #endif

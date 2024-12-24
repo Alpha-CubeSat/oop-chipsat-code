@@ -13,14 +13,16 @@ namespace constants {
         constexpr int radio_rst_pin = 5;
         constexpr int radio_busy_pin = 16;
 
-        constexpr float freq = 433.0;
-        constexpr float bw = 125.0;
-        constexpr int sf = 12;
-        constexpr int cr = 5;
-        constexpr int sw = 18;
-        constexpr int pwr = 20;
-        constexpr int pl = 8;
-        constexpr int gn = 0;
+        constexpr float freq = 437.4; // MHz
+        constexpr float bw = 62.5;    // kHz
+        constexpr int sf = 10;        // Between 7 and 12
+        constexpr int cr = 5;         // Between 5 and 8. 4/8 coding ratio. One redundancy bit for every data bit
+        constexpr int sw = 18;        // Sync-word (defines network). Default is 0d18
+        constexpr int pwr = 20;       // Between 2 and 17, or 20 for max power
+        constexpr int pl = 8;         // Payload length
+        constexpr int gn = 0;         // Gain
+
+        constexpr uint8_t max_alive_signal_dlinks = 3;
 
 #ifdef CHIPSAT_ID
         constexpr uint8_t id = CHIPSAT_ID;
@@ -28,19 +30,19 @@ namespace constants {
         constexpr uint8_t id = 0;
 #endif
 
-        constexpr uint32_t listen_period = 30 * constants::time::one_second;
+        constexpr uint32_t listen_period = 30 * constants::time::one_minute;
         constexpr uint32_t command_wait_period = 30 * constants::time::one_second;
         constexpr uint32_t callsign_interval = 10 * constants::time::one_minute;
 
-        constexpr uint32_t transmit_slot_length = 2 * constants::time::one_second;
-
+        constexpr uint32_t transmit_slot_length = 700; // ms
+        // TODO: Verify sensor data on alive signal
     } // namespace radio
     namespace imu {
-        constexpr int gyro_min = -245; // default gyro range is +/- 245 dps
+        constexpr int gyro_min = -245; // Default gyro range is +/- 245 dps
         constexpr int gyro_max = 245;
-        constexpr int acc_min = -20; // default accel range is +/- 2 G
+        constexpr int acc_min = -20; // Default accel range is +/- 2 G
         constexpr int acc_max = 20;
-        constexpr int mag_min = -100; // default mag range is +/- 4 guass -> 100 uT
+        constexpr int mag_min = -100; // Default mag range is +/- 4 guass -> 100 uT
         constexpr int mag_max = 100;
     } // namespace imu
     namespace temperature {
@@ -55,13 +57,16 @@ namespace constants {
         constexpr int reset_pin = 7;
         constexpr int buffer_size = 11;
 
-        constexpr uint32_t boot_time = constants::time::one_second * 30;
+        constexpr uint32_t boot_time = 10 * constants::time::one_second;
     } // namespace gps
     namespace opcodes {
         constexpr uint8_t no_op = 0x00;
         constexpr uint8_t change_downlink_window = 0x11;
     } // namespace opcodes
-
-}; // namespace constants
+    namespace led {
+        constexpr int led_pin = 9;
+        constexpr uint32_t led_on_time = 5 * constants::time::one_second;
+    } // namespace led
+};    // namespace constants
 
 #endif

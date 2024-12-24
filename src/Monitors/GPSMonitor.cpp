@@ -9,7 +9,7 @@ void GPSMonitor::init()
     digitalWrite(constants::gps::reset_pin, LOW);
     sfr::gps::on = true;
 
-    // writes NMEA output message type to SRAM and Flash
+    // Writes NMEA output message type to SRAM and Flash
     uint8_t SetNMEA[] = {
         0xA0, 0xA1, 0x00, 0x03, 0x09, 0x01, 0x01, 0x09, 0x0D, 0x0A};
 
@@ -19,6 +19,7 @@ void GPSMonitor::init()
 
 void GPSMonitor::execute()
 {
+    // Turn on GPS after boot mode is over (10 seconds)
     if (!sfr::gps::on) {
         if (millis() - sfr::gps::boot_time > constants::gps::boot_time) {
             init();
@@ -33,10 +34,8 @@ void GPSMonitor::execute()
         gps.encode(ss.read());
         serial_reads++;
     }
-    // while (*gpsStream) {
-    //     gps.encode(*gpsStream++);
-    // }
 
+    // Read GPS values if they are valid
     if (gps.location.isUpdated() && gps.location.isValid()) {
         sfr::gps::latitude = gps.location.lat();
         sfr::gps::longitude = gps.location.lng();
@@ -49,6 +48,9 @@ void GPSMonitor::execute()
     if (gps.time.isUpdated() && gps.time.isValid()) {
         sfr::gps::utc_time = gps.time.value();
     }
+
+    sfr::gps::valid_location = gps.location.isValid();
+    sfr::gps::valid_altitude = gps.altitude.isValid();
 
 #ifdef VERBOSE
     Serial.print(F("Chars="));
