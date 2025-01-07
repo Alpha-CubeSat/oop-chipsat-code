@@ -1,6 +1,6 @@
 #include "IMUMonitor.hpp"
 
-IMUMonitor::IMUMonitor()
+IMUMonitor::IMUMonitor(): imu(Wire)
 {
 }
 
@@ -10,7 +10,7 @@ void IMUMonitor::execute()
 #ifdef VERBOSE
         Serial.println(F("Turning on IMU"));
 #endif
-        if (!IMU.begin()) {
+        if (!imu.begin()) {
 #ifdef VERBOSE
             Serial.println(F("IMU failed"));
 #endif
@@ -26,22 +26,22 @@ void IMUMonitor::execute()
 void IMUMonitor::capture_imu_values()
 {
     // Check if the gyroscope, accelerometer, or magnetometer has new data available
-    if (IMU.gyroscopeAvailable()) {
-        IMU.readGyroscope(
+    if (imu.gyroscopeAvailable()) {
+        imu.readGyroscope(
             sfr::imu::gyro_x,
             sfr::imu::gyro_y,
             sfr::imu::gyro_z); // Data is in degrees/s
     }
 
-    if (IMU.accelerationAvailable()) {
-        IMU.readAcceleration(
+    if (imu.accelerationAvailable()) {
+        imu.readAcceleration(
             sfr::imu::acc_x,
             sfr::imu::acc_y,
             sfr::imu::acc_z); // Data is in m/s^2
     }
 
-    if (IMU.magneticFieldAvailable()) {
-        IMU.readMagneticField(
+    if (imu.magneticFieldAvailable()) {
+        imu.readMagneticField(
             sfr::imu::mag_x,
             sfr::imu::mag_y,
             sfr::imu::mag_z); // Data in uT
