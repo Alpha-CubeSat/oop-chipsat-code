@@ -1,6 +1,6 @@
 #include "IMUMonitor.hpp"
 
-IMUMonitor::IMUMonitor(): imu(Wire)
+IMUMonitor::IMUMonitor() : imu(Wire)
 {
 }
 
