@@ -2,8 +2,6 @@
 
 TempMonitor::TempMonitor()
 {
-    // Init I2C communication as master
-    Wire.begin();
 }
 
 void TempMonitor::execute()

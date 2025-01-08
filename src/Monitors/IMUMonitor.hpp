@@ -19,6 +19,8 @@ private:
      * @brief Reads IMU data
      */
     void capture_imu_values();
+
+    LSM9DS1Class imu;
 };
 
 #endif

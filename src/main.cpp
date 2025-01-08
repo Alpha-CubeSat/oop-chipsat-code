@@ -12,6 +12,10 @@ void setup()
     Serial.begin(9600);
 #endif
 
+    // Set I2C transaction timeout
+    Wire.begin();
+    Wire.setWireTimeout(3000);
+
     sfr::gps::boot_time = millis();
 
     // Set ChipSat LED high for debugging
