@@ -2,25 +2,29 @@
 
 TempMonitor::TempMonitor()
 {
-    Wire.beginTransmission(constants::temperature::i2c_address);
-    Wire.write(0xE7);
-    Wire.endTransmission();
-
-    Wire.requestFrom(constants::temperature::i2c_address, 1);
-
-    if (Wire.available() == 1) {
-        uint8_t user_register = Wire.read();
-        user_register = user_register | 0x81;
-
-        Wire.beginTransmission(constants::temperature::i2c_address);
-        Wire.write(0xE6);
-        Wire.write(user_register);
-        Wire.endTransmission();
-    }
 }
 
 void TempMonitor::execute()
 {
+    if (!sfr::temperature::initialized) {
+        Wire.beginTransmission(constants::temperature::i2c_address);
+        Wire.write(0xE7);
+        Wire.endTransmission();
+
+        Wire.requestFrom(constants::temperature::i2c_address, 1);
+
+        if (Wire.available() == 1) {
+            uint8_t user_register = Wire.read();
+            user_register = user_register | 0x81;
+
+            Wire.beginTransmission(constants::temperature::i2c_address);
+            Wire.write(0xE6);
+            Wire.write(user_register);
+            Wire.endTransmission();
+        }
+        sfr::temperature::initialized = true;
+    }
+
     Wire.beginTransmission(constants::temperature::i2c_address);
     // Select no hold master
     Wire.write(0xF3);

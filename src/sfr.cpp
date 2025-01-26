@@ -10,6 +10,8 @@ namespace sfr {
 
     } // namespace imu
     namespace temperature {
+        bool initialized = false;
+
         float temp_c;
     } // namespace temperature
     namespace gps {
