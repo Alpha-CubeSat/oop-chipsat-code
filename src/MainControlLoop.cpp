@@ -13,58 +13,58 @@ void MainControlLoop::execute()
 {
 
 #ifdef VERBOSE
-    Serial.println(F("-------------------- START LOOP --------------------"));
+    Serial.println("-------------------- START LOOP --------------------");
 
-    Serial.print(F("Gyro X: "));
+    Serial.print("Gyro X: ");
     Serial.println(sfr::imu::gyro_x);
 
-    Serial.print(F("Gyro Y: "));
+    Serial.print("Gyro Y: ");
     Serial.println(sfr::imu::gyro_y);
 
-    Serial.print(F("Gyro Z: "));
+    Serial.print("Gyro Z: ");
     Serial.println(sfr::imu::gyro_z);
 
-    Serial.print(F("Accel X: "));
+    Serial.print("Accel X: ");
     Serial.println(sfr::imu::acc_x);
 
-    Serial.print(F("Accel Y: "));
+    Serial.print("Accel Y: ");
     Serial.println(sfr::imu::acc_y);
 
-    Serial.print(F("Accel Z: "));
+    Serial.print("Accel Z: ");
     Serial.println(sfr::imu::acc_z);
 
-    Serial.print(F("Mag X: "));
+    Serial.print("Mag X: ");
     Serial.println(sfr::imu::mag_x);
 
-    Serial.print(F("Mag Y: "));
+    Serial.print("Mag Y: ");
     Serial.println(sfr::imu::mag_y);
 
-    Serial.print(F("Mag Z: "));
+    Serial.print("Mag Z: ");
     Serial.println(sfr::imu::mag_z);
 
-    Serial.print(F("Temperature (C): "));
+    Serial.print("Temperature (C): ");
     Serial.print(sfr::temperature::temp_c);
-    Serial.println(F(" C"));
+    Serial.println(" C");
 
-    Serial.print(F("GPS On: "));
+    Serial.print("GPS On: ");
     Serial.println(sfr::gps::on);
 
     Serial.print("UTC Time: ");
     Serial.println(sfr::gps::utc_time);
 
-    Serial.print(F("GPS Latitude: "));
+    Serial.print("GPS Latitude: ");
     Serial.println(sfr::gps::latitude);
 
-    Serial.print(F("GPS Longitude: "));
+    Serial.print("GPS Longitude: ");
     Serial.println(sfr::gps::longitude);
 
-    Serial.print(F("GPS Altitude (m): "));
+    Serial.print("GPS Altitude (m): ");
     Serial.println(sfr::gps::altitude);
 
-    Serial.print(F("Downlink Slot: "));
+    Serial.print("Downlink Slot: ");
     Serial.println(sfr::radio::downlink_slot);
 
-    Serial.print(F("Alive Time: "));
+    Serial.print("Alive Time: ");
     Serial.println(millis() - sfr::gps::boot_time);
 
 #endif
