@@ -23,6 +23,8 @@ namespace sfr {
 
     } // namespace imu
     namespace temperature {
+        extern bool initialized;
+
         extern float temp_c;
     } // namespace temperature
     namespace radio {

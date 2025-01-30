@@ -40,9 +40,9 @@ namespace constants {
     namespace imu {
         constexpr int gyro_min = -245; // Default gyro range is +/- 245 dps
         constexpr int gyro_max = 245;
-        constexpr int acc_min = -20; // Default accel range is +/- 2 G
-        constexpr int acc_max = 20;
-        constexpr int mag_min = -100; // Default mag range is +/- 4 guass -> 100 uT
+        constexpr int acc_min = -10; // Default accel range is +/- 2 G
+        constexpr int acc_max = 10;
+        constexpr int mag_min = -100; // Default mag range is +/- 4 gauss -> 100 uT
         constexpr int mag_max = 100;
     } // namespace imu
     namespace temperature {
