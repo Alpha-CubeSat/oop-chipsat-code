@@ -263,9 +263,6 @@ bool RadioControlTask::normalReportDownlink()
     flags |= sfr::gps::on << 2;                                  // boot mode flag
     flags |= (sfr::radio::mode == radio_mode_type::listen) << 1; // listen flag
 
-    Serial.println("Acc X: " + String(sfr::imu::acc_x));
-    Serial.println("Acc Y: " + String(sfr::imu::acc_y));
-
     uint8_t dlink[] = {
         (uint8_t)lat, (uint8_t)(lat >> 8),
         (uint8_t)lon, (uint8_t)(lon >> 8),
